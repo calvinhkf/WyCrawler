@@ -15,6 +15,7 @@ from file_util import save_lib, get_lib_name, read_json
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 db = database.connectdb()
 lib_path = "F:/GP/lib/"
+result_path ="C:/Users/yw/Desktop/result/"
 
 # def insert_project_lib_usage(project_id, version_type_id, module_):
 #     sql = "SELECT * FROM project_lib_usage WHERE project_id = '" + str(project_id) +"' and version_type_id = " + str(version_type_id)
@@ -298,6 +299,6 @@ def get_lib_usedby_project(path):
 # save_version_information("org.apache.mina", "mina-integration-beans", "2.0.17", "jar", None,1)
 # read_used_library()
 for i in range(179, 1380):
-    get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(i)+".txt")
+    get_lib_usedby_project(result_path+str(i)+".txt")
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-# get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(4)+".txt")
+# get_lib_usedby_project(result_path+str(4)+".txt")
