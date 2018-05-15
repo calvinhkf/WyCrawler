@@ -14,6 +14,7 @@ from file_util import save_lib, get_lib_name, read_json
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 db = database.connectdb()
+lib_path = "F:/GP/lib/"
 
 # def insert_project_lib_usage(project_id, version_type_id, module_):
 #     sql = "SELECT * FROM project_lib_usage WHERE project_id = '" + str(project_id) +"' and version_type_id = " + str(version_type_id)
@@ -85,8 +86,8 @@ def get_lib_from_list_page(page_path,_type,classifier):
                 url = page_path + "/" + li["href"]
             if url is not None:
                 package_url = li["href"]
-                if not os.path.exists("F:/GP/lib/" + li["href"]):
-                    save_lib(url, "F:/GP/lib/" + li["href"])
+                if not os.path.exists(lib_path + li["href"]):
+                    save_lib(url, lib_path + li["href"])
                 success = True
                 break
         elif li["href"].endswith("." + _type) and "-sources" not in li["href"] and "-javadoc" not in li["href"]:
@@ -98,8 +99,8 @@ def get_lib_from_list_page(page_path,_type,classifier):
                 url = page_path + "/" + li["href"]
             if url is not None:
                 package_url = li["href"]
-                if not os.path.exists("F:/GP/lib/" + li["href"]):
-                    save_lib(url, "F:/GP/lib/" + li["href"])
+                if not os.path.exists(lib_path + li["href"]):
+                    save_lib(url, lib_path+ li["href"])
                 success = True
                 break
     return success, package_url
@@ -109,8 +110,8 @@ def save_lib_package(files, version_id, _type, classifier, project_id, module_):
     file_list = json.loads(files)
     if _type in file_list:
         jar_url = file_list[_type]
-        if not os.path.exists("F:/GP/lib/" + get_lib_name(jar_url)):
-            save_lib(jar_url, "F:/GP/lib/" + get_lib_name(jar_url))
+        if not os.path.exists(lib_path + get_lib_name(jar_url)):
+            save_lib(jar_url, lib_path + get_lib_name(jar_url))
         # version_type_id = insert_version_type(version_id, _type, classifier, get_lib_name(jar_url))
         # insert_project_lib_usage(project_id, version_type_id, module_)
         return
