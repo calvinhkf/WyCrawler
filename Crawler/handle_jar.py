@@ -14,8 +14,16 @@ from file_util import save_lib, get_lib_name, read_json
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 db = database.connectdb()
-lib_path = "F:/GP/lib/"
+# lib_path = "F:/GP/lib/"
+lib_path = "C:/Users/yw/Desktop/lib/"
 result_path ="C:/Users/yw/Desktop/result/"
+output_path ="C:/Users/yw/Desktop/"
+
+project_array = []
+version_type_dic = {}
+lib_usage_dic = {}
+library_version_dic = {}
+entry_dic = {}
 
 # def insert_project_lib_usage(project_id, version_type_id, module_):
 #     sql = "SELECT * FROM project_lib_usage WHERE project_id = '" + str(project_id) +"' and version_type_id = " + str(version_type_id)
@@ -108,11 +116,23 @@ def get_lib_from_list_page(page_path,_type,classifier):
 
 def save_lib_package(files, version_id, _type, classifier, project_id, module_):
     # library_versions :org.apache.hadoop  hadoop-hdfs  3.0.0-beta1
+    global version_type_dic, lib_usage_dic
     file_list = json.loads(files)
     if _type in file_list:
         jar_url = file_list[_type]
         if not os.path.exists(lib_path + get_lib_name(jar_url)):
             save_lib(jar_url, lib_path + get_lib_name(jar_url))
+
+
+        version_type_dic["_type"] = _type
+        version_type_dic["classifier"] = classifier
+        version_type_dic["jar_package_url"] = get_lib_name(jar_url)
+
+        lib_usage_dic["module_"] = module_
+
+        entry_dic["version_type"] = version_type_dic
+        entry_dic["lib_usage"] = lib_usage_dic
+
         # version_type_id = insert_version_type(version_id, _type, classifier, get_lib_name(jar_url))
         # insert_project_lib_usage(project_id, version_type_id, module_)
         return
@@ -120,7 +140,16 @@ def save_lib_package(files, version_id, _type, classifier, project_id, module_):
         if 'View' in file_list:
             page_url = file_list['View']
             success,package_url = get_lib_from_list_page(page_url, _type, classifier)
-            # if success:
+            if success:
+                version_type_dic["_type"] = _type
+                version_type_dic["classifier"] = classifier
+                version_type_dic["jar_package_url"] = get_lib_name(package_url)
+
+                lib_usage_dic["module_"] = module_
+
+                entry_dic["version_type"] = version_type_dic
+                entry_dic["lib_usage"] = lib_usage_dic
+
             #     version_type_id = insert_version_type(version_id, _type, classifier, get_lib_name(package_url))
             #     insert_project_lib_usage(project_id, version_type_id, module_)
     # if _type == "xml":
@@ -249,9 +278,27 @@ def save_version_information(groupId, artifactId, version, _type, classifier, pr
     # print(group)
     # print(name1)
     # print(version1)
+    library_version_dic["group"] = group
+    library_version_dic["name"] = name1
+    library_version_dic["version"] = version1
+    library_version_dic["version_url"] = version_url
+    library_version_dic["license"] = license
+    library_version_dic["categories"] = categories
+    library_version_dic["organization"] = organization
+    library_version_dic["home_page"] = home_page
+    library_version_dic["date"] = date
+    library_version_dic["files"] = files
+    library_version_dic["repository"] = repository
+    library_version_dic["used_by"] = used_by
+    # library_version_dic["page"] = page
+    library_version_dic["category_url"] = category_url
+
+    entry_dic["library_version"] = library_version_dic
     # version_id = insert_library_version(group, name1, version1, version_url, license, categories, organization, home_page, date,
     #                    files, repository, used_by, page, category_url)
     save_lib_package(files, -1, _type, classifier, project_id, module_)
+    if len(entry_dic) != 0:
+        project_array.append(entry_dic)
     # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
 def get_lib_usedby_project(path):
@@ -293,12 +340,24 @@ def get_lib_usedby_project(path):
         #     else:
         #         continue
         # if do:
+        global version_type_dic,lib_usage_dic,library_version_dic,entry_dic
+        version_type_dic = {}
+        lib_usage_dic = {}
+        library_version_dic = {}
+        entry_dic = {}
         save_version_information(groupId, artifactId, version, type, classifier, project_id, module_)
         print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
 # save_version_information("org.apache.mina", "mina-integration-beans", "2.0.17", "jar", None,1)
 # read_used_library()
+# for i in range(179, 1380):
 for i in range(179, 1380):
+    # global project_array
+    project_array = []
     get_lib_usedby_project(result_path+str(i)+".txt")
+    # get_lib_usedby_project("C:/Users/yw/Desktop/test/"+str(i)+".txt")
+    if len(project_array) != 0:
+        with open(output_path+str(i)+".txt", 'w') as file_object:
+            json.dump(project_array, file_object)
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 # get_lib_usedby_project(result_path+str(4)+".txt")
