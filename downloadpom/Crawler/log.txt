@@ -1,0 +1,22 @@
+crawler.py
+
+category_id 2022
+------------------------- tab_url:http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin
+         version:3.7.0
+         repository:{'Central':'http://mvnrepository.com/repos/central'}
+         usages:{'9':'http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-pluginmaven-compiler-plugin/3.7.0/usages'}
+         date:(Sep, 2017)
+    license:Apache 2.0
+    categories:{'Maven Plugins':'http://mvnrepository.com/open-source/maven-plugins'}
+    organization:None
+    home_page:None
+    date:(Sep 01, 2017) 
+    files:{'pom (10 KB)':'http://central.maven.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.7.0/maven-compiler-plugin-3.7.0.pom','maven-plugin (56 KB)':'http://central.maven.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.7.0/maven-compiler-plugin-3.7.0.jar','View All':'http://central.maven.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.7.0'}
+    repository:{'Central':'http://mvnrepository.com/repos/central'}
+    used_by:{'54 artifacts':'http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin/usages'}
+
+new h2 : Runtime Dependencies (1)
+
+category_id 2053
+
+new h2 : Runtime Dependencies (1)

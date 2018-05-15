@@ -8,14 +8,15 @@ class PostHandler(BaseHTTPRequestHandler):
             fp=self.rfile,  
             headers=self.headers,  
             environ={'REQUEST_METHOD':'POST',  
-                     'CONTENT_TYPE':self.headers['Content-Type'],  
-                     }  
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                     }
         )  
 
         groupId = None
         artifactId = None
         version = None
-        for field in form.keys():  
+        content = None
+        for field in form.keys():
             field_item = form[field]  
             key = field_item.name
             value  = field_item.value
@@ -36,12 +37,15 @@ class PostHandler(BaseHTTPRequestHandler):
 
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(('Client: %sn \n' % str(self.client_address)).encode())
-        self.wfile.write(('User-agent: %sn\n' % str(self.headers['user-agent'])).encode())
-        self.wfile.write(('Path: %sn\n'%self.path).encode())
-        self.wfile.write(('Form data:n\n').encode())
-        self.wfile.write('File:fileName.pom\n'.encode())
-        self.wfile.write(content)
+        # self.wfile.write(('Client: %sn \n' % str(self.client_address)).encode())
+        # self.wfile.write(('User-agent: %sn\n' % str(self.headers['user-agent'])).encode())
+        # self.wfile.write(('Path: %sn\n'%self.path).encode())
+        # self.wfile.write(('Form data:n\n').encode())
+        # self.wfile.write('File:fileName.pom\n'.encode())
+        if content is None:
+            self.wfile.write("".encode(encoding="utf-8"))
+        else:
+            self.wfile.write(content)
         return  
   
 def StartServer():

@@ -3,7 +3,7 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from file_util import read_json, save_lib2
+from file_util import read_json, save_lib2, save_lib, read_pom_file
 from handle_jar import get_lib_from_list_page
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 
@@ -36,14 +36,17 @@ def get_pom(groupId, artifactId, version):
                         view_all_url = each["href"]
                     if _type == 'pom':
                         pom_url = each["href"]
-                        if not os.path.exists("C:/Users/huangkaifeng/Desktop/" + groupId+" "+artifactId+" "+version+".pom"):
-                            # save_lib(pom_url, "C:/Users/huangkaifeng/Desktop/" + groupId + " " + artifactId + " " + version + ".pom")
-                            content = save_lib2(pom_url)
+                        if not os.path.exists("F:/GP/pom/" + groupId+" "+artifactId+" "+version+".pom"):
+                            content = save_lib(pom_url, "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                        else:
+                            content = read_pom_file("F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                        # if not os.path.exists("C:/Users/huangkaifeng/Desktop/" + groupId+" "+artifactId+" "+version+".pom"):
+                        #     content = save_lib2(pom_url)
                         downloaded = True
                         break
             break
     if not downloaded and view_all_url is not None:
-            downloaded,package_url,content = get_lib_from_list_page(view_all_url, "pom", None)
+            downloaded, content = get_lib_from_list_page(view_all_url, groupId, artifactId, version,"pom", None)
     print(downloaded)
     return content
 

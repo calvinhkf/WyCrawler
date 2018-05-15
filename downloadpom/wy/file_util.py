@@ -12,7 +12,7 @@ def save_lib(url,path):
     lib = requests.get(url, headers=headers)
     with open(path, "wb") as f:
         f.write(lib.content)
-    f.close()
+    return lib.content
 
 def save_lib2(url):
     lib = requests.get(url, headers=headers)
@@ -20,3 +20,8 @@ def save_lib2(url):
 
 def get_lib_name(path):
     return path.split("/")[-1]
+
+def read_pom_file(path):
+    with open(path, 'rb') as f:
+        return f.read()
+        # return f.read().encode(encoding="utf-8")
