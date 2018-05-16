@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from file_util import save_lib, get_lib_name, read_json
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-db = database.connectdb()
+# db = database.connectdb()
 # lib_path = "F:/GP/lib/"
 lib_path = "C:/Users/yw/Desktop/lib/"
 result_path ="C:/Users/yw/Desktop/result/"
@@ -351,13 +351,14 @@ def get_lib_usedby_project(path):
 # save_version_information("org.apache.mina", "mina-integration-beans", "2.0.17", "jar", None,1)
 # read_used_library()
 # for i in range(179, 1380):
-for i in range(179, 1380):
+for i in range(308, 1380):
     # global project_array
-    project_array = []
-    get_lib_usedby_project(result_path+str(i)+".txt")
-    # get_lib_usedby_project("C:/Users/yw/Desktop/test/"+str(i)+".txt")
-    if len(project_array) != 0:
-        with open(output_path+str(i)+".txt", 'w') as file_object:
-            json.dump(project_array, file_object)
+    if not os.path.exists(output_path+str(i)+".txt"):
+        project_array = []
+        get_lib_usedby_project(result_path + str(i) + ".txt")
+        # get_lib_usedby_project("C:/Users/yw/Desktop/test/"+str(i)+".txt")
+        if len(project_array) != 0:
+            with open(output_path + str(i) + ".txt", 'w') as file_object:
+                json.dump(project_array, file_object)
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 # get_lib_usedby_project(result_path+str(4)+".txt")
