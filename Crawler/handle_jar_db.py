@@ -285,7 +285,7 @@ def get_lib_usedby_project(path):
         if "module" in lib:
             module_ = lib["module"]
         # if not do:
-        #     if artifactId == "qiniu-java-sdk" and groupId == "com.qiniu":
+        #     if artifactId == "apex-common" and groupId == "org.apache.apex":
         #         do = True
         #     else:
         #         continue
@@ -299,7 +299,8 @@ def get_lib_usedby_project(path):
 
 # save_version_information("org.apache.mina", "mina-integration-beans", "2.0.17", "jar", None,1)
 # read_used_library()
-for i in range(1139, 1140):
-    get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(i)+".txt")
+#1139 649 1213 492 654 1261 1265
+# for i in range(1265, 1266):
+#     get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(i)+".txt")
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 # get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(4)+".txt")

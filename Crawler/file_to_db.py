@@ -5,12 +5,13 @@ from handle_jar_db import insert_project_lib_usage, insert_library_version, inse
 from file_util import read_json
 
 db = database.connectdb()
-lib_path = "C:/Users/yw/Desktop/lib/"
-result_path ="C:/Users/yw/Desktop/result/"
-output_path ="C:/Users/yw/Desktop/"
+# lib_path = "C:/Users/yw/Desktop/lib/"
+# result_path ="C:/Users/yw/Desktop/result/"
+output_path ="F:/GP/output/"
 
 def parse_file_data():
-    for i in range(1, 2):
+    for i in range(405, 1380):
+        print("++++++++++++++++"+str(i)+".txt")
         if os.path.exists(output_path + str(i) + ".txt"):
             data = read_json(output_path + str(i) + ".txt")
             for entry_dic in data:
@@ -40,22 +41,36 @@ def parse_file_data():
                 used_by = library_version_dic["used_by"]
                 category_url = library_version_dic["category_url"]
 
+                # print("library_versions : "+group +" "+name+" "+version)
+
                 sql = "SELECT * FROM library_versions WHERE group_str = '" + str(group) + "' and name_str = '" + str(
                     name) + "' and version = '" + str(version) + "'"
                 version_info = database.querydb(db, sql)
                 if len(version_info) != 0:
                     version_id = version_info[0][0]
                     files = version_info[0][12]
-                    print("+++++++++++++++++++++++++version_id:" + str(version_id))
+                    # print("+++++++++++++++++++++++++version_id:" + str(version_id))
                     sql = "SELECT * FROM version_types WHERE version_id = " + str(version_id)
                     types = database.querydb(db, sql)
+                    isFound = False
                     for t in types:
                         if t[2] == _type:
+                            # print("version_type : " + str(_type) + " " + str(classifier) + " " + str(jar_package_url))
                             insert_project_lib_usage(i, t[0], module_)
-                            return
+                            isFound = True
+                            # print("INSERT lib_usage : " + str(module_) )
+                            break
+                    if isFound:
+                        continue
                 else:
                     version_id = insert_library_version(group, name, version, version_url, license_, categories,
                                                         organization, home_page, date,
                                                         files, repository, used_by, category_url)
+                    # print("INSERT library_versions : " + group + " " + name + " " + version)
                 version_type_id = insert_version_type(version_id, _type, classifier, jar_package_url)
                 insert_project_lib_usage(i, version_type_id, module_)
+                # print("INSERT version_type : " +str( _type) + " " + str(classifier) + " " + str(jar_package_url))
+                # print("INSERT lib_usage : " + str(module_))
+
+
+# parse_file_data()

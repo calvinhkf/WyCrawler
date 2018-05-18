@@ -1,3 +1,4 @@
+import json
 import random
 
 import requests
@@ -5,11 +6,15 @@ import time
 from bs4 import BeautifulSoup
 
 import database
+from exception import CustomizeException
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 db = database.connectdb()
+
+lib_list = []
+
 def update_release_time():
-    for i in range(3, 100000):
+    for i in range(21135, 100000):
         print("+++++++++++++++++++++++++ " + str(i))
         sql = "SELECT * FROM lib_update WHERE id = " + str(i)
         update = database.querydb(db, sql)
@@ -66,7 +71,7 @@ def get_time_from_maven(groupId,artifactId,version):
     if results is None:
         print("can't find 'im' class")
         return
-    time.sleep(random.randint(10, 18))
+    time.sleep(random.randint(3, 6))
     results = results.find_next_sibling(class_='grid')
     information_trs = results.find_all('tr')
     datetime = None
@@ -77,5 +82,4 @@ def get_time_from_maven(groupId,artifactId,version):
     return datetime
 
 
-
-update_release_time()
+# update_release_time()
