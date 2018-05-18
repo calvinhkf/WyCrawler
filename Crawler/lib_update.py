@@ -10,7 +10,7 @@ headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 db = database.connectdb()
 
 lib_list = []
-result_list = []
+# result_list = []
 
 def get_no_duplicated_lib():
     # for i in range(40001, 810000):
@@ -63,11 +63,13 @@ def handle_lib_by_id(start,end):
                 print(str(groupId)+"  "+ str(artifactId)+"  "+ str(version))
                 _time = get_time_from_maven(groupId, artifactId, version)
                 if _time is not None:
-                    lib_dic["time"] = _time
-                    result_list.append(lib_dic)
-    if len(result_list) != 0:
-        with open("output.txt", 'w') as file_object:
-            json.dump(result_list, file_object)
+                    with open("output.txt", 'a') as file_object:
+                        file_object.write(str(id)+"+++"+str(groupId)+"+++"+str(artifactId)+"+++"+str(version)+"+++"+str(_time)+"\n")
+                    # lib_dic["time"] = _time
+                    # result_list.append(lib_dic)
+    # if len(result_list) != 0:
+    #     with open("output.txt", 'w') as file_object:
+    #         json.dump(result_list, file_object)
 
-# handle_lib_by_id(1, 8)
-get_no_duplicated_lib()
+handle_lib_by_id(12, 13)
+# get_no_duplicated_lib()
