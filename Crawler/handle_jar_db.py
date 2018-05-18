@@ -276,26 +276,30 @@ def get_lib_usedby_project(path):
             continue
         if project_id is None:
             continue
-        type = "jar"
+        type_ = "jar"
         classifier = None
         if "type" in lib:
-            type = lib["type"]
+            type_ = lib["type"]
         if "classifier" in lib:
             classifier = lib["classifier"]
         if "module" in lib:
             module_ = lib["module"]
         # if not do:
-        #     if artifactId == "java-getopt" and groupId == "gnu.getopt":
+        #     if artifactId == "qiniu-java-sdk" and groupId == "com.qiniu":
         #         do = True
         #     else:
         #         continue
         # if do:
-        save_version_information(groupId, artifactId, version, type, classifier, project_id, module_)
+        if type(version) == list:
+            for ver in version:
+                save_version_information(groupId, artifactId, ver, type_, classifier, project_id, module_)
+        else:
+            save_version_information(groupId, artifactId, version, type_, classifier, project_id, module_)
         print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
 # save_version_information("org.apache.mina", "mina-integration-beans", "2.0.17", "jar", None,1)
 # read_used_library()
-for i in range(286, 1380):
+for i in range(1139, 1140):
     get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(i)+".txt")
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 # get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(4)+".txt")
