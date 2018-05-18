@@ -9,7 +9,7 @@ import database
 from exception import CustomizeException
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-db = database.connectdb()
+# db = database.connectdb()
 
 lib_list = []
 
