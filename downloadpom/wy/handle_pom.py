@@ -1,7 +1,10 @@
 import os
+import socket
+
 import requests
 
 from bs4 import BeautifulSoup
+from urllib3.exceptions import NewConnectionError, MaxRetryError
 
 from file_util import read_json, save_lib2, save_lib, read_pom_file
 from handle_jar import get_lib_from_list_page
@@ -50,6 +53,71 @@ def get_pom(groupId, artifactId, version):
     print(downloaded)
     return content
 
+def get_pom_by_repo_url(repoUrl, groupId, artifactId, version):
+    print("groupId: " + str(groupId) + ", artifactId: " + str(artifactId) + ", version: " + str(version))
+    downloaded = False
+    groupUrl = groupId.replace('.', '/')
+    # groupUrl = groupId
+    # print(groupUrl)
+    pom_url = repoUrl+"/"+groupUrl+"/"+artifactId+"/"+version+"/"+artifactId+"-"+version+".pom"
+    if not pom_url.startswith("https://") and not pom_url.startswith("http://"):
+        pom_url = "http://" + pom_url
+
+    print(pom_url)
+    content = None
+    try:
+        lib_pom = requests.get(pom_url, headers=headers)
+    except Exception as e:
+        print(downloaded)
+        return content
+
+    if lib_pom is not None and lib_pom.text is not None and lib_pom.text.startswith("<project"):
+        if not os.path.exists("F:/GP/pom/" + groupId+" "+artifactId+" "+version+".pom"):
+            content = save_lib(pom_url, "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+        else:
+            content = read_pom_file("F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+        downloaded = True
+    else:
+        list_page_url = repoUrl+"/"+groupUrl+"/"+artifactId+"/"+version
+        maven_metadata_url = list_page_url + "/" +"maven-metadata.xml"
+        try:
+            meta_data = requests.get(maven_metadata_url, headers=headers)
+            # print(meta_data.text)
+            if meta_data is not None:
+                meta_data_soup = BeautifulSoup(meta_data.text, 'xml');
+                snapshot_versions = meta_data_soup.find_all('snapshotVersion')
+                for snapshot_version in snapshot_versions:
+                    # print(snapshot_version)
+                    # print(snapshot_version.extension.string)
+                    type = snapshot_version.extension.string
+                    if type == 'pom':
+                        version_id = snapshot_version.value.string
+                        # print(version_id)
+                        pom_url = list_page_url + "/" + artifactId + "-" + version_id + ".pom"
+                        # pom_url = list_page_url + "/" + artifactId + "-.pom"
+                        print(pom_url)
+                        try:
+                             lib_pom = requests.get(pom_url, headers=headers)
+                        except Exception as e:
+                            print(downloaded)
+                            return content
+                        # print(lib_pom.text)
+                        # print("<html>" not in lib_pom.text)
+                        if lib_pom is not None and lib_pom.text is not None and "<html>" not in lib_pom.text:
+                            if not os.path.exists("F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom"):
+                                content = save_lib(pom_url,
+                                                   "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                            else:
+                                content = read_pom_file(
+                                    "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                            downloaded = True
+                        break
+        except Exception as e:
+            meta_data = None
+
+    print(downloaded)
+    return content
+
 def download_unparsed_pom_lib(path):
     data = read_json(path)
     idx = 0
@@ -66,3 +134,10 @@ def download_unparsed_pom_lib(path):
         get_pom(groupId, artifactId, version)
 # get_pom('org.springframework', 'spring-framework-bom', '4.3.7.RELEASE')
 # download_unparsed_pom_lib("C:/Users/yw/Desktop/pom.txt")
+
+# get_pom_by_repo_url(
+#     "https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/org.talend.components/components-parent/0.19.9/components-parent-0.19.9.pom", "org.talend.components", "components-parent", "0.19.9")
+
+content = get_pom_by_repo_url(
+    "https://oss.sonatype.org/content/repositories/snapshots", "com.fasterxml.jackson", "jackson-base", "3.0.0-SNAPSHOT")
+# print(content)

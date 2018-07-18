@@ -1,7 +1,9 @@
 #coding=utf-8  
 from http.server import BaseHTTPRequestHandler  
 import cgi
-from handle_pom import get_pom
+from handle_pom import get_pom, get_pom_by_repo_url
+
+
 class PostHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         form = cgi.FieldStorage(
@@ -12,6 +14,7 @@ class PostHandler(BaseHTTPRequestHandler):
                      }
         )  
 
+        repoUrl = None
         groupId = None
         artifactId = None
         version = None
@@ -23,6 +26,8 @@ class PostHandler(BaseHTTPRequestHandler):
             # filesize = len(filevalue)#文件大小(字节)
             #print len(filevalue)  
             # print(key)
+            if key == 'repoUrl':
+                repoUrl = value
             if key == 'artifactId':
                 artifactId = value
             if key == 'groupId':
@@ -33,7 +38,10 @@ class PostHandler(BaseHTTPRequestHandler):
             # with open(filename+".txt",'wb') as f:
             #     f.write(filevalue)
         if groupId != None and artifactId != None and version != None:
-            content = get_pom(groupId, artifactId, version)
+            if repoUrl != None:
+                content = get_pom_by_repo_url(repoUrl, groupId, artifactId, version)
+            else:
+                content = get_pom(groupId, artifactId, version)
 
         self.send_response(200)
         self.end_headers()
