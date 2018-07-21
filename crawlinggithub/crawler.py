@@ -119,7 +119,7 @@ def crawler(num_a,num_b):
             cnt+=1
         print('proj-type: '+flag)
         fout.write(str(index)+'\n')
-        fout.write(url)
+        fout.write(m_list[i])
         fout.write('\n')
         fout.write(str(ltime))
         fout.write('\n')
