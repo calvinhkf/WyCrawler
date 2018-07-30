@@ -63,7 +63,8 @@ def handle_lib_by_id(start,end):
                 print(str(groupId)+"  "+ str(artifactId)+"  "+ str(version))
                 _time = get_time_from_maven(groupId, artifactId, version)
                 if _time is not None:
-                    with open("output.txt", 'a') as file_object:
+                    # with open("output"+str(start)+"-"+str(end)+".txt", 'a') as file_object:
+                    with open("output69387+.txt", 'a') as file_object:
                         file_object.write(str(id)+"+++"+str(groupId)+"+++"+str(artifactId)+"+++"+str(version)+"+++"+str(_time)+"\n")
                     # lib_dic["time"] = _time
                     # result_list.append(lib_dic)
@@ -71,5 +72,5 @@ def handle_lib_by_id(start,end):
     #     with open("output.txt", 'w') as file_object:
     #         json.dump(result_list, file_object)
 
-handle_lib_by_id(12, 13)
+# handle_lib_by_id(69387, 70000)
 # get_no_duplicated_lib()

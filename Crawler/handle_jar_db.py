@@ -10,10 +10,11 @@ import database
 from exception import CustomizeException
 from bs4 import BeautifulSoup
 
-from file_util import save_lib, get_lib_name, read_json
+from file_util import save_lib, get_lib_name, read_json, read_file
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 db = database.connectdb()
+repo_dir = "E:/ThirdPartyLibraryAnalysis/repo"
 
 def insert_project_lib_usage(project_id, version_type_id, module_):
     sql = "SELECT * FROM project_lib_usage WHERE project_id = '" + str(project_id) +"' and version_type_id = " + str(version_type_id)
@@ -64,16 +65,33 @@ def insert_library_version(group,name1,version1,version_url,license,categories,o
     results = database.querydb(db, sql)
     return results[0][0]
 
+def insert_unsolved_library(group,name1,version1,project_id):
+    sql = "SELECT * FROM unsolved_libraries WHERE group_str = '" + str(group) + "' and name_str = '" + str(
+        name1) +"' and version = '"+str(version1)+"'"
+    record = database.querydb(db, sql)
+    if len(record) == 0:
+        sql = "INSERT INTO unsolved_libraries" \
+              "(project_id, group_str,name_str,version) " \
+              "VALUES (\'" \
+              + str(project_id).replace("'", "''") + "\',\'" \
+              + str(group).replace("'", "''") + "\',\'" \
+              + str(name1).replace("'", "''") + "\',\'" \
+              + str(version1).replace("'", "''") + "\')"
+        database.execute_sql(db, sql)
+        print('======================== INSERT INTO unsolved_libraries :' + str(group) + "  " + str(name1)+"  " + str(version1))
+
 def get_lib_from_list_page(page_path,_type,classifier):
     success = False
     package_url = None
     time.sleep(random.randint(2, 5))
     page = requests.get(page_path, headers=headers)
     soup = BeautifulSoup(page.text, 'lxml');
-    if soup.find('pre') is None:
-        print("error : has no attribute 'pre'")
-        return success, package_url
-    list = soup.find('pre').find_all('a')
+    # 去掉pre，统一格式
+    # if soup.find('pre') is None:
+    #     print("error : has no attribute 'pre'")
+    #     return success, package_url
+    # list = soup.find('pre').find_all('a')
+    list = soup.find_all('a')
     for li in list:
         if _type == "test-jar" and li["href"].endswith(".jar") and "-sources" not in li["href"] and "-javadoc" not in li["href"] and "test" in li["href"]:
             url = None
@@ -150,6 +168,7 @@ def save_version_information(groupId, artifactId, version, _type, classifier, pr
         category_url = None
         if library_soup.find('h2', class_='im-title') is None:
             print("can't find h2 'im-title' class")
+            insert_unsolved_library(groupId, artifactId, version, project_id)
             return
         titles = library_soup.find('h2', class_='im-title').find_all('a')
         if titles[len(titles) - 1].get_text() == version:
@@ -159,6 +178,7 @@ def save_version_information(groupId, artifactId, version, _type, classifier, pr
         results = library_soup.find('div', class_='im')
         if results is None:
             print("can't find 'im' class")
+            insert_unsolved_library(groupId, artifactId, version, project_id)
             return
             # raise (CustomizeException("can't find 'im' class"))
         time.sleep(random.randint(10, 18))
@@ -251,6 +271,23 @@ def save_version_information(groupId, artifactId, version, _type, classifier, pr
     save_lib_package(files, version_id, _type, classifier, project_id, module_)
     # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
+def get_lib_from_other_repo(groupId, artifactId, version, _type, classifier, project_id, module_):
+    repo_file = repo_dir + "/" + str(project_id) + ".txt"
+    lines = read_file(repo_file)
+    for i in range(len(lines)):
+        repo_url = lines[i]
+        groupUrl = groupId.replace('.', '/')
+        lib_url = repo_url + "/" + groupUrl + "/" + artifactId + "/" + version
+
+        success, package_url = get_lib_from_list_page(lib_url, _type, classifier)
+        if success:
+            version_id = insert_library_version(groupId, artifactId, version, lib_url, 'NULL', 'NULL', 'NULL', 'NULL',
+                                                'NULL', 'NULL', 'NULL', 'NULL', 'NULL')
+            version_type_id = insert_version_type(version_id, _type, classifier, get_lib_name(package_url))
+            insert_project_lib_usage(project_id, version_type_id, module_)
+
+
+
 def get_lib_usedby_project(path):
     if not os.path.exists(path):
         return
@@ -291,6 +328,7 @@ def get_lib_usedby_project(path):
         #         continue
         # if do:
         if type(version) == list:
+            # continue
             for ver in version:
                 save_version_information(groupId, artifactId, ver, type_, classifier, project_id, module_)
         else:
@@ -300,7 +338,7 @@ def get_lib_usedby_project(path):
 # save_version_information("org.apache.mina", "mina-integration-beans", "2.0.17", "jar", None,1)
 # read_used_library()
 #1139 649 1213 492 654 1261 1265
-# for i in range(1265, 1266):
-#     get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(i)+".txt")
+for i in range(1000, 1400):
+    get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(i)+".txt")
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 # get_lib_usedby_project("C:/Users/yw/Desktop/result/"+str(4)+".txt")

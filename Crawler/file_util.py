@@ -16,3 +16,10 @@ def save_lib(url,path):
 
 def get_lib_name(path):
     return path.split("/")[-1]
+
+def read_file(path):
+    with open(path, "r") as f:
+        lines = f.readlines()
+        for i in range(len(lines)):
+            lines[i] = lines[i].strip('\n')
+    return lines

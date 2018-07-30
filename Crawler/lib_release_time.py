@@ -14,7 +14,7 @@ headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 lib_list = []
 
 def update_release_time():
-    for i in range(21135, 100000):
+    for i in range(58338, 100000):
         print("+++++++++++++++++++++++++ " + str(i))
         sql = "SELECT * FROM lib_update WHERE id = " + str(i)
         update = database.querydb(db, sql)
@@ -64,14 +64,14 @@ def get_time_from_maven(groupId,artifactId,version):
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
     library_version = requests.get(version_url, headers=headers)
     library_soup = BeautifulSoup(library_version.text, 'lxml');
-    if library_soup.find('h2', class_='im-title') is None:
-        print("can't find h2 'im-title' class")
-        return
+    # if library_soup.find('h2', class_='im-title') is None:
+    #     print("can't find h2 'im-title' class")
+    #     return
     results = library_soup.find('div', class_='im')
     if results is None:
         print("can't find 'im' class")
         return
-    time.sleep(random.randint(3, 6))
+    time.sleep(random.randint(1, 2))
     results = results.find_next_sibling(class_='grid')
     information_trs = results.find_all('tr')
     datetime = None
