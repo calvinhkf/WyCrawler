@@ -290,7 +290,6 @@ def save_version_information(groupId, artifactId, version, _type, classifier, pr
     library_version_dic["files"] = files
     library_version_dic["repository"] = repository
     library_version_dic["used_by"] = used_by
-    # library_version_dic["page"] = page
     library_version_dic["category_url"] = category_url
 
     entry_dic["library_version"] = library_version_dic

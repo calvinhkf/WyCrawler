@@ -8,6 +8,10 @@ def read_json(path):
         data = json.load(json_file)
         return data
 
+def write_json(path,json_data):
+    with open(path, 'w') as file_object:
+        json.dump(json_data, file_object)
+
 def save_lib(url,path):
     lib = requests.get(url, headers=headers)
     with open(path, "wb") as f:
