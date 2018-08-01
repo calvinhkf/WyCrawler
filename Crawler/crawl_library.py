@@ -92,7 +92,7 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
 def get_lib_list_of_one_version(path):
     newlist = []
     try:
-        time.sleep(random.randint(2, 5))
+        time.sleep(random.randint(3, 6))
         page = requests.get(path, headers=headers)
         soup = BeautifulSoup(page.text, 'lxml');
         list = soup.find_all('a')
@@ -104,6 +104,7 @@ def get_lib_list_of_one_version(path):
 
 def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
+    time.sleep(random.randint(10, 18))
     library_version = requests.get(version_url, headers=headers)
     library_soup = BeautifulSoup(library_version.text, 'lxml');
     category_url = None
@@ -121,7 +122,6 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
         print("can't find 'im' class")
         get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
         return
-    time.sleep(random.randint(10, 18))
     results = results.find_next_sibling(class_='grid')
     information_trs = results.find_all('tr')
     repository, license, categories, organization, home_page, files, used_by = None, None, None, None, None, None, None
@@ -263,7 +263,7 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
                 usages = "{'" + tds[tr_usages].a.string.replace('\n', '') + "':'" + category_url + tds[tr_usages].a[
                     "href"] + "'}"
             date = tds[tr_date].string.replace('\n', '')
-            time.sleep(random.randint(8, 10))
+            time.sleep(random.randint(15, 25))
             library_version = requests.get(version_url, headers=headers)
             page = library_version.text
             library_soup = BeautifulSoup(library_version.text, 'lxml');
@@ -444,7 +444,7 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
 def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artifactId, target_version):
     versions_meta_url = library_url + "/" + "maven-metadata.xml"
     try:
-        # time.sleep(random.randint(3, 6))
+        time.sleep(random.randint(3, 6))
         versions_meta_data = requests.get(versions_meta_url, headers=headers)
         if versions_meta_data is not None:
             meta_data_soup = BeautifulSoup(versions_meta_data.text, 'xml');
@@ -524,4 +524,4 @@ def handle_one_lib(lib_obj):
 # get_denpendencies_of_proj(4,5539)
 # print(len(lib_dict))
 # dependency_dict_to_list()
-handle_lib_by_range(2,50)
+handle_lib_by_range(6,50)
