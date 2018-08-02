@@ -34,10 +34,13 @@ def save_lib_package(files, _type, classifier,version):
         version_type_dic["jar_package_url"] = get_lib_name(jar_url)
         version_types_list.append(version_type_dic)
         return
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar":
+    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file":
+        new_type = _type
+        if _type == "nbm-file":
+            new_type = "nbm"
         if 'View' in file_list:
             page_url = file_list['View']
-            success, package_url = get_lib_from_list_page(page_url, _type, classifier)
+            success, package_url = get_lib_from_list_page(page_url, new_type, classifier)
             if success:
                 version_type_dic["version"] = version
                 version_type_dic["_type"] = _type
@@ -409,6 +412,8 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
                             get_other_library_versions_in_other_repo(repo_url,library_url, groupId, artifactId, version)
                             crawled_repo.append(repo_url)
 
+                        print('    repository:' + str(repo_url))
+                        print('    date:' + str(snapshot_date))
                         library_version_dic = {}
                         library_version_dic["group"] = groupId
                         library_version_dic["name"] = artifactId
@@ -465,6 +470,8 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
                     # insert_library_version(groupId, artifactId, ver, version_detail_url, None,
                     #                                 None, None, None, update_date, None, repo_url,
                     #                                 None, None)
+                    print('    repository:' + str(repo_url))
+                    print('    date:' + str(update_date))
                     library_version_dic = {}
                     library_version_dic["group"] = groupId
                     library_version_dic["name"] = artifactId
@@ -491,6 +498,7 @@ def handle_lib_by_range(start, end):
         handle_one_lib(json_data[i])
 
 def handle_one_lib(lib_obj):
+    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     global repo_array,crawled_repo,library_versions_list,version_types_list,unsolved_lib_list
     crawled_repo = []
     library_versions_list = []
@@ -524,4 +532,5 @@ def handle_one_lib(lib_obj):
 # get_denpendencies_of_proj(4,5539)
 # print(len(lib_dict))
 # dependency_dict_to_list()
-handle_lib_by_range(6,50)
+handle_lib_by_range(56,100)
+# save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")
