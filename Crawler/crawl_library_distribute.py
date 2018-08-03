@@ -505,12 +505,14 @@ def handle_lib_by_range(start, end):
 
 def handle_one_lib(lib_obj):
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    key = lib_obj['lib_name']
+    if os.path.exists(output_dir+"/"+key+".json"):
+        return
     global repo_array,crawled_repo,library_versions_list,version_types_list,unsolved_lib_list
     crawled_repo = []
     library_versions_list = []
     version_types_list = []
     unsolved_lib_list = []
-    key = lib_obj['lib_name']
     versions_array = lib_obj['versions_array']
     repo_array = lib_obj['repo_array']
     names = key.split(' ')
