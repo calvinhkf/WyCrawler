@@ -11,7 +11,6 @@ from file_util import read_json, write_json, read_file, get_lib_name, save_lib
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-result_dir = "E:/data/curr_result_all"
 output_dir = "E:/data/dependency_library_info"
 lib_dir = "F:/GP/lib/"
 
@@ -494,6 +493,7 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
 
 def handle_lib_by_range(start, end):
     json_data = read_json("dependencies_list.txt")
+    print(len(json_data))
     for i in range(start, end):
         print("+++++++++++++++++++++++++++++++ " + str(i))
         handle_one_lib(json_data[i])
@@ -533,5 +533,6 @@ def handle_one_lib(lib_obj):
 # get_denpendencies_of_proj(4,5539)
 # print(len(lib_dict))
 # dependency_dict_to_list()
+# 0
 handle_lib_by_range(90,150)
 # save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")
