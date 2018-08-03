@@ -13,6 +13,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 result_dir = "E:/data/curr_result_all"
 output_dir = "E:/data/dependency_library_info"
+lib_dir = "F:/GP/lib/"
 
 crawled_repo = []
 repo_array = []
@@ -26,8 +27,8 @@ def save_lib_package(files, _type, classifier,version):
     file_list = json.loads(files)
     if _type in file_list:
         jar_url = file_list[_type]
-        if not os.path.exists("F:/GP/lib/" + get_lib_name(jar_url)):
-            save_lib(jar_url, "F:/GP/lib/" + get_lib_name(jar_url))
+        if not os.path.exists(lib_dir + get_lib_name(jar_url)):
+            save_lib(jar_url, lib_dir + get_lib_name(jar_url))
         version_type_dic["version"] = version
         version_type_dic["_type"] = _type
         version_type_dic["classifier"] = classifier
@@ -73,8 +74,8 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
                 url = page_path + "/" + lib_package
             if url is not None:
                 package_url = lib_package
-                if not os.path.exists("F:/GP/lib/" + lib_package):
-                    save_lib(url, "F:/GP/lib/" + lib_package)
+                if not os.path.exists(lib_dir + lib_package):
+                    save_lib(url, lib_dir + lib_package)
                 success = True
                 break
         elif lib_package.endswith("." + _type) and "-sources" not in lib_package and "-javadoc" not in lib_package:
@@ -86,8 +87,8 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
                 url = page_path + "/" + lib_package
             if url is not None:
                 package_url = lib_package
-                if not os.path.exists("F:/GP/lib/" + lib_package):
-                    save_lib(url, "F:/GP/lib/" + lib_package)
+                if not os.path.exists(lib_dir + lib_package):
+                    save_lib(url, lib_dir + lib_package)
                 success = True
                 break
     return success, package_url
@@ -399,8 +400,8 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
                     print(package_url)
                     lib_name = None
                     if package_url in lib_list:
-                        if not os.path.exists("F:/GP/lib/" + package_url):
-                            save_lib(list_page_url + "/" + package_url, "F:/GP/lib/" + package_url)
+                        if not os.path.exists(lib_dir + package_url):
+                            save_lib(list_page_url + "/" + package_url, lib_dir + package_url)
                         success = True
                         lib_name = package_url
                     else:
@@ -532,5 +533,5 @@ def handle_one_lib(lib_obj):
 # get_denpendencies_of_proj(4,5539)
 # print(len(lib_dict))
 # dependency_dict_to_list()
-handle_lib_by_range(56,100)
+handle_lib_by_range(90,150)
 # save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")
