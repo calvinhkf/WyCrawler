@@ -11,8 +11,8 @@ from file_util import read_json, write_json, read_file, get_lib_name, save_lib
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-result_dir = "E:/data/curr_result_all"
 output_dir = "E:/data/dependency_library_info"
+lib_dir = "F:/GP/lib/"
 
 crawled_repo = []
 repo_array = []
@@ -26,18 +26,21 @@ def save_lib_package(files, _type, classifier,version):
     file_list = json.loads(files)
     if _type in file_list:
         jar_url = file_list[_type]
-        if not os.path.exists("F:/GP/lib/" + get_lib_name(jar_url)):
-            save_lib(jar_url, "F:/GP/lib/" + get_lib_name(jar_url))
+        if not os.path.exists(lib_dir + get_lib_name(jar_url)):
+            save_lib(jar_url, lib_dir + get_lib_name(jar_url))
         version_type_dic["version"] = version
         version_type_dic["_type"] = _type
         version_type_dic["classifier"] = classifier
         version_type_dic["jar_package_url"] = get_lib_name(jar_url)
         version_types_list.append(version_type_dic)
         return
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar":
+    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file":
+        new_type = _type
+        if _type == "nbm-file":
+            new_type = "nbm"
         if 'View' in file_list:
             page_url = file_list['View']
-            success, package_url = get_lib_from_list_page(page_url, _type, classifier)
+            success, package_url = get_lib_from_list_page(page_url, new_type, classifier)
             if success:
                 version_type_dic["version"] = version
                 version_type_dic["_type"] = _type
@@ -70,8 +73,8 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
                 url = page_path + "/" + lib_package
             if url is not None:
                 package_url = lib_package
-                if not os.path.exists("F:/GP/lib/" + lib_package):
-                    save_lib(url, "F:/GP/lib/" + lib_package)
+                if not os.path.exists(lib_dir + lib_package):
+                    save_lib(url, lib_dir + lib_package)
                 success = True
                 break
         elif lib_package.endswith("." + _type) and "-sources" not in lib_package and "-javadoc" not in lib_package:
@@ -83,8 +86,8 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
                 url = page_path + "/" + lib_package
             if url is not None:
                 package_url = lib_package
-                if not os.path.exists("F:/GP/lib/" + lib_package):
-                    save_lib(url, "F:/GP/lib/" + lib_package)
+                if not os.path.exists(lib_dir + lib_package):
+                    save_lib(url, lib_dir + lib_package)
                 success = True
                 break
     return success, package_url
@@ -92,7 +95,7 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
 def get_lib_list_of_one_version(path):
     newlist = []
     try:
-        time.sleep(random.randint(2, 5))
+        time.sleep(random.randint(3, 6))
         page = requests.get(path, headers=headers)
         soup = BeautifulSoup(page.text, 'lxml');
         list = soup.find_all('a')
@@ -104,6 +107,7 @@ def get_lib_list_of_one_version(path):
 
 def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
+    time.sleep(random.randint(10, 18))
     library_version = requests.get(version_url, headers=headers)
     library_soup = BeautifulSoup(library_version.text, 'lxml');
     category_url = None
@@ -121,7 +125,6 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
         print("can't find 'im' class")
         get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
         return
-    time.sleep(random.randint(10, 18))
     results = results.find_next_sibling(class_='grid')
     information_trs = results.find_all('tr')
     repository, license, categories, organization, home_page, files, used_by = None, None, None, None, None, None, None
@@ -263,7 +266,7 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
                 usages = "{'" + tds[tr_usages].a.string.replace('\n', '') + "':'" + category_url + tds[tr_usages].a[
                     "href"] + "'}"
             date = tds[tr_date].string.replace('\n', '')
-            time.sleep(random.randint(8, 10))
+            time.sleep(random.randint(15, 25))
             library_version = requests.get(version_url, headers=headers)
             page = library_version.text
             library_soup = BeautifulSoup(library_version.text, 'lxml');
@@ -396,8 +399,8 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
                     print(package_url)
                     lib_name = None
                     if package_url in lib_list:
-                        if not os.path.exists("F:/GP/lib/" + package_url):
-                            save_lib(list_page_url + "/" + package_url, "F:/GP/lib/" + package_url)
+                        if not os.path.exists(lib_dir + package_url):
+                            save_lib(list_page_url + "/" + package_url, lib_dir + package_url)
                         success = True
                         lib_name = package_url
                     else:
@@ -409,6 +412,8 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
                             get_other_library_versions_in_other_repo(repo_url,library_url, groupId, artifactId, version)
                             crawled_repo.append(repo_url)
 
+                        print('    repository:' + str(repo_url))
+                        print('    date:' + str(snapshot_date))
                         library_version_dic = {}
                         library_version_dic["group"] = groupId
                         library_version_dic["name"] = artifactId
@@ -444,7 +449,7 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
 def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artifactId, target_version):
     versions_meta_url = library_url + "/" + "maven-metadata.xml"
     try:
-        # time.sleep(random.randint(3, 6))
+        time.sleep(random.randint(3, 6))
         versions_meta_data = requests.get(versions_meta_url, headers=headers)
         if versions_meta_data is not None:
             meta_data_soup = BeautifulSoup(versions_meta_data.text, 'xml');
@@ -465,6 +470,8 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
                     # insert_library_version(groupId, artifactId, ver, version_detail_url, None,
                     #                                 None, None, None, update_date, None, repo_url,
                     #                                 None, None)
+                    print('    repository:' + str(repo_url))
+                    print('    date:' + str(update_date))
                     library_version_dic = {}
                     library_version_dic["group"] = groupId
                     library_version_dic["name"] = artifactId
@@ -486,11 +493,13 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
 
 def handle_lib_by_range(start, end):
     json_data = read_json("dependencies_list.txt")
+    print(len(json_data))
     for i in range(start, end):
         print("+++++++++++++++++++++++++++++++ " + str(i))
         handle_one_lib(json_data[i])
 
 def handle_one_lib(lib_obj):
+    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     global repo_array,crawled_repo,library_versions_list,version_types_list,unsolved_lib_list
     crawled_repo = []
     library_versions_list = []
@@ -524,4 +533,6 @@ def handle_one_lib(lib_obj):
 # get_denpendencies_of_proj(4,5539)
 # print(len(lib_dict))
 # dependency_dict_to_list()
-handle_lib_by_range(2,50)
+# 0
+handle_lib_by_range(90,150)
+# save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")
