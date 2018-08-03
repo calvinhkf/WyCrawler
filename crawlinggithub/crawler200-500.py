@@ -6,6 +6,7 @@ import re
 from bs4 import BeautifulSoup
 from queue import Queue
 import sys
+# input star_lt_500_gt_200.csv output
 def extract(content):
     sub_sub_dirs = []
     sub_sub_files = []
