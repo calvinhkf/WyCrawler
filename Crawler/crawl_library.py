@@ -8,11 +8,22 @@ import time
 from bs4 import BeautifulSoup
 from exception import CustomizeException
 from file_util import read_json, write_json, read_file, get_lib_name, save_lib
-
+from useragents import agents
+import sys
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-output_dir = "E:/data/dependency_library_info"
-lib_dir = "F:/GP/lib/"
+
+ttype = sys.argv[1]
+if ttype == "a":
+    output_dir = "E:/data/dependency_library_info"
+    lib_dir = "F:/GP/lib/"
+else:
+    output_dir = os.getcwd()+'/dependency_library_info'
+    lib_dir = os.getcwd()+'/lib/'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    if not os.path.exists(lib_dir):
+        os.makedirs(lib_dir)
 
 crawled_repo = []
 repo_array = []
@@ -95,7 +106,9 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
 def get_lib_list_of_one_version(path):
     newlist = []
     try:
-        time.sleep(random.randint(3, 6))
+        # time.sleep(random.randint(3, 6))
+        time.sleep(random.randint(1, 3))
+        headers = {'User-Agent': random.choice(agents)}
         page = requests.get(path, headers=headers)
         soup = BeautifulSoup(page.text, 'lxml');
         list = soup.find_all('a')
@@ -107,7 +120,9 @@ def get_lib_list_of_one_version(path):
 
 def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
-    time.sleep(random.randint(10, 18))
+    # time.sleep(random.randint(10, 18))
+    time.sleep(random.randint(1, 3))
+    headers = {'User-Agent': random.choice(agents)}
     library_version = requests.get(version_url, headers=headers)
     library_soup = BeautifulSoup(library_version.text, 'lxml');
     category_url = None
@@ -179,7 +194,9 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     print('    files:' + str(files))
     # print('    used_by:' + str(used_by))
     if "https://mvnrepository.com" not in crawled_repo:
-        time.sleep(random.randint(15, 20))
+        # time.sleep(random.randint(15, 20))
+        time.sleep(random.randint(1, 3))
+        headers = {'User-Agent': random.choice(agents)}
         library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers)
         library_soup = BeautifulSoup(library.text, 'lxml');
         results = library_soup.find('ul', class_='tabs').find_all('li')
@@ -214,7 +231,9 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
 
 def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifactId, target_version):
     target_version_repo = None
-    time.sleep(random.randint(12, 15))
+    # time.sleep(random.randint(12, 15))
+    time.sleep(random.randint(1, 3))
+    headers = {'User-Agent': random.choice(agents)}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers)
     library_soup = BeautifulSoup(library_tab.text, 'lxml');
@@ -266,7 +285,9 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
                 usages = "{'" + tds[tr_usages].a.string.replace('\n', '') + "':'" + category_url + tds[tr_usages].a[
                     "href"] + "'}"
             date = tds[tr_date].string.replace('\n', '')
-            time.sleep(random.randint(15, 25))
+            # time.sleep(random.randint(15, 25))
+            time.sleep(random.randint(1, 3))
+            headers = {'User-Agent': random.choice(agents)}
             library_version = requests.get(version_url, headers=headers)
             page = library_version.text
             library_soup = BeautifulSoup(library_version.text, 'lxml');
@@ -449,7 +470,7 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
 def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artifactId, target_version):
     versions_meta_url = library_url + "/" + "maven-metadata.xml"
     try:
-        time.sleep(random.randint(3, 6))
+        # time.sleep(random.randint(3, 6))
         versions_meta_data = requests.get(versions_meta_url, headers=headers)
         if versions_meta_data is not None:
             meta_data_soup = BeautifulSoup(versions_meta_data.text, 'xml');
@@ -535,6 +556,8 @@ def handle_one_lib(lib_obj):
 # get_denpendencies_of_proj(4,5539)
 # print(len(lib_dict))
 # dependency_dict_to_list()
-# 0
-handle_lib_by_range(90,150)
+# 90
+numa = sys.argv[2]
+numb = sys.argv[3]
+handle_lib_by_range(int(numa),int(numb))
 # save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")
