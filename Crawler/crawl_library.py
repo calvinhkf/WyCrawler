@@ -45,7 +45,7 @@ def save_lib_package(files, _type, classifier,version):
         version_type_dic["jar_package_url"] = get_lib_name(jar_url)
         version_types_list.append(version_type_dic)
         return
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file":
+    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml":
         new_type = _type
         if _type == "nbm-file":
             new_type = "nbm"
@@ -232,7 +232,7 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
 def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifactId, target_version):
     target_version_repo = None
     # time.sleep(random.randint(12, 15))
-    time.sleep(random.randint(1, 3))
+    time.sleep(random.randint(2, 3))
     headers = {'User-Agent': random.choice(agents)}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers)

@@ -1,0 +1,1 @@
+{"version_types_list": [], "library_versions_list": [], "unsolved_lib_list": [{"classifier": null, "name": "org.opennms.features.minion.heartbeat.producer", "_type": "jar", "group": "org.opennms.features.minion.heartbeat", "version": "23.0.0-SNAPSHOT"}]}

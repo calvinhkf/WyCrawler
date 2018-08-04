@@ -1,0 +1,1 @@
+{"version_types_list": [], "library_versions_list": [], "unsolved_lib_list": [{"classifier": null, "name": "kylin-storage-hbase", "_type": "jar", "group": "org.apache.kylin", "version": "2.4.0-SNAPSHOT"}, {"classifier": null, "name": "kylin-storage-hbase", "_type": "test-jar", "group": "org.apache.kylin", "version": "2.4.0-SNAPSHOT"}]}

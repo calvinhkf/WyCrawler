@@ -1,0 +1,1 @@
+{"version_types_list": [], "library_versions_list": [], "unsolved_lib_list": [{"classifier": null, "name": "brave-instrumentation-grpc", "_type": "jar", "group": "@project.groupId@", "version": "@project.version@"}]}

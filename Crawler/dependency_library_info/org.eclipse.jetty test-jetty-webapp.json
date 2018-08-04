@@ -1,0 +1,1 @@
+{"version_types_list": [], "library_versions_list": [], "unsolved_lib_list": [{"classifier": null, "name": "test-jetty-webapp", "_type": "war", "group": "org.eclipse.jetty", "version": "9.4.11-SNAPSHOT"}, {"classifier": "webbundle", "name": "test-jetty-webapp", "_type": "jar", "group": "org.eclipse.jetty", "version": "9.4.11-SNAPSHOT"}]}
