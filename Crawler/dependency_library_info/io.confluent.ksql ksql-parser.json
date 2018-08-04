@@ -1,1 +1,0 @@
-{"version_types_list": [], "library_versions_list": [], "unsolved_lib_list": [{"classifier": null, "name": "ksql-parser", "_type": "jar", "group": "io.confluent.ksql", "version": "5.0.0-SNAPSHOT"}]}

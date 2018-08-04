@@ -48,8 +48,10 @@ def get_pom(groupId, artifactId, version):
                         downloaded = True
                         break
             break
+
     if not downloaded and view_all_url is not None:
-            downloaded, content = get_lib_from_list_page(view_all_url, groupId, artifactId, version,"pom", None)
+        # print(view_all_url)
+        downloaded, content = get_lib_from_list_page(view_all_url, groupId, artifactId, version,"pom", None)
     print(downloaded)
     return content
 
@@ -138,6 +140,12 @@ def download_unparsed_pom_lib(path):
 # get_pom_by_repo_url(
 #     "https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/org.talend.components/components-parent/0.19.9/components-parent-0.19.9.pom", "org.talend.components", "components-parent", "0.19.9")
 
-content = get_pom_by_repo_url(
-    "https://oss.sonatype.org/content/repositories/snapshots", "com.fasterxml.jackson", "jackson-base", "3.0.0-SNAPSHOT")
+# content = get_pom_by_repo_url(
+#     "https://github.com/jitsi/jitsi-maven-repository/raw/master/snapshots", "org.jitsi", "jitsi-universe", "1.0-20170425.182805-23")
 # print(content)
+# content = save_lib("https://raw.githubusercontent.com/jitsi/jitsi-maven-repository/master/snapshots/org/jitsi/jitsi-universe/1.0-SNAPSHOT/jitsi-universe-1.0-20160405.235512-16.pom",
+#                    "F:/GP/pom/org.jitsi jitsi-universe 1.0-20160405.235512-16.pom")
+# print(content)
+
+
+# get_pom("org.springframework.boot", "spring-boot-starter-parent", "1.1.0.RC1")

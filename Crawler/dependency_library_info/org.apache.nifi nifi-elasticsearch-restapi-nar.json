@@ -1,1 +1,0 @@
-{"version_types_list": [], "library_versions_list": [], "unsolved_lib_list": [{"classifier": null, "name": "nifi-elasticsearch-restapi-nar", "_type": "nar", "group": "org.apache.nifi", "version": "1.8.0-SNAPSHOT"}]}
