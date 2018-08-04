@@ -16,7 +16,7 @@ def get_lib_from_list_page(page_path, groupId, artifactId, version, _type,classi
     success = False
     page = requests.get(page_path, headers=headers)
     soup = BeautifulSoup(page.text, 'lxml');
-    list = soup.find('pre').find_all('a')
+    list = soup.find_all('a')
     for li in list:
         if li["href"].endswith("." + _type) and "-sources" not in li["href"] and "-javadoc" not in li["href"]:
             url = None

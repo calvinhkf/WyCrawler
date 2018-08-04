@@ -45,7 +45,7 @@ def save_lib_package(files, _type, classifier,version):
         version_type_dic["jar_package_url"] = get_lib_name(jar_url)
         version_types_list.append(version_type_dic)
         return
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file":
+    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml":
         new_type = _type
         if _type == "nbm-file":
             new_type = "nbm"
