@@ -17,6 +17,9 @@ ttype = sys.argv[1]
 if ttype == "a":
     output_dir = "E:/data/dependency_library_info"
     lib_dir = "F:/GP/lib/"
+elif ttype == "c":
+    output_dir = "E:/data/dependency_library_info"
+    lib_dir = "E:/data/lib/"
 else:
     output_dir = os.getcwd()+'/dependency_library_info'
     lib_dir = os.getcwd()+'/lib/'
