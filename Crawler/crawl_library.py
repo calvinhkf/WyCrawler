@@ -232,7 +232,7 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
 def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifactId, target_version):
     target_version_repo = None
     # time.sleep(random.randint(12, 15))
-    time.sleep(random.randint(1, 3))
+    time.sleep(random.randint(2, 5))
     headers = {'User-Agent': random.choice(agents)}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers)
