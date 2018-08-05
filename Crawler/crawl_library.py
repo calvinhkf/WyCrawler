@@ -35,6 +35,8 @@ library_versions_list = []
 version_types_list = []
 unsolved_lib_list = []
 
+curr_project_id = -1
+
 def save_lib_package(files, _type, classifier,version):
     version_type_dic = {}
     file_list = json.loads(files)
@@ -65,7 +67,7 @@ def save_lib_package(files, _type, classifier,version):
     #     return
     else:
         # print("!!!!!!!!!!!!!!!!!!!! unhandled type: " + str(_type))
-        raise (CustomizeException("!!!!!!!!!!!!!!!!!!!! unhandled type: " + str(_type)))
+        raise (CustomizeException("id: "+str(curr_project_id)+"\n version:"+str(version)+"classifier:"+str(classifier)+"type:"+str(_type)+"\n!!!!!!!!!!!!!!!!!!!! unhandled type: " + str(_type)))
 
 def get_lib_from_list_page(page_path, _type, classifier):
     time.sleep(random.randint(2, 5))
@@ -253,7 +255,7 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
         if 'Date' == ths[i].string:
             date_idx = i
     if (version_idx == -1 or repository_idx == -1 or usages_idx == -1 or date_idx == -1):
-        raise (CustomizeException("Version Repository Usages Date imcomplete"))
+        raise (CustomizeException("id: "+str(curr_project_id)+"\n tab_url:"+str(tab_url)+"\n groupId:"+str(groupId)+"artifactId:"+str(artifactId)+"target_version:"+str(target_version)+"\nVersion Repository Usages Date imcomplete"))
     tbodys = results.find_all('tbody')
     # bi = 0
     for body in tbodys:
@@ -296,7 +298,7 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
             library_soup = BeautifulSoup(library_version.text, 'lxml');
             results = library_soup.find('div', class_='im')
             if results is None:
-                raise (CustomizeException("can't find 'im' class"))
+                raise (CustomizeException("id: "+str(curr_project_id)+"\n tab_url:"+str(tab_url)+"\n groupId:"+str(groupId)+"artifactId:"+str(artifactId)+"target_version:"+str(target_version)+"\ncan't find 'im' class"))
                 # print("can't find 'im' class")
                 # return
             results = results.find_next_sibling(class_='grid')
@@ -516,10 +518,12 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
         versions_meta_data = None
 
 def handle_lib_by_range(start, end):
+    global curr_project_id
     json_data = read_json("dependencies_list.txt")
     print(len(json_data))
     for i in range(start, end):
         print("+++++++++++++++++++++++++++++++ " + str(i))
+        curr_project_id = i
         handle_one_lib(json_data[i])
 
 def handle_one_lib(lib_obj):
@@ -536,14 +540,14 @@ def handle_one_lib(lib_obj):
     repo_array = lib_obj['repo_array']
     names = key.split(' ')
     if len(names) != 2:
-        raise (CustomizeException("names length != 2"))
+        raise (CustomizeException("id: "+str(curr_project_id)+"\n key:" +str(key) + "\nnames length != 2"))
     groupId = names[0]
     artifactId = names[1]
     # print(groupId + "====" + artifactId)
     for version_info in versions_array:
         values = version_info.split(' ')
         if len(values) != 2 and len(values) != 3:
-            raise (CustomizeException("values length != 2 or 3:" + str(version_info)))
+            raise (CustomizeException("id: "+str(curr_project_id)+"\n key:" +str(key) + "\nvalues length != 2 or 3:" + str(version_info)))
         version = values[0]
         _type = values[1]
         classifier = None
