@@ -28,6 +28,8 @@ else:
     if not os.path.exists(lib_dir):
         os.makedirs(lib_dir)
 
+dependency_file = sys.argv[4]
+
 crawled_repo = []
 repo_array = []
 
@@ -523,7 +525,8 @@ def handle_lib_by_range(start, end):
     global curr_project_id
     # 2845
     # json_data = read_json("combined_dependencies_list.txt")
-    json_data = read_json("dependencies_list.txt")
+    # json_data = read_json("dependencies_list.txt")
+    json_data = read_json(dependency_file)
     print(len(json_data))
     for i in range(start, end):
         print("+++++++++++++++++++++++++++++++ " + str(i))
