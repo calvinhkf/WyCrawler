@@ -11,297 +11,112 @@ from exception import CustomizeException
 from bs4 import BeautifulSoup
 
 from file_util import save_lib, get_lib_name, read_json
+from handle_jar_db import insert_library_version, db, insert_version_type, insert_project_lib_usage
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-# db = database.connectdb()
-# lib_path = "F:/GP/lib/"
+
 lib_path = "C:/Users/yw/Desktop/lib/"
-result_path ="C:/Users/yw/Desktop/result/"
-output_path ="C:/Users/yw/Desktop/"
+# result_path ="C:/Users/yw/Desktop/result/"
+# output_path ="C:/Users/yw/Desktop/"
 crawled_lib_path = "E:/data/dependency_library_info"
 
-project_array = []
-version_type_dic = {}
-lib_usage_dic = {}
-library_version_dic = {}
-entry_dic = {}
-
-# def insert_project_lib_usage(project_id, version_type_id, module_):
-#     sql = "SELECT * FROM project_lib_usage WHERE project_id = '" + str(project_id) +"' and version_type_id = " + str(version_type_id)
-#     record = database.querydb(db, sql)
-#     if len(record) == 0:
-#         if module_ is None:
-#             sql = "INSERT INTO project_lib_usage (project_id,version_type_id) VALUES ('" + str(project_id) + "','" + str(version_type_id) + "')"
-#         else:
-#             sql = "INSERT INTO project_lib_usage (project_id,version_type_id,module) VALUES ('" + str(project_id) + "','" + str(version_type_id) + "','"+ str(module_) + "')"
-#         database.execute_sql(db, sql)
-#         print('======================== INSERT INTO project_lib_usage : ' + str(project_id) + "  " + str(version_type_id))
-#
-#
-# def insert_version_type(version_id,_type,classifier,jar_package_url):
-#     sql = "INSERT INTO version_types" \
-#           "(version_id,type,classifier,jar_package_url) " \
-#           "VALUES (\'" \
-#           + str(version_id).replace("'", "''") + "\',\'" \
-#           + str(_type).replace("'", "''") + "\',\'" \
-#           + str(classifier).replace("'", "''") + "\',\'" \
-#           + str(jar_package_url).replace("'", "''") + "\')"
-#     database.execute_sql(db, sql)
-#     print('======================== INSERT INTO version_types : ' + str(version_id) + "  " + str(_type)+"  " + str(classifier)+"  " + str(jar_package_url))
-#     sql = "SELECT LAST_INSERT_ID()"
-#     results = database.querydb(db, sql)
-#     return results[0][0]
-#
-# def insert_library_version(group,name1,version1,version_url,license,categories,organization,home_page,date,files,repository,used_by,page,category_url):
-#     sql = "INSERT INTO library_versions" \
-#           "(group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,page,category_url) " \
-#           "VALUES (\'" \
-#           + str(group).replace("'", "''") + "\',\'" \
-#           + str(name1).replace("'", "''") + "\',\'" \
-#           + str(version1).replace("'", "''") + "\',\'" \
-#           + str(version_url).replace("'", "''") + "\',\'" \
-#           + str(license).replace("'", "''") + "\',\'" \
-#           + str(categories).replace("'", "''") + "\',\'" \
-#           + str(organization).replace("'", "''") + "\',\'" \
-#           + str(home_page).replace("'", "''") + "\',\'" \
-#           + str(date).replace("'", "''") + "\',\'" \
-#           + str(files).replace("'", "''") + "\',\'" \
-#           + str(repository).replace("'", "''") + "\',\'" \
-#           + str(used_by).replace("'", "''") + "\',\'" \
-#           + str(page).replace("'", "''") + "\',\'" \
-#           + str(category_url).replace("'", "''") + "\')"
-#     database.execute_sql(db, sql)
-#     print('======================== INSERT INTO library_versions :' + str(group) + "  " + str(name1)+"  " + str(version1))
-#     sql = "SELECT LAST_INSERT_ID()"
-#     results = database.querydb(db, sql)
-#     return results[0][0]
-
-def get_lib_from_list_page(page_path,_type,classifier):
-    success = False
-    package_url = None
-    time.sleep(random.randint(15, 20))
-    page = requests.get(page_path, headers=headers)
-    soup = BeautifulSoup(page.text, 'lxml');
-    if soup.find('pre') is None:
-        print("error : has no attribute 'pre'")
-        return success, package_url
-    list = soup.find('pre').find_all('a')
-    for li in list:
-        if _type == "test-jar" and li["href"].endswith(".jar") and "-sources" not in li["href"] and "-javadoc" not in li["href"] and "test" in li["href"]:
-            url = None
-            if classifier is not None:
-                if classifier in li["href"]:
-                    url = page_path + "/" + li["href"]
-            else:
-                url = page_path + "/" + li["href"]
-            if url is not None:
-                package_url = li["href"]
-                if not os.path.exists(lib_path + li["href"]):
-                    save_lib(url, lib_path + li["href"])
-                success = True
-                break
-        elif li["href"].endswith("." + _type) and "-sources" not in li["href"] and "-javadoc" not in li["href"]:
-            url = None
-            if classifier is not None:
-                if classifier in li["href"]:
-                    url = page_path + "/" + li["href"]
-            else:
-                url = page_path + "/" + li["href"]
-            if url is not None:
-                package_url = li["href"]
-                if not os.path.exists(lib_path + li["href"]):
-                    save_lib(url, lib_path+ li["href"])
-                success = True
-                break
-    return success, package_url
-
-def save_lib_package(files, version_id, _type, classifier, project_id, module_):
-    # library_versions :org.apache.hadoop  hadoop-hdfs  3.0.0-beta1
-    global version_type_dic, lib_usage_dic
-    file_list = json.loads(files)
-    if _type in file_list:
-        jar_url = file_list[_type]
-        if not os.path.exists(lib_path + get_lib_name(jar_url)):
-            save_lib(jar_url, lib_path + get_lib_name(jar_url))
-
-
-        version_type_dic["_type"] = _type
-        version_type_dic["classifier"] = classifier
-        version_type_dic["jar_package_url"] = get_lib_name(jar_url)
-
-        lib_usage_dic["module_"] = module_
-
-        entry_dic["version_type"] = version_type_dic
-        entry_dic["lib_usage"] = lib_usage_dic
-
-        # version_type_id = insert_version_type(version_id, _type, classifier, get_lib_name(jar_url))
-        # insert_project_lib_usage(project_id, version_type_id, module_)
-        return
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar":
-        if 'View' in file_list:
-            page_url = file_list['View']
-            success,package_url = get_lib_from_list_page(page_url, _type, classifier)
-            if success:
-                version_type_dic["_type"] = _type
-                version_type_dic["classifier"] = classifier
-                version_type_dic["jar_package_url"] = get_lib_name(package_url)
-
-                lib_usage_dic["module_"] = module_
-
-                entry_dic["version_type"] = version_type_dic
-                entry_dic["lib_usage"] = lib_usage_dic
-
-            #     version_type_id = insert_version_type(version_id, _type, classifier, get_lib_name(package_url))
-            #     insert_project_lib_usage(project_id, version_type_id, module_)
-    # if _type == "xml":
-    #     return
+def insert_unsolved_library_without_projectid(group,name1,version1,_type,classifier):
+    if classifier is None:
+        sql = "SELECT * FROM unsolved_libraries WHERE group_str = '" + str(group) + "' and name_str = '" + str(
+        name1) +"' and version = '"+str(version1)+"' and type = '"+str(_type)+"' and classifier is NULL"
     else:
-        print("!!!!!!!!!!!!!!!!!!!! unhandled type: " + str(_type))
-        # raise (CustomizeException("!!!!!!!!!!!!!!!!!!!! unhandled type: " + str(_type)))
+        sql = "SELECT * FROM unsolved_libraries WHERE group_str = '" + str(group) + "' and name_str = '" + str(
+        name1) +"' and version = '"+str(version1)+"' and type = '"+str(_type)+"' and classifier = '"+str(classifier)+"'"
+    record = database.querydb(db, sql)
+    if len(record) == 0:
+        sql = "INSERT INTO unsolved_libraries" \
+              "(group_str,name_str,version,type,classifier) " \
+              "VALUES (\'" \
+              + str(group).replace("'", "''") + "\',\'" \
+              + str(name1).replace("'", "''") + "\',\'" \
+              + str(version1).replace("'", "''") + "\',\'" \
+              + str(_type).replace("'", "''") + "\',"
+        if classifier is not None:
+            sql += "\'" + str(classifier).replace("'", "''") + "\')"
+        else:
+            sql += "NULL)"
+        database.execute_sql(db, sql)
+        print('======================== INSERT INTO unsolved_libraries :' + str(group) + "  " + str(name1)+"  " + str(version1)+"  " + str(_type)+"  " + str(classifier))
 
-def save_version_information(groupId, artifactId, version, _type, classifier, project_id, module_):
-    print("groupId: " + str(groupId) + ", artifactId: " + str(artifactId) + ", version: " + str(
-            version) + ", type: " + str(_type) + ", classifier: " + str(classifier)+ ", module: " + str(module_))
-    version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
-    print(version_url)
-    # sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId)+"' and name_str = '"+str(artifactId)+"' and version = '"+str(version)+"'"
-    # version_info = database.querydb(db, sql)
-    # if len(version_info) != 0:
-    #     version_id = version_info[0][0]
-    #     files = version_info[0][12]
-    #     print("+++++++++++++++++++++++++version_id:" +str(version_id))
-    #     sql = "SELECT * FROM version_types WHERE version_id = " + str(version_id)
-    #     types = database.querydb(db, sql)
-    #     for t in types:
-    #         if t[2] == _type:
-    #             insert_project_lib_usage(project_id, t[0], module_)
-    #             return
-    # else:
-    library_version = requests.get(version_url, headers=headers)
-    page = library_version.text
-    library_soup = BeautifulSoup(library_version.text, 'lxml');
-    category_url = None
-    if library_soup.find('h2', class_='im-title') is None:
-        print("can't find h2 'im-title' class")
-        return
-    titles = library_soup.find('h2', class_='im-title').find_all('a')
-    if titles[len(titles) - 1].get_text() == version:
-        if len(titles) - 2 >= 0:
-            category_url = "https://mvnrepository.com"+titles[len(titles) - 2]["href"]
-            print("category_url:"+category_url)
-    results = library_soup.find('div', class_='im')
-    if results is None:
-        print("can't find 'im' class")
-        return
-        # raise (CustomizeException("can't find 'im' class"))
-    time.sleep(random.randint(15, 20))
-    results = results.find_next_sibling(class_='grid')
-    information_trs = results.find_all('tr')
-    license = None
-    categories = None
-    organization = None
-    home_page = None
-    files = None
-    used_by = None
-    declarations = None
-    for tr in information_trs:
-        if 'License' == tr.th.string:
-            license = ''
-            spans = tr.td.find_all('span')
-            for span in spans:
-                license = license + span.string + ','
-            if license[len(license) - 1] == ',':
-                license = license[:-1].replace('\n', '')
-        if 'Categories' == tr.th.string:
-            categories = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "http://mvnrepository.com" + tr.td.a[
-                "href"] + "\"}"
-        if 'Organization' == tr.th.string:
-            if tr.td.a is None:
-                organization = "{\"" + tr.td.string.replace('\n', '') + "\":\"\"}"
-            else:
-                organization = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + tr.td.a["href"] + "\"}"
-        if 'HomePage' == tr.th.string:
-            if tr.td.a is None:
-                home_page = tr.td.string.replace('\n', '')
-            else:
-                home_page = tr.td.a["href"]
-        if 'Date' == tr.th.string:
-            date = tr.td.string
-        if 'Files' == tr.th.string:
-            entries = tr.td.find_all('a')
-            if entries is not None:
-                files = "{"
-                for each in entries:
-                    file_type = each.get_text().replace('\n', '').split(' ')[0]
-                    files = files + "\"" + file_type + "\":\"" + each["href"] + "\","
-                if files[len(files) - 1] == ",":
-                    files = files[:-1]
-                files = files + "}"
-        if 'Repositories' == tr.th.string:
-            entries = tr.td.find_all('a')
-            if entries is not None:
-                repository = "{"
-                for each in entries:
-                    repository = repository + "\"" + each.string.replace('\n',
-                                                                        '') + "\":\"" + "http://mvnrepository.com" + \
-                                 each["href"] + "\","
-                if repository[len(repository) - 1] == ",":
-                    repository = repository[:-1]
-                    repository = repository + "}"
-        if 'Used By' == tr.th.string:
-            used_by = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "http://mvnrepository.com" + tr.td.a[
-                "href"] + "\"}"
-    # print('    license:', end="")
-    # print(license)
-    # print('    categories:', end="")
-    # print(categories)
-    # print('    organization:', end="")
-    # print(organization)
-    # print('    home_page:', end="")
-    # print(home_page)
-    # print('    date:', end="")
-    # print(date)
-    # print('    files:', end="")
-    # print(files)
-    # print('    repository:', end="")
-    # print(repository)
-    # print('    used_by:', end="")
-    # print(used_by)
-    declarations = library_soup.find('div', id='snippets')
-    if declarations is not None:
-        declarations = str(declarations)
-    declarations_soup = BeautifulSoup(str(declarations), 'lxml');
-    maven = declarations_soup.find(id='maven-a').string
-    declarations_soup = BeautifulSoup(maven, 'xml');
-    group = declarations_soup.find('groupId').string
-    name1 = declarations_soup.find('artifactId').string
-    version1 = declarations_soup.find('version').string
-    # print(group)
-    # print(name1)
-    # print(version1)
-    library_version_dic["group"] = group
-    library_version_dic["name"] = name1
-    library_version_dic["version"] = version1
-    library_version_dic["version_url"] = version_url
-    library_version_dic["license"] = license
-    library_version_dic["categories"] = categories
-    library_version_dic["organization"] = organization
-    library_version_dic["home_page"] = home_page
-    library_version_dic["date"] = date
-    library_version_dic["files"] = files
-    library_version_dic["repository"] = repository
-    library_version_dic["used_by"] = used_by
-    library_version_dic["category_url"] = category_url
+def read_crawled_lib_from_file():
+    list = os.listdir(crawled_lib_path)
+    for i in range(0, len(list)):
+        path = os.path.join(crawled_lib_path, list[i])
+        print(path)
+        if os.path.isfile(path) and path.endswith(".json"):
+            lib_str = list[i][:-5]
+            print(lib_str)
+            lib_array = lib_str.split(" ")
+            if len(lib_array) != 2:
+                raise CustomizeException("!!!!!!!!!!!!!!! len(lib_array)!= 2 : "+lib_str)
+            groupId = lib_array[0]
+            artifactId = lib_array[1]
+            # print(groupId)
+            # print(artifactId)
+            json_data = read_json(path)
+            library_versions_list = json_data["library_versions_list"]
+            unsolved_lib_list = json_data["unsolved_lib_list"]
+            version_types_list = json_data["version_types_list"]
+            for library_version in  library_versions_list:
+                insert_library_version(library_version["group"], library_version["name"], library_version["version"],
+                                       library_version["version_url"], library_version["license"],
+                                       library_version["categories"], library_version["organization"],
+                                       library_version["home_page"],
+                                       library_version["date"], library_version["files"], library_version["repository"],
+                                       library_version["used_by"], library_version["category_url"])
+            for version_type in version_types_list:
+                version = version_type["version"]
+                _type = version_type["_type"]
+                classifier = version_type["classifier"]
+                jar_package_url = version_type["jar_package_url"]
+                sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
+                    artifactId) + "' and version = '" + str(version) + "'"
+                version_info = database.querydb(db, sql)
+                if len(version_info) != 0:
+                    version_id = version_info[0][0]
+                    break
+                added = False
+                sql = "SELECT * FROM version_types WHERE version_id = " + str(version_id)
+                types = database.querydb(db, sql)
+                for t in types:
+                    if t[2] == _type:
+                        if (classifier is not None and classifier == t[3]) or (classifier == None and t[3] == None):
+                            added = True
+                            break
+                if not added:
+                    version_type_id = insert_version_type(version_id, _type, classifier, jar_package_url)
+                # insert_project_lib_usage(project_id, version_type_id, module_)
+            for unsolved_lib in unsolved_lib_list:
+                insert_unsolved_library_without_projectid(unsolved_lib["group"], unsolved_lib["name"], unsolved_lib["version"], unsolved_lib["_type"], unsolved_lib["classifier"])
 
-    entry_dic["library_version"] = library_version_dic
-    # version_id = insert_library_version(group, name1, version1, version_url, license, categories, organization, home_page, date,
-    #                    files, repository, used_by, page, category_url)
-    save_lib_package(files, -1, _type, classifier, project_id, module_)
-    if len(entry_dic) != 0:
-        project_array.append(entry_dic)
-    # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+def in_unsolved_table(group,name1,version1,_type,classifier):
+    if classifier is None:
+        sql = "SELECT * FROM unsolved_libraries WHERE group_str = '" + str(group) + "' and name_str = '" + str(
+        name1) +"' and version = '"+str(version1)+"' and type = '"+str(_type)+"' and classifier is NULL"
+    else:
+        sql = "SELECT * FROM unsolved_libraries WHERE group_str = '" + str(group) + "' and name_str = '" + str(
+        name1) +"' and version = '"+str(version1)+"' and type = '"+str(_type)+"' and classifier = '"+str(classifier)+"'"
+    record = database.querydb(db, sql)
+    if len(record) == 0:
+        return False
+    else:
+        return True
 
-def get_lib_usedby_project(path):
+def in_version_type_table(version_id,type_,classifier):
+    sql = "SELECT * FROM version_types WHERE version_id = " + str(version_id)
+    types = database.querydb(db, sql)
+    for t in types:
+        if t[2] == type_:
+            if (classifier is not None and classifier == t[3]) or (classifier == None and t[3] == None):
+                return t[0]
+    return -1
+
+def project_crawled_lib_usage(path):
     if not os.path.exists(path):
         return
     print()
@@ -320,53 +135,58 @@ def get_lib_usedby_project(path):
         groupId= lib["groupId"]
         artifactId = lib["artifactId"]
         version = lib["version"]
-        if groupId is None or artifactId is None or version is None or '${' in groupId or '${' in artifactId or '${' in version:
-            print("groupId: " + str(groupId) +"   artifactId: " + str(artifactId)+"   version: " + str(version))
+        type_ = lib["type"]
+        if groupId is None or artifactId is None or version is None or type_ is None or '${' in groupId or '${' in artifactId or '${' in version or '${' in type_:
+            print("groupId: " + str(groupId) +"   artifactId: " + str(artifactId)+"   version: " + str(version)+"   type: " + str(type_) )
             print(False)
             continue
         if project_id is None:
             continue
-        type_ = "jar"
         classifier = None
-        if "type" in lib:
-            type_ = lib["type"]
+
         if "classifier" in lib:
             classifier = lib["classifier"]
+            if '${' in classifier:
+                print("groupId: " + str(groupId) + "   artifactId: " + str(artifactId) + "   version: " + str(
+                    version) + "   type: " + str(type_) + "   classifier: " + str(classifier))
+                print(False)
+                continue
         if "module" in lib:
             module_ = lib["module"]
-        # if not do:
-        #     if artifactId == "camel-xmpp-starter" and groupId == "org.apache.camel":
-        #         do = True
-        #     else:
-        #         continue
-        # if do:
-        global version_type_dic,lib_usage_dic,library_version_dic,entry_dic
-        version_type_dic = {}
-        lib_usage_dic = {}
-        library_version_dic = {}
-        entry_dic = {}
         if type(version) == list:
-            for ver in version:
-                version_type_dic = {}
-                lib_usage_dic = {}
-                library_version_dic = {}
-                entry_dic = {}
-                save_version_information(groupId, artifactId, ver, type_, classifier, project_id, module_)
+            continue
         else:
-            save_version_information(groupId, artifactId, version, type_, classifier, project_id, module_)
-        print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+            sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
+                artifactId) + "' and version = '" + str(version) + "'"
+            version_info = database.querydb(db, sql)
+            version_id = None
+            if len(version_info) != 0:
+                version_id = version_info[0][0]
+            if version_id is None:
+                is_in_table = in_unsolved_table(groupId, artifactId, version, type_, classifier)
+                if not is_in_table:
+                    raise CustomizeException("unrecorded library: "+"groupId: " + str(groupId) + "   artifactId: " + str(artifactId) + "   version: " + str(
+                    version) + "   type: " + str(type_) + "   classifier: " + str(classifier))
+                else:
+                    continue
+            version_type_id = in_version_type_table(version_id, type_, classifier)
+            if version_type_id < 0:
+                is_in_table = in_unsolved_table(groupId, artifactId, version, type_, classifier)
+                if not is_in_table:
+                    raise CustomizeException("unrecorded library: " + "groupId: " + str(groupId) + "   artifactId: " + str(artifactId) + "   version: " + str(
+                            version) + "   type: " + str(type_) + "   classifier: " + str(classifier))
+                else:
+                    continue
+            insert_project_lib_usage(project_id, version_type_id, module_)
+        # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
-# save_version_information("org.apache.mina", "mina-integration-beans", "2.0.17", "jar", None,1)
-# read_used_library()
-# for i in range(179, 1380):
-for i in range(1213, 1214):
-    # global project_array
-    if not os.path.exists(output_path+str(i)+".txt"):
-        project_array = []
-        get_lib_usedby_project(result_path + str(i) + ".txt")
-        # get_lib_usedby_project("C:/Users/yw/Desktop/test/"+str(i)+".txt")
-        if len(project_array) != 0:
-            with open(output_path + str(i) + ".txt", 'w') as file_object:
-                json.dump(project_array, file_object)
-# print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-# get_lib_usedby_project(result_path+str(4)+".txt")
+# for i in range(1213, 1214):
+#     # global project_array
+#     if not os.path.exists(output_path+str(i)+".txt"):
+#         project_array = []
+#         get_lib_usedby_project(result_path + str(i) + ".txt")
+#         # get_lib_usedby_project("C:/Users/yw/Desktop/test/"+str(i)+".txt")
+#         if len(project_array) != 0:
+#             with open(output_path + str(i) + ".txt", 'w') as file_object:
+#                 json.dump(project_array, file_object)
+read_crawled_lib_from_file()

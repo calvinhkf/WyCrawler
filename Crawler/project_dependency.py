@@ -15,7 +15,7 @@ from exception import CustomizeException
 from file_util import read_json, write_json, read_file, get_lib_name, save_lib
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-result_dir = "E:/data/curr_result_all"
+result_dir = "E:/data/curr_result8.5"
 repo_dir = "E:/data/repo"
 
 lib_dict = {}
@@ -98,7 +98,7 @@ def get_denpendencies_of_proj(start_id,end_id):
                             repo_array.append(repo_url)
                     lib_obj['repo_array'] = repo_array
                     lib_dict[key] = lib_obj
-    write_json("unduplicate_proj_dependencies.txt", lib_dict)
+    write_json("unduplicate_proj_dependencies2.txt", lib_dict)
 
 def more_denpendencies_of_proj(start_id,end_id):
     global prev_lib_dic
@@ -183,10 +183,80 @@ def more_denpendencies_of_proj(start_id,end_id):
                             repo_array.append(repo_url)
                     lib_obj['repo_array'] = repo_array
                     lib_dict[key] = lib_obj
-    write_json("more_proj_dependencies.txt", lib_dict)
+    write_json("more_proj_dependencies1.txt", lib_dict)
+
+def more_denpendencies_from_list(list_path):
+    prev_lib_dic = read_json("unduplicate_proj_dependencies.txt")
+    json_data = read_json(list_path)
+    for lib_obj in json_data:
+        key = lib_obj['lib_name']
+        versions = lib_obj['versions_array']
+        repos = lib_obj['repo_array']
+        for value in versions:
+            if key in prev_lib_dic.keys():
+                versions_array = prev_lib_dic[key]['versions_array']
+                if value in versions_array:
+                    continue
+            if key in lib_dict.keys():
+                versions_array = lib_dict[key]['versions_array']
+                repo_array = lib_dict[key]['repo_array']
+                if value not in versions_array:
+                    versions_array.append(value)
+                for repo_url in repos:
+                    if not repo_url.startswith("https://") and not repo_url.startswith("http://"):
+                        repo_url = "http://" + repo_url
+                    if repo_url not in repo_array:
+                        repo_array.append(repo_url)
+            else:
+                lib_obj = {}
+                versions_array = []
+                versions_array.append(value)
+                lib_obj['versions_array'] = versions_array
+                repo_array = []
+                for repo_url in repos:
+                    if not repo_url.startswith("https://") and not repo_url.startswith("http://"):
+                        repo_url = "http://" + repo_url
+                    if repo_url not in repo_array:
+                        repo_array.append(repo_url)
+                lib_obj['repo_array'] = repo_array
+                lib_dict[key] = lib_obj
+    write_json("more_proj_dependencies2.txt", lib_dict)
+
+def combine_more_proj_denpendencies():
+    lib_dict = read_json("more_proj_dependencies1.txt")
+    json_data = read_json("more_proj_dependencies2.txt")
+    for key in json_data.keys():
+        versions = json_data[key]['versions_array']
+        repos = json_data[key]['repo_array']
+        for value in versions:
+            if key in lib_dict.keys():
+                versions_array = lib_dict[key]['versions_array']
+                repo_array = lib_dict[key]['repo_array']
+                if value not in versions_array:
+                    versions_array.append(value)
+                for repo_url in repos:
+                    if not repo_url.startswith("https://") and not repo_url.startswith("http://"):
+                        repo_url = "http://" + repo_url
+                    if repo_url not in repo_array:
+                        repo_array.append(repo_url)
+            else:
+                lib_obj = {}
+                versions_array = []
+                versions_array.append(value)
+                lib_obj['versions_array'] = versions_array
+                repo_array = []
+                for repo_url in repos:
+                    if not repo_url.startswith("https://") and not repo_url.startswith("http://"):
+                        repo_url = "http://" + repo_url
+                    if repo_url not in repo_array:
+                        repo_array.append(repo_url)
+                lib_obj['repo_array'] = repo_array
+                lib_dict[key] = lib_obj
+    write_json("combined_proj_dependencies.txt", lib_dict)
 
 def dependency_dict_to_list(dic_path,list_path):
     json_data = read_json(dic_path)
+    print(len(json_data))
     lib_list = []
     for key in json_data:
         lib_obj = {}
@@ -202,5 +272,9 @@ def dependency_dict_to_list(dic_path,list_path):
 # print(len(lib_dict))
 # dependency_dict_to_list()
 # handle_lib_by_range(1,4)
-# more_denpendencies_of_proj(start_id,end_id)
+# more_denpendencies_of_proj(4, 5539)
+# more_denpendencies_from_list("DependencyList.txt")
 # dependency_dict_to_list("more_proj_dependencies.txt","more_dependencies_list.txt")
+# combine_more_proj_denpendencies()
+
+dependency_dict_to_list("combined_proj_dependencies.txt","combined_dependencies_list.txt")

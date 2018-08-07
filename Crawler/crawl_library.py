@@ -521,6 +521,8 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
 
 def handle_lib_by_range(start, end):
     global curr_project_id
+    # 2845
+    # json_data = read_json("combined_dependencies_list.txt")
     json_data = read_json("dependencies_list.txt")
     print(len(json_data))
     for i in range(start, end):
