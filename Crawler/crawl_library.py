@@ -531,7 +531,10 @@ def handle_lib_by_range(start, end):
     for i in range(start, end):
         print("+++++++++++++++++++++++++++++++ " + str(i))
         curr_project_id = i
-        handle_one_lib(json_data[i])
+        try:
+            handle_one_lib(json_data[i])
+        except Exception:
+            continue
 
 def handle_one_lib(lib_obj):
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
