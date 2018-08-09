@@ -52,7 +52,7 @@ def save_lib_package(files, _type, classifier,version):
         version_type_dic["jar_package_url"] = get_lib_name(jar_url)
         version_types_list.append(version_type_dic)
         return
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml" or _type == "war" or _type == "kar":
+    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml" or _type == "war" or _type == "kar" or _type == "swc" or _type == "pom":
         new_type = _type
         if _type == "nbm-file":
             new_type = "nbm"
@@ -531,10 +531,13 @@ def handle_lib_by_range(start, end):
     for i in range(start, end):
         print("+++++++++++++++++++++++++++++++ " + str(i))
         curr_project_id = i
-        try:
+        if is_catch == "y":
+            try:
+                handle_one_lib(json_data[i])
+            except Exception:
+                continue
+        else:
             handle_one_lib(json_data[i])
-        except Exception:
-            continue
 
 def handle_one_lib(lib_obj):
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
@@ -576,5 +579,6 @@ def handle_one_lib(lib_obj):
 # 90 573 589
 numa = sys.argv[2]
 numb = sys.argv[3]
+is_catch = sys.argv[5]
 handle_lib_by_range(int(numa),int(numb))
 # save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")

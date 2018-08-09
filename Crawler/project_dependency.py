@@ -277,4 +277,4 @@ def dependency_dict_to_list(dic_path,list_path):
 # dependency_dict_to_list("more_proj_dependencies.txt","more_dependencies_list.txt")
 # combine_more_proj_denpendencies()
 
-dependency_dict_to_list("combined_proj_dependencies.txt","8.7.txt")
+# dependency_dict_to_list("combined_proj_dependencies.txt","8.7.txt")

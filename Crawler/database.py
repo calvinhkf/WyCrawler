@@ -4,7 +4,8 @@ def connectdb():
     print('连接到mysql服务器...')
     # 打开数据库连接
     #  db = mysql.connector.connect(user="root", passwd="123456.", database="TESTDB", use_unicode=True)
-    db = mysql.connector.connect(host='192.168.1.109', port=3306, user="root", passwd="123456", database="third_party_library")
+    db = mysql.connector.connect(host='192.168.1.102', port=3306, user="root", passwd="123456", database="third_party_library")
+    # db = mysql.connector.connect(host='10.141.221.73', port=3306, user="root", passwd="root",database="codehub")
     print('连接成功!')
     return db
 

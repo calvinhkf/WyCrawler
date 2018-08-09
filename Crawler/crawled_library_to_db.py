@@ -189,4 +189,4 @@ def project_crawled_lib_usage(path):
 #         if len(project_array) != 0:
 #             with open(output_path + str(i) + ".txt", 'w') as file_object:
 #                 json.dump(project_array, file_object)
-read_crawled_lib_from_file()
+# read_crawled_lib_from_file()
