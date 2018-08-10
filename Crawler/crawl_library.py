@@ -52,10 +52,12 @@ def save_lib_package(files, _type, classifier,version):
         version_type_dic["jar_package_url"] = get_lib_name(jar_url)
         version_types_list.append(version_type_dic)
         return
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml" or _type == "war" or _type == "kar" or _type == "swc" or _type == "pom":
+    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml" or _type == "war" or _type == "kar" or _type == "swc" or _type == "pom" or _type == "executable-war":
         new_type = _type
         if _type == "nbm-file":
             new_type = "nbm"
+        if _type == "executable-war":
+            new_type = "war"
         if 'View' in file_list:
             page_url = file_list['View']
             success, package_url = get_lib_from_list_page(page_url, new_type, classifier)
@@ -576,7 +578,7 @@ def handle_one_lib(lib_obj):
 # get_denpendencies_of_proj(4,5539)
 # print(len(lib_dict))
 # dependency_dict_to_list()
-# 90 573 589
+# +1164 +11597
 numa = sys.argv[2]
 numb = sys.argv[3]
 is_catch = sys.argv[5]
