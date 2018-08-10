@@ -1,12 +1,12 @@
 import os
 
 import database
-from crawled_library_to_db import in_unsolved_table
+# from crawled_library_to_db import in_unsolved_table
 from exception import CustomizeException
 from file_util import read_json, write_json
 
-db = database.connectdb()
-from handle_jar_db import insert_project_lib_usage
+# db = database.connectdb()
+# from handle_jar_db import insert_project_lib_usage
 
 def search_library_version_in_db(groupId,artifactId,version):
     sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
@@ -250,9 +250,21 @@ def other_project_dependency_usage_to_db(dir_path):
             elif recorded_proj_id is None:
                 update_project_id_for_unsolved_lib(unsolved_id, project_id)
 
-
+def delete_duplicate_file(start, end):
+    # os.remove("E:/data/dependency_library_info/test.txt")
+    json_data = read_json("dependencies_list.txt")
+    print(len(json_data))
+    for i in range(start, end):
+        key = json_data[i]["lib_name"]
+        # path = "E:/data/dependency_library_info/" + key + ".json"
+        path = "H:/wangying/2018-8-3-分机器跑/dependency_library_info/" + key + ".json"
+        if os.path.exists(path):
+            print("+++++++++++++++++++++++++++++++ " + str(i))
+            print(path)
+            os.remove(path)
 # collect_project()
 # project_info_to_db("pros_maven_gradle_200_500.txt")
 # save_project_info("E:/data/dependency/maven_gradle200_500","maven-gradle")
 # browse_maven_gradle_projs()
 # project_dependency_usage_to_db("E:/data/curr_result_all")
+# delete_duplicate_file(2501, 3001)

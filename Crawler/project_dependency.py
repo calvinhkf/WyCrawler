@@ -15,7 +15,7 @@ from exception import CustomizeException
 from file_util import read_json, write_json, read_file, get_lib_name, save_lib
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-result_dir = "E:/data/curr_result8.5"
+result_dir = "E:/data/curr_result_add"
 repo_dir = "E:/data/repo"
 
 lib_dict = {}
@@ -185,8 +185,8 @@ def more_denpendencies_of_proj(start_id,end_id):
                     lib_dict[key] = lib_obj
     write_json("more_proj_dependencies1.txt", lib_dict)
 
-def more_denpendencies_from_list(list_path):
-    prev_lib_dic = read_json("unduplicate_proj_dependencies.txt")
+def more_denpendencies_from_list(origin_path,list_path):
+    prev_lib_dic = read_json(origin_path)
     json_data = read_json(list_path)
     for lib_obj in json_data:
         key = lib_obj['lib_name']
@@ -220,7 +220,8 @@ def more_denpendencies_from_list(list_path):
                         repo_array.append(repo_url)
                 lib_obj['repo_array'] = repo_array
                 lib_dict[key] = lib_obj
-    write_json("more_proj_dependencies2.txt", lib_dict)
+    # write_json("more_proj_dependencies2.txt", lib_dict)
+    write_json("8.10.txt", lib_dict)
 
 def combine_more_proj_denpendencies():
     lib_dict = read_json("more_proj_dependencies1.txt")
@@ -252,7 +253,7 @@ def combine_more_proj_denpendencies():
                         repo_array.append(repo_url)
                 lib_obj['repo_array'] = repo_array
                 lib_dict[key] = lib_obj
-    write_json("combined_proj_dependencies.txt", lib_dict)
+    write_json("8.10.txt", lib_dict)
 
 def dependency_dict_to_list(dic_path,list_path):
     json_data = read_json(dic_path)
@@ -273,8 +274,9 @@ def dependency_dict_to_list(dic_path,list_path):
 # dependency_dict_to_list()
 # handle_lib_by_range(1,4)
 # more_denpendencies_of_proj(4, 5539)
-# more_denpendencies_from_list("DependencyList.txt")
+# more_denpendencies_from_list("combined_proj_dependencies.txt", "8.10.txt")
 # dependency_dict_to_list("more_proj_dependencies.txt","more_dependencies_list.txt")
 # combine_more_proj_denpendencies()
 
-# dependency_dict_to_list("combined_proj_dependencies.txt","8.7.txt")
+# dependency_dict_to_list("combined_proj_dependencies.txt", "test.txt")
+dependency_dict_to_list("8.10.txt", "8.10.txt")
