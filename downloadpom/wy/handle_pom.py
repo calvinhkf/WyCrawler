@@ -9,7 +9,9 @@ from urllib3.exceptions import NewConnectionError, MaxRetryError
 from file_util import read_json, save_lib2, save_lib, read_pom_file
 from handle_jar import get_lib_from_list_page
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-pom_path = "F:/GP/pom/"
+pom_dir = "F:/GP/"
+pom_path = pom_dir + "pom/"
+pom_path_unsolved = pom_dir + "pom_unsolved/"
 
 def get_pom(groupId, artifactId, version):
     print("groupId: " + str(groupId) + ", artifactId: " + str(artifactId) + ", version: " + str(version))
@@ -54,6 +56,8 @@ def get_pom(groupId, artifactId, version):
         # print(view_all_url)
         downloaded, content = get_lib_from_list_page(view_all_url, groupId, artifactId, version,"pom", None)
     print(downloaded)
+    if not downloaded:
+        os.mknod(pom_path_unsolved + groupId + " " + artifactId + " " + version + ".pom")
     return content
 
 def get_pom_by_repo_url(repoUrl, groupId, artifactId, version):
@@ -119,6 +123,8 @@ def get_pom_by_repo_url(repoUrl, groupId, artifactId, version):
             meta_data = None
 
     print(downloaded)
+    if not downloaded:
+        os.mknod(pom_path_unsolved + groupId + " " + artifactId + " " + version + ".pom")
     return content
 
 def download_unparsed_pom_lib(path):
