@@ -57,7 +57,8 @@ def get_pom(groupId, artifactId, version):
         downloaded, content = get_lib_from_list_page(view_all_url, groupId, artifactId, version,"pom", None)
     print(downloaded)
     if not downloaded:
-        os.mknod(pom_path_unsolved + groupId + " " + artifactId + " " + version + ".pom")
+        f = open(pom_path_unsolved + groupId + " " + artifactId + " " + version + ".pom", 'w')
+        f.close()
     return content
 
 def get_pom_by_repo_url(repoUrl, groupId, artifactId, version):
@@ -124,7 +125,8 @@ def get_pom_by_repo_url(repoUrl, groupId, artifactId, version):
 
     print(downloaded)
     if not downloaded:
-        os.mknod(pom_path_unsolved + groupId + " " + artifactId + " " + version + ".pom")
+        f = open(pom_path_unsolved + groupId + " " + artifactId + " " + version + ".pom", 'w')
+        f.close()
     return content
 
 def download_unparsed_pom_lib(path):
