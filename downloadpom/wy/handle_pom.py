@@ -9,6 +9,7 @@ from urllib3.exceptions import NewConnectionError, MaxRetryError
 from file_util import read_json, save_lib2, save_lib, read_pom_file
 from handle_jar import get_lib_from_list_page
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
+pom_path = "F:/GP/pom/"
 
 def get_pom(groupId, artifactId, version):
     print("groupId: " + str(groupId) + ", artifactId: " + str(artifactId) + ", version: " + str(version))
@@ -39,10 +40,10 @@ def get_pom(groupId, artifactId, version):
                         view_all_url = each["href"]
                     if _type == 'pom':
                         pom_url = each["href"]
-                        if not os.path.exists("F:/GP/pom/" + groupId+" "+artifactId+" "+version+".pom"):
-                            content = save_lib(pom_url, "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                        if not os.path.exists(pom_path + groupId+" "+artifactId+" "+version+".pom"):
+                            content = save_lib(pom_url, pom_path + groupId + " " + artifactId + " " + version + ".pom")
                         else:
-                            content = read_pom_file("F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                            content = read_pom_file(pom_path + groupId + " " + artifactId + " " + version + ".pom")
                         # if not os.path.exists("C:/Users/huangkaifeng/Desktop/" + groupId+" "+artifactId+" "+version+".pom"):
                         #     content = save_lib2(pom_url)
                         downloaded = True
@@ -74,10 +75,10 @@ def get_pom_by_repo_url(repoUrl, groupId, artifactId, version):
         return content
 
     if lib_pom is not None and lib_pom.text is not None and lib_pom.text.startswith("<project"):
-        if not os.path.exists("F:/GP/pom/" + groupId+" "+artifactId+" "+version+".pom"):
-            content = save_lib(pom_url, "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+        if not os.path.exists(pom_path + groupId+" "+artifactId+" "+version+".pom"):
+            content = save_lib(pom_url, pom_path + groupId + " " + artifactId + " " + version + ".pom")
         else:
-            content = read_pom_file("F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+            content = read_pom_file(pom_path + groupId + " " + artifactId + " " + version + ".pom")
         downloaded = True
     else:
         list_page_url = repoUrl+"/"+groupUrl+"/"+artifactId+"/"+version
@@ -106,12 +107,12 @@ def get_pom_by_repo_url(repoUrl, groupId, artifactId, version):
                         # print(lib_pom.text)
                         # print("<html>" not in lib_pom.text)
                         if lib_pom is not None and lib_pom.text is not None and "<html>" not in lib_pom.text:
-                            if not os.path.exists("F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom"):
+                            if not os.path.exists(pom_path + groupId + " " + artifactId + " " + version + ".pom"):
                                 content = save_lib(pom_url,
-                                                   "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                                                   pom_path + groupId + " " + artifactId + " " + version + ".pom")
                             else:
                                 content = read_pom_file(
-                                    "F:/GP/pom/" + groupId + " " + artifactId + " " + version + ".pom")
+                                    pom_path + groupId + " " + artifactId + " " + version + ".pom")
                             downloaded = True
                         break
         except Exception as e:
