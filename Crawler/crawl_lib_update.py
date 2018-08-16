@@ -8,7 +8,7 @@ import sys
 import urllib3
 from bs4 import BeautifulSoup
 
-import database
+# import database
 import file_util
 from file_util import get_lib_name,save_lib
 # from check_time import get_maven_proj_update_within_three_months
@@ -18,8 +18,8 @@ from useragents import agents
 
 lib_update_path = "D:/data/lib_update_gradle_maven_2/"
 gradle_lib_update_path = "D:/data/lib_update_gradle_maven_2/"
-db = database.connectdb()
-cursor = db.cursor()
+# db = database.connectdb()
+# cursor = db.cursor()
 # lib_dir = sys.argv[3]
 lib_dir = os.getcwd()+'/lib/'
 # lib_dir = "D:/GP/lib/"
