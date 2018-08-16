@@ -365,7 +365,11 @@ def crawl_jar_from_maven(lib_tuple,file):
     artifactId = lib_tuple[1]
     version = lib_tuple[2]
     _type = lib_tuple[3]
+    _type = _type.strip()
     classifier = lib_tuple[4]
+
+    if _type != "jar":
+        return
 
     if version.endswith("-SNAPSHOT"):
         with open(uncrawled_path, "a") as f:
