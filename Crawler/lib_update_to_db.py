@@ -355,7 +355,7 @@ def get_url():
     print()
 
 def crawl_jar_from_maven(lib_tuple,file):
-    uncrawled_path = lib_dir + "uncrawled_lib.txt"
+    uncrawled_path = lib_dir + "2uncrawled_lib.txt"
 
     groupId = lib_tuple[0]
     artifactId = lib_tuple[1]
@@ -426,7 +426,7 @@ def crawl_jar_by_range(a,b):
         print("++++++++++++++++++++++++++++ " + str(i))
         lib_tuple = json_data[i]
         print(lib_tuple)
-        crawl_jar_from_maven(lib_tuple, lib_dir +"result.txt")
+        crawl_jar_from_maven(lib_tuple, lib_dir +"1result.txt")
 
 # read_lib_update_data(16, 5600)
 # parse_gradle_lib_update_data()
