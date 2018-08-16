@@ -428,13 +428,19 @@ def crawl_jar_from_maven(lib_tuple,file):
         f.close()
 
 def crawl_jar_by_range(a,b):
+    uncrawled_path = lib_dir + "2uncrawled_lib.txt"
     json_data = file_util.read_json("jar_final.txt")
     print(len((json_data)))
     for i in range(a,b):
         print("++++++++++++++++++++++++++++ " + str(i))
         lib_tuple = json_data[i]
         print(lib_tuple)
-        crawl_jar_from_maven(lib_tuple, lib_dir +"1result.txt")
+        try:
+            crawl_jar_from_maven(lib_tuple, lib_dir +"1result.txt")
+        except:
+            with open(uncrawled_path, "a") as f:
+                f.write(str(lib_tuple) + "\n")
+            f.close()
 
 # read_lib_update_data(16, 5600)
 # parse_gradle_lib_update_data()
