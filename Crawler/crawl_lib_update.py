@@ -368,7 +368,7 @@ def crawl_jar_from_maven(lib_tuple,file):
     _type = _type.strip()
     classifier = lib_tuple[4]
 
-    if _type != "jar":
+    if _type != "jar" and _type != "test-jar":
         return
 
     if version.endswith("-SNAPSHOT"):
