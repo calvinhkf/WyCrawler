@@ -20,7 +20,8 @@ lib_update_path = "D:/data/lib_update_gradle_maven_2/"
 gradle_lib_update_path = "D:/data/lib_update_gradle_maven_2/"
 db = database.connectdb()
 cursor = db.cursor()
-lib_dir = sys.argv[3]
+# lib_dir = sys.argv[3]
+lib_dir = os.getcwd()+'/lib/'
 # lib_dir = "D:/GP/lib/"
 urllib3.disable_warnings()
 
