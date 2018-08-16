@@ -287,11 +287,11 @@ def save_lib_package(files, _type, classifier,version):
         if not os.path.exists(lib_dir + get_lib_name(jar_url)):
             file_util.save_lib(jar_url, lib_dir + get_lib_name(jar_url))
         return get_lib_name(jar_url)
-    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml" or _type == "war" or _type == "kar" or _type == "swc" or _type == "pom" or _type == "executable-war":
+    if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml" or _type == "war" or _type == "kar" or _type == "swc" or _type == "pom" or _type == "executable-war" or _type == "warpath":
         new_type = _type
         if _type == "nbm-file":
             new_type = "nbm"
-        if _type == "executable-war":
+        if _type == "executable-war" or _type == "warpath":
             new_type = "war"
         if 'View' in file_list:
             page_url = file_list['View']
