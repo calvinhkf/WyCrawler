@@ -1,6 +1,9 @@
 import json
+import random
 
 import requests
+
+from useragents import agents
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 def read_json(path):
@@ -13,6 +16,7 @@ def write_json(path,json_data):
         json.dump(json_data, file_object)
 
 def save_lib(url,path):
+    headers = {'User-Agent': random.choice(agents)}
     lib = requests.get(url, headers=headers)
     with open(path, "wb") as f:
         f.write(lib.content)

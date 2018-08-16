@@ -307,6 +307,7 @@ def get_lib_from_list_page(page_path, _type, classifier):
 def get_lib_list_of_one_version(path):
     newlist = []
     try:
+        time.sleep(random.randint(1, 3))
         headers = {'User-Agent': random.choice(agents)}
         page = requests.get(path, headers=headers, verify=False)
         soup = BeautifulSoup(page.text, 'lxml');
@@ -370,7 +371,7 @@ def crawl_jar_from_maven(lib_tuple,file):
         return
 
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
-    time.sleep(random.randint(1, 3))
+    time.sleep(random.randint(2, 5))
     headers = {'User-Agent': random.choice(agents)}
     print(version_url)
     library_version = requests.get(version_url, headers=headers, verify=False)
