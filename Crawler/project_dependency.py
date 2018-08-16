@@ -279,4 +279,4 @@ def dependency_dict_to_list(dic_path,list_path):
 # combine_more_proj_denpendencies()
 
 # dependency_dict_to_list("combined_proj_dependencies.txt", "test.txt")
-dependency_dict_to_list("8.10.txt", "8.10.txt")
+# dependency_dict_to_list("8.10.txt", "8.10.txt")

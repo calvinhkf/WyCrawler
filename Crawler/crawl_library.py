@@ -5,6 +5,7 @@ import random
 import requests
 import time
 
+import urllib3
 from bs4 import BeautifulSoup
 from exception import CustomizeException
 from file_util import read_json, write_json, read_file, get_lib_name, save_lib
@@ -38,6 +39,8 @@ version_types_list = []
 unsolved_lib_list = []
 
 curr_project_id = -1
+
+urllib3.disable_warnings()
 
 def save_lib_package(files, _type, classifier,version):
     version_type_dic = {}
@@ -118,7 +121,7 @@ def get_lib_list_of_one_version(path):
         # time.sleep(random.randint(3, 6))
         # time.sleep(random.randint(1, 3))
         headers = {'User-Agent': random.choice(agents)}
-        page = requests.get(path, headers=headers)
+        page = requests.get(path, headers=headers, verify=False)
         soup = BeautifulSoup(page.text, 'lxml');
         list = soup.find_all('a')
         for li in list:
@@ -132,7 +135,7 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     # time.sleep(random.randint(10, 18))
     time.sleep(random.randint(1, 3))
     headers = {'User-Agent': random.choice(agents)}
-    library_version = requests.get(version_url, headers=headers)
+    library_version = requests.get(version_url, headers=headers, verify=False)
     library_soup = BeautifulSoup(library_version.text, 'lxml');
     category_url = None
     if library_soup.find('h2', class_='im-title') is None:
@@ -206,7 +209,7 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
         # time.sleep(random.randint(15, 20))
         time.sleep(random.randint(1, 3))
         headers = {'User-Agent': random.choice(agents)}
-        library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers)
+        library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False)
         library_soup = BeautifulSoup(library.text, 'lxml');
         results = library_soup.find('ul', class_='tabs').find_all('li')
         for tab in results:
@@ -244,7 +247,7 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
     time.sleep(random.randint(1, 3))
     headers = {'User-Agent': random.choice(agents)}
     print('------------------------- tab_url:' + tab_url)
-    library_tab = requests.get(tab_url, headers=headers)
+    library_tab = requests.get(tab_url, headers=headers, verify=False)
     library_soup = BeautifulSoup(library_tab.text, 'lxml');
     results = library_soup.find(class_='grid versions')
     version_idx, repository_idx, usages_idx, date_idx = -1, -1, -1, -1
@@ -297,7 +300,7 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
             # time.sleep(random.randint(15, 25))
             time.sleep(random.randint(1, 3))
             headers = {'User-Agent': random.choice(agents)}
-            library_version = requests.get(version_url, headers=headers)
+            library_version = requests.get(version_url, headers=headers, verify=False)
             page = library_version.text
             library_soup = BeautifulSoup(library_version.text, 'lxml');
             results = library_soup.find('div', class_='im')
@@ -403,7 +406,7 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
     maven_metadata_url = list_page_url + "/" + "maven-metadata.xml"
     success = False
     try:
-        meta_data = requests.get(maven_metadata_url, headers=headers)
+        meta_data = requests.get(maven_metadata_url, headers=headers, verify=False)
         if meta_data is not None:
             meta_data_soup = BeautifulSoup(meta_data.text, 'xml');
             snapshot_date = None
@@ -482,7 +485,7 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
     versions_meta_url = library_url + "/" + "maven-metadata.xml"
     try:
         # time.sleep(random.randint(3, 6))
-        versions_meta_data = requests.get(versions_meta_url, headers=headers)
+        versions_meta_data = requests.get(versions_meta_url, headers=headers, verify=False)
         if versions_meta_data is not None:
             meta_data_soup = BeautifulSoup(versions_meta_data.text, 'xml');
             versions = meta_data_soup.find_all('version')
@@ -494,7 +497,7 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
                     version_detail_url = library_url + "/" + ver
                     version_detail_meta_url = version_detail_url + "/" + "maven-metadata.xml"
                     # time.sleep(random.randint(3, 6))
-                    versions_meta_data = requests.get(version_detail_meta_url, headers=headers)
+                    versions_meta_data = requests.get(version_detail_meta_url, headers=headers, verify=False)
                     meta_data_soup = BeautifulSoup(versions_meta_data.text, 'xml');
                     update_date = None
                     if meta_data_soup.find('timestamp') is not None:
@@ -542,6 +545,7 @@ def handle_lib_by_range(start, end):
             handle_one_lib(json_data[i])
 
 def handle_one_lib(lib_obj):
+    print(lib_obj)
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     key = lib_obj['lib_name']
     if os.path.exists(output_dir+"/"+key+".json"):
@@ -555,7 +559,7 @@ def handle_one_lib(lib_obj):
     repo_array = lib_obj['repo_array']
     names = key.split(' ')
     if len(names) != 2:
-        raise (CustomizeException("id: "+str(curr_project_id)+"\n key:" +str(key) + "\nnames length != 2"))
+        raise (CustomizeException('\nid: '+str(curr_project_id)+'\nkey:' +str(key) + '\nnames length != 2'))
     groupId = names[0]
     artifactId = names[1]
     # print(groupId + "====" + artifactId)
@@ -579,8 +583,8 @@ def handle_one_lib(lib_obj):
 # print(len(lib_dict))
 # dependency_dict_to_list()
 # +1164 +11597
-numa = sys.argv[2]
-numb = sys.argv[3]
-is_catch = sys.argv[5]
-handle_lib_by_range(int(numa),int(numb))
-# save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")
+
+# numa = sys.argv[2]
+# numb = sys.argv[3]
+# is_catch = sys.argv[5]
+# handle_lib_by_range(int(numa),int(numb))

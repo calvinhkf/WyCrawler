@@ -5,8 +5,8 @@ import database
 from exception import CustomizeException
 from file_util import read_json, write_json
 
-# db = database.connectdb()
-# from handle_jar_db import insert_project_lib_usage
+db = database.connectdb()
+from handle_jar_db import insert_project_lib_usage
 
 def search_library_version_in_db(groupId,artifactId,version):
     sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
@@ -70,7 +70,48 @@ def save_project_info(dir_path,_type):
         array.append(proj_obj)
 
     print(len(array))
-    write_json("pros_maven_gradle_200_500.txt", array)
+    write_json("gradle.txt", array)
+
+def save_project_info(dir_path):
+    proj_types = {}
+    json_data = read_json("E:/data/projs.json")
+    for data in json_data:
+        url = data["url"]
+        proj_type = data["proj-type"]
+        proj_type = proj_type.split(":")[-1].strip()
+        proj_types[url] = proj_type
+    gradle_array = []
+    gradle_maven_array = []
+    list = os.listdir(dir_path)
+    for li in list:
+        if li.endswith(".txt"):
+            li = li[:-4]
+        li = li.replace("__fdse__", "/")
+        github_url = "https://github.com/" + li
+        sql = "SELECT * FROM repository_high_quality WHERE url = '" + str(github_url) + "'"
+        query_result = database.querydb(db,sql)
+        if len(query_result) <= 0:
+            raise CustomizeException("No url:"+github_url)
+        proj_obj = {}
+        proj_obj["id"] = query_result[0][0]
+        proj_obj["repositoryid"] = query_result[0][1]
+        proj_obj["url"] = query_result[0][2]
+        proj_obj["stars"] = query_result[0][3]
+        proj_obj["commit_count"] = query_result[0][4]
+        proj_obj["sizes"] = query_result[0][5]
+        proj_obj["fork"] = query_result[0][6]
+        proj_obj["repos_addr"] = query_result[0][9]
+        proj_obj["type"] = proj_types[query_result[0][2]]
+        print(query_result[0][2])
+        print(proj_obj["type"])
+        if proj_obj["type"] == "gradle":
+            gradle_array.append(proj_obj)
+        if proj_obj["type"] == "maven-gradle":
+            gradle_maven_array.append(proj_obj)
+    print(len(gradle_array))
+    print(len(gradle_maven_array))
+    write_json("gradle.txt", gradle_array)
+    write_json("gradle_maven.txt", gradle_maven_array)
 
 
 def project_info_to_db(path):
@@ -96,7 +137,7 @@ def project_info_to_db(path):
         database.execute_sql(db, sql)
 
 def browse_maven_projs():
-    dir_path = "E:/data/curr_result_all/"
+    dir_path = "E:/data/curr_result_add/"
     proj_types = {}
     json_data = read_json("E:/data/projs.json")
     for data in json_data:
@@ -104,7 +145,7 @@ def browse_maven_projs():
         proj_type = data["proj-type"]
         proj_types[url] = proj_type
     # list = os.listdir("E:/data/curr_result_all")
-    for id in range(5339,5600):
+    for id in range(4049,5600):
         if os.path.exists(dir_path+str(id) +".txt"):
             print(id)
             sql = "SELECT * FROM project WHERE id = " + str(id)
@@ -133,7 +174,7 @@ def browse_maven_projs():
                 database.execute_sql(db, sql)
 
 def browse_maven_gradle_projs():
-    dir_path = "E:/data/curr_result8.5/"
+    dir_path = "E:/data/curr_result8.5(maven_gradle)/"
     proj_types = {}
     json_data = read_json("E:/data/projs.json")
     for data in json_data:
@@ -141,7 +182,7 @@ def browse_maven_gradle_projs():
         proj_type = data["proj-type"]
         proj_types[url] = proj_type
     # list = os.listdir("E:/data/curr_result_all")
-    for id in range(5400, 5600):
+    for id in range(0, 5600):
         if os.path.exists(dir_path + str(id) + ".txt"):
             print(id)
             sql = "SELECT * FROM project WHERE id = " + str(id)
@@ -152,6 +193,35 @@ def browse_maven_gradle_projs():
                     raise CustomizeException("not maven_gradle type :" + str(id))
             else:
                 raise CustomizeException("not in db :" + str(id))
+
+def check_maven_projs():
+    count =0
+    dir_path = "E:/data/curr_result_all/"
+    proj_types = {}
+    json_data = read_json("E:/data/projs.json")
+    for data in json_data:
+        url = data["url"]
+        proj_type = data["proj-type"]
+        proj_types[url] = proj_type
+    # list = os.listdir("E:/data/curr_result_all")
+    for id in range(0, 5600):
+        if os.path.exists(dir_path + str(id) + ".txt"):
+            print(id)
+            sql = "SELECT * FROM project WHERE id = " + str(id)
+            query_result = database.querydb(db, sql)
+            if len(query_result) > 0:
+                type = query_result[0][8]
+                if type != "maven":
+                    raise CustomizeException("not maven type :" + str(id))
+            else:
+                raise CustomizeException("not in db :" + str(id))
+            # proj_obj = read_json(dir_path + str(id) + ".txt")
+            # http_url = proj_obj[0]["url"]
+            # if proj_types[http_url] == "proj-type: maven":
+            #     count +=1
+            #     print(str(id) + "    " + proj_types[http_url])
+    print(count)
+
 
 def project_dependency_usage_to_db(dir_path):
     file_list = os.listdir(dir_path)
@@ -262,9 +332,109 @@ def delete_duplicate_file(start, end):
             print("+++++++++++++++++++++++++++++++ " + str(i))
             print(path)
             os.remove(path)
+
+def get_maven_proj_url():
+    sql = "SELECT * FROM project WHERE type = 'maven'"
+    query_result = database.querydb(db, sql)
+    print(len(query_result))
+    with open("maven_url.txt", "a") as f:
+        for result in query_result:
+            f.write(str(result[0])+"\n")
+            f.write(result[1]+"\n")
+    f.close()
+
+def projs_statics():
+    gradle_count,maven_count,gradle_maven_count = 0,0,0
+    new_array = []
+    json_data = read_json("E:/data/projs.8.11.time.json")
+    print(len(json_data))
+    for proj in json_data:
+        type_ = proj["proj-type"]
+        if type_ == "proj-type: gradle":
+            gradle_count += 1
+        if type_ == "proj-type: maven":
+            maven_count += 1
+        if type_ == "proj-type: maven-gradle":
+            gradle_maven_count += 1
+    #     url = proj["url"]
+    #     sql = "SELECT * FROM project WHERE url = '" + url + "'"
+    #     query_result = database.querydb(db, sql)
+    #     if len(query_result) > 0:
+    #         new_array.append(proj)
+    # print(len(new_array))
+    # write_json("E:/data/projs8.11.json",new_array)
+    print(gradle_count)
+    print(maven_count)
+    print(gradle_maven_count)
+
+def update_projs_in_db():
+    count = 0
+    proj_types = {}
+    json_data = read_json("E:/data/projs.json")
+    for data in json_data:
+        url = data["url"]
+        proj_type = data["proj-type"]
+        proj_types[url] = proj_type
+    sql = "SELECT * FROM project where type = 'maven'"
+    query_result = database.querydb(db,sql)
+    print(len(query_result))
+    for record in query_result:
+        url = record[1]
+        if url not in proj_types:
+            count += 1
+            print(url)
+            # sql = "DELETE FROM project where id = "+str(record[0])
+            # database.execute_sql(db,sql)
+    print(count)
+
+def delete_projs_result(dir_path):
+    count = 0
+    file_list = os.listdir(dir_path)
+    for li in file_list:
+        path = os.path.join(dir_path, li)
+        if li.endswith(".txt"):
+            li = li[:-4]
+        li = li.replace("__fdse__", "/")
+        github_url = "https://github.com/" + li
+        sql = "SELECT * FROM project WHERE url = '" + str(github_url) + "'"
+        query_result = database.querydb(db,sql)
+        if len(query_result) <= 0:
+            count += 1
+            print(github_url)
+            os.remove(path)
+    print(count)
+
+def check_unsolved_maven_gradle_proj():
+    proj_types = {}
+    json_data = read_json("E:/data/projs.8.11.time.json")
+    for data in json_data:
+        url = data["url"]
+        proj_type = data["proj-type"]
+        proj_types[url] = proj_type
+    sql = "SELECT * FROM project where type ='gradle'"
+    query_result = database.querydb(db,sql)
+    # print(len(query_result))
+    for record in query_result:
+        id = record[0]
+        url = record[1]
+        if proj_types[url] == "proj-type: maven-gradle":
+            print(id)
+            print(url)
+
+
 # collect_project()
-# project_info_to_db("pros_maven_gradle_200_500.txt")
+# project_info_to_db("gradle_maven.txt")
 # save_project_info("E:/data/dependency/maven_gradle200_500","maven-gradle")
 # browse_maven_gradle_projs()
 # project_dependency_usage_to_db("E:/data/curr_result_all")
 # delete_duplicate_file(2501, 3001)
+# check_maven_projs()
+# browse_maven_projs()
+# get_maven_proj_url()
+# save_project_info("E:/data/diff")
+# update_projs()
+# update_projs_in_db()
+# delete_projs_result("E:/data/dependency/maven_gradle200_500")
+# check_unsolved_maven_gradle_proj()
+# projs_statics()
+# project_dependency_usage_to_db(dir_path)
