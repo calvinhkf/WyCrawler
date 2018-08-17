@@ -442,6 +442,23 @@ def crawl_jar_by_range(a,b):
                 f.write(str(lib_tuple) + "\n")
             f.close()
 
+def find_index():
+    json_data = file_util.read_json("jar_final.txt")
+    print(len((json_data)))
+    for i in range(0, 470000):
+        print("++++++++++++++++++++++++++++ " + str(i))
+        lib_tuple = json_data[i]
+        print(lib_tuple)
+        groupId = lib_tuple[0]
+        artifactId = lib_tuple[1]
+        version = lib_tuple[2]
+        _type = lib_tuple[3]
+        _type = _type.strip()
+        classifier = lib_tuple[4]
+        if groupId == 'com.ning.billing' and artifactId == 'killbill-account'and version == '0.1.79' and _type == 'test-jar' and classifier is None:
+            print(i)
+            return
+
 # read_lib_update_data(16, 5600)
 # parse_gradle_lib_update_data()
 # read_lib_update_data_gradle(16,5600)
@@ -451,3 +468,5 @@ def crawl_jar_by_range(a,b):
 a = sys.argv[1]
 b = sys.argv[2]
 crawl_jar_by_range(int(a), int(b))
+# crawl_jar_by_range(450001, 460001)
+# find_index()
