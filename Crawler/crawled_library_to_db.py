@@ -3,7 +3,7 @@ import os
 import database
 from exception import CustomizeException
 
-from file_util import save_lib, get_lib_name, read_json
+from file_util import save_lib, get_lib_name, read_json, write_json
 from handle_jar_db import db, insert_project_lib_usage
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
@@ -11,7 +11,7 @@ headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 lib_path = "C:/Users/yw/Desktop/lib/"
 # result_path ="C:/Users/yw/Desktop/result/"
 # output_path ="C:/Users/yw/Desktop/"
-crawled_lib_path = "D:/data/dependency_library_info_3"
+crawled_lib_path = "E:/data/dependency_library_info_1"
 # crawled_lib_path = "E:/data/dependency_library_info"
 cursor = db.cursor()
 
@@ -159,8 +159,8 @@ def read_crawled_lib_from_file():
         #     do = True
         # if not do:
         #     continue
-        if list[i] != "org.apache.kafka kafka_2.10.json":
-            continue
+        # if list[i] != "org.apache.kafka kafka_2.10.json":
+        #     continue
         path = os.path.join(crawled_lib_path, list[i])
         print(path)
         if os.path.isfile(path) and path.endswith(".json"):
@@ -188,44 +188,14 @@ def read_crawled_lib_from_file():
                                            library_version["home_page"],
                                            library_version["date"], library_version["files"], repository_url,
                                            library_version["used_by"], library_version["category_url"]))
-                    if len(version_values) == 5000:
-                        cursor.executemany('INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', version_values)
-                        db.commit()
-                        version_values = []
-                        print(5000)
-    cursor.executemany('INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', version_values)
-    db.commit()
-
-                    # insert_library_version_with_repository(library_version["group"], library_version["name"], library_version["version"],
-                    #                        library_version["version_url"], library_version["license"],
-                    #                        library_version["categories"], library_version["organization"],
-                    #                        library_version["home_page"],
-                    #                        library_version["date"], library_version["files"], library_version["repository"],
-                    #                        library_version["used_by"], library_version["category_url"])
-            # for version_type in version_types_list:
-            #     version = version_type["version"]
-            #     _type = version_type["_type"]
-            #     classifier = version_type["classifier"]
-            #     jar_package_url = version_type["jar_package_url"]
-            #     sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
-            #         artifactId) + "' and version = '" + str(version) + "'"
-            #     version_info = database.querydb(db, sql)
-            #     if len(version_info) != 0:
-            #         version_id = version_info[0][0]
-            #         break
-            #     added = False
-            #     sql = "SELECT * FROM version_types WHERE version_id = " + str(version_id)
-            #     types = database.querydb(db, sql)
-            #     for t in types:
-            #         if t[2] == _type:
-            #             if (classifier is not None and classifier == t[3]) or (classifier == None and t[3] == None):
-            #                 added = True
-            #                 break
-            #     if not added:
-            #         version_type_id = insert_version_type(version_id, _type, classifier, jar_package_url)
-            #     # insert_project_lib_usage(project_id, version_type_id, module_)
-            # for unsolved_lib in unsolved_lib_list:
-            #     insert_unsolved_library_without_projectid(unsolved_lib["group"], unsolved_lib["name"], unsolved_lib["version"], unsolved_lib["_type"], unsolved_lib["classifier"])
+    write_json("E:/data/dependency_library_info_1/1todb.txt", version_values)
+    #                 if len(version_values) == 5000:
+    #                     cursor.executemany('INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', version_values)
+    #                     db.commit()
+    #                     version_values = []
+    #                     print(5000)
+    # cursor.executemany('INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', version_values)
+    # db.commit()
 
 def version_type_to_db():
     version_values = []
@@ -386,6 +356,73 @@ def project_crawled_lib_usage(path):
             # return
         # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
+def update_library_to_db():
+    results = read_json("1result.txt")
+    for lib in results:
+        groupId = lib[0]
+        artifactId = lib[1]
+        version = lib[2]
+        _type = lib[3]
+        classifier = lib[4]
+        date = lib[5]
+        repository = lib[6]
+        jar_package_url = lib[7]
+        if not is_in_library_version(groupId, artifactId, version, repository):
+            version_values.append((groupId, artifactId, version,
+                 None, None, None, None, None, date, None, repository, None, None))
+            if len(version_values) == 5000:
+                cursor.executemany(
+                    'INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                    version_values)
+                db.commit()
+                version_values = []
+                print(5000)
+    cursor.executemany(
+        'INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+        version_values)
+    db.commit()
+
+def update_version_type_to_db():
+    repo_dic = read_json("repo_dic.txt")
+    results = read_json("1result.txt")
+    for lib in results:
+        groupId = lib[0]
+        artifactId = lib[1]
+        version = lib[2]
+        _type = lib[3]
+        classifier = lib[4]
+        date = lib[5]
+        repository = lib[6]
+        jar_package_url = lib[7]
+
+        if repository in repo_dic:
+            repository = repo_dic[repository]
+
+        sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
+            artifactId) + "' and version = '" + str(version) + "'"
+        version_info = database.querydb(db, sql)
+        if len(version_info) == 1 or len(version_info) == 2:
+            version_id = version_info[0][0]
+            type_id = in_version_type_table(version_id,_type,classifier)
+            if type_id < 0:
+                version_id2 = None
+                if len(version_info) == 2:
+                    version_id2 = version_info[1][0]
+                print(jar_package_url)
+                version_values.append((version_id, version_id2, _type, classifier, jar_package_url))
+                if len(version_values) == 5000:
+                    cursor.executemany('INSERT INTO version_types (version_id,version_id2,type,classifier,jar_package_url) value (%s,%s,%s,%s,%s)', version_values)
+                    db.commit()
+                    version_values = []
+                    print(5000)
+                # version_type_id = insert_version_type(version_id, _type, classifier, jar_package_url)
+            # for unsolved_lib in unsolved_lib_list:
+            #     insert_unsolved_library_without_projectid(unsolved_lib["group"], unsolved_lib["name"], unsolved_lib["version"], unsolved_lib["_type"], unsolved_lib["classifier"])
+        else:
+            raise CustomizeException("group_str = " + str(groupId) + ",name_str = " + str(artifactId) + ",version = " + str(version)+" || length = " +str(len(version_info)))
+    cursor.executemany('INSERT INTO version_types (version_id,version_id2,type,classifier,jar_package_url) value (%s,%s,%s,%s,%s)',version_values)
+    db.commit()
+
 # for i in range(1213, 1214):
 #     # global project_array
 #     if not os.path.exists(output_path+str(i)+".txt"):
@@ -396,10 +433,10 @@ def project_crawled_lib_usage(path):
 #             with open(output_path + str(i) + ".txt", 'w') as file_object:
 #                 json.dump(project_array, file_object)
 # read_crawled_lib_from_file()
-# read_crawled_lib_from_file()
 # version_type_to_db()
 # unsolved_library_to_db()
 # result_path = "D:/data/curr_result_all/"
 # for i in range(4,6000):
 #     path = result_path + str(i)+".txt"
 #     project_crawled_lib_usage(path)
+#

@@ -45,16 +45,16 @@ urllib3.disable_warnings()
 def save_lib_package(files, _type, classifier,version):
     version_type_dic = {}
     file_list = json.loads(files)
-    if _type in file_list:
-        jar_url = file_list[_type]
-        if not os.path.exists(lib_dir + get_lib_name(jar_url)):
-            save_lib(jar_url, lib_dir + get_lib_name(jar_url))
-        version_type_dic["version"] = version
-        version_type_dic["_type"] = _type
-        version_type_dic["classifier"] = classifier
-        version_type_dic["jar_package_url"] = get_lib_name(jar_url)
-        version_types_list.append(version_type_dic)
-        return
+    # if _type in file_list:
+    #     jar_url = file_list[_type]
+    #     if not os.path.exists(lib_dir + get_lib_name(jar_url)):
+    #         save_lib(jar_url, lib_dir + get_lib_name(jar_url))
+    #     version_type_dic["version"] = version
+    #     version_type_dic["_type"] = _type
+    #     version_type_dic["classifier"] = classifier
+    #     version_type_dic["jar_package_url"] = get_lib_name(jar_url)
+    #     version_types_list.append(version_type_dic)
+    #     return
     if _type == "tar.gz" or _type == "zip" or _type == "jar" or _type == "test-jar" or _type == "nbm-file" or _type == "xml" or _type == "war" or _type == "kar" or _type == "swc" or _type == "pom" or _type == "executable-war":
         new_type = _type
         if _type == "nbm-file":
@@ -532,7 +532,7 @@ def handle_lib_by_range(start, end):
     # json_data = read_json("8.7.txt")
     # json_data = read_json("dependencies_list.txt")
     json_data = read_json(dependency_file)
-    print(len(json_data))
+    # print(len(json_data))
     for i in range(start, end):
         print("+++++++++++++++++++++++++++++++ " + str(i))
         curr_project_id = i
@@ -584,7 +584,7 @@ def handle_one_lib(lib_obj):
 # dependency_dict_to_list()
 # +1164 +11597
 
-# numa = sys.argv[2]
-# numb = sys.argv[3]
-# is_catch = sys.argv[5]
-# handle_lib_by_range(int(numa),int(numb))
+numa = sys.argv[2]
+numb = sys.argv[3]
+is_catch = sys.argv[5]
+handle_lib_by_range(int(numa),int(numb))

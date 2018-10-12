@@ -20,8 +20,8 @@ lib_update_path = "D:/data/lib_update_gradle_maven_2/"
 gradle_lib_update_path = "D:/data/lib_update_gradle_maven_2/"
 # db = database.connectdb()
 # cursor = db.cursor()
-# lib_dir = sys.argv[3]
-lib_dir = os.getcwd()+'/lib/'
+lib_dir = sys.argv[3]
+# lib_dir = os.getcwd()+'/lib/'
 if not os.path.exists(lib_dir):
     os.makedirs(lib_dir)
 # lib_dir = "D:/GP/lib/"
@@ -467,6 +467,7 @@ def find_index():
 # collect_lib()
 a = sys.argv[1]
 b = sys.argv[2]
-crawl_jar_by_range(int(a), int(b))
-# crawl_jar_by_range(450001, 460001)
+# crawl_jar_by_range(int(a), int(b))
+# crawl_jar_by_range(454416, 460001)
+# crawl_jar_by_range(400001, 410001)
 # find_index()

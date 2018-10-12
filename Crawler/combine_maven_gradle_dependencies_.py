@@ -137,15 +137,15 @@ def project_info_to_db(path):
         database.execute_sql(db, sql)
 
 def browse_maven_projs():
-    dir_path = "E:/data/curr_result_add/"
+    dir_path = "E:/data/curr_result_100_200/"
     proj_types = {}
-    json_data = read_json("E:/data/projs.json")
-    for data in json_data:
-        url = data["url"]
-        proj_type = data["proj-type"]
-        proj_types[url] = proj_type
+    # json_data = read_json("E:/data/projs.json")
+    # for data in json_data:
+    #     url = data["url"]
+    #     proj_type = data["proj-type"]
+    #     proj_types[url] = proj_type
     # list = os.listdir("E:/data/curr_result_all")
-    for id in range(4049,5600):
+    for id in range(0,7000):
         if os.path.exists(dir_path+str(id) +".txt"):
             print(id)
             sql = "SELECT * FROM project WHERE id = " + str(id)
@@ -158,8 +158,8 @@ def browse_maven_projs():
             else:
                 proj_obj = read_json(dir_path+str(id) +".txt")
                 http_url = proj_obj[0]["url"]
-                if proj_types[http_url] != "proj-type: maven":
-                    raise CustomizeException("not maven:" + str(id) + "  " + http_url)
+                # if proj_types[http_url] != "proj-type: maven":
+                #     raise CustomizeException("not maven:" + str(id) + "  " + http_url)
                 sql = "INSERT INTO project" \
                       "(id,url,stars,commit_count,sizes,fork,repos_addr,repository_id,type) " \
                       "VALUES (\'" \

@@ -72,7 +72,7 @@ def get_update_time_for_lib(repository ,groupId, artifactId, version):
             return snapshot_date
 
     headers = {'User-Agent': random.choice(agents)}
-    versions_data = requests.get(vesion_page_url, headers=headers)
+    versions_data = requests.get(vesion_page_url, headers=headers, verify=False)
     # print(versions_data.text)
     versions_data_soup = BeautifulSoup(versions_data.text, 'xml');
     date, update_date = None, None
@@ -80,6 +80,10 @@ def get_update_time_for_lib(repository ,groupId, artifactId, version):
     for a in a_links:
         if a.next_sibling is not None:
             info_str = a.next_sibling.string.strip()
+        # elif a.parent is not None:
+        #     time_td = a.parent.find_next_sibling('td')
+        #     if time_td is not None:
+        #         info_str = time_td.string.strip()
             info_array = info_str.split(" ")
             if len(info_array) > 0:
                 date_str = info_array[0]
@@ -113,7 +117,7 @@ def get_update_time_for_lib1(repository ,groupId, artifactId, version):
             return snapshot_date
 
     headers = {'User-Agent': random.choice(agents)}
-    versions_data = requests.get(vesion_page_url, headers=headers)
+    versions_data = requests.get(vesion_page_url, headers=headers, verify=False)
     # print(versions_data.text)
     versions_data_soup = BeautifulSoup(versions_data.text, 'xml');
     date, update_date = None, None
@@ -122,9 +126,10 @@ def get_update_time_for_lib1(repository ,groupId, artifactId, version):
         if a.parent is not None:
             time_td = a.parent.find_next_sibling('td')
             if time_td is not None:
-                time_str = time_td.string
+                time_str = time_td.string.strip()
                 # print(time_str)
                 time_array = time_str.split(' ')
+                #print(time_array[0])
                 if len(time_array) == 6:
                     temp = time_array[2]+"-"+time_array[1]+"-"+time_array[5]
                     # print(temp)
@@ -134,7 +139,7 @@ def get_update_time_for_lib1(repository ,groupId, artifactId, version):
                     elif d1 > date:
                         date = d1
                 else:
-                    raise CustomizeException("len("+str(time_str)+") != 6")
+                    raise CustomizeException("len("+str(time_str)+") != 6, length"+str(len(time_array)))
     if date is not None:
         update_date = date.strftime("%Y-%b-%d")
     # print(update_date)
@@ -158,7 +163,7 @@ def crawl_date_for_one_repo(num1,num2):
             artifactId = data[2]
             version = data[3]
             repository = data[4]
-            update_time = get_update_time_for_lib1(repository, groupId, artifactId, version)
+            update_time = get_update_time_for_lib(repository, groupId, artifactId, version)
             if update_time is not None:
                 print(update_time)
                 # print(id)
@@ -169,6 +174,42 @@ def crawl_date_for_one_repo(num1,num2):
                 f.close()
             # break
 
+def read_update_date(path):
+    lines = read_file(path)
+    for line in lines:
+        print(line)
+        database.execute_sql(db,line)
+
+def crawl_date_for_same_time():
+    do = False
+    json_data = read_json("repo2_data.txt")
+    # count += len(json_data)
+    print(len(json_data))
+    for data in json_data:
+        print(data)
+        id = data[0]
+        if id == 85863:
+            do = True
+        if not do:
+            continue
+        groupId = data[1]
+        artifactId = data[2]
+        version = data[3]
+        repository = data[4]
+        update_time = get_update_time_for_lib1(repository, groupId, artifactId, version)
+        if update_time is not None:
+            print(update_time)
+            # print(id)
+            sql = "UPDATE library_versions set date = '" + str(update_time)+"' where id ="+str(id)
+            # database.execute_sql(db,sql)
+            with open("crawled_time_same2.txt", "a") as f:
+                f.write(str(sql) + "\n")
+            f.close()
+        else:
+            with open("uncrawled_time_same2.txt", "a") as f:
+                f.write(str(data) + "\n")
+            f.close()
+
 # numa = sys.argv[2]
 # numb = sys.argv[3]
 # 206442
@@ -177,3 +218,5 @@ def crawl_date_for_one_repo(num1,num2):
 # 5 6 #7 #8 #10 #12 #13 #15 #16
 # handle_lib_by_range(int(numa),int(numb))
 # save_lib_package("{\"View\":\"http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/org-netbeans-modules-spi-actions/RELEASE82/\"}", "nbm-file", None,"RELEASE82")
+# read_update_date("G:/crawled_time.txt")
+# crawl_date_for_same_time()
