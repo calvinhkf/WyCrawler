@@ -119,7 +119,7 @@ def get_lib_list_of_one_version(path):
     newlist = []
     try:
         # time.sleep(random.randint(3, 6))
-        # time.sleep(random.randint(1, 3))
+        time.sleep(random.randint(1, 3))
         headers = {'User-Agent': random.choice(agents)}
         page = requests.get(path, headers=headers, verify=False)
         if page.status_code == 403:
@@ -136,7 +136,7 @@ def get_lib_list_of_one_version(path):
 def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
     # time.sleep(random.randint(10, 18))
-    time.sleep(random.randint(1, 3))
+    time.sleep(random.randint(3, 5))
     headers = {'User-Agent': random.choice(agents)}
     library_version = requests.get(version_url, headers=headers, verify=False)
     if library_version.status_code == 403:
@@ -213,7 +213,7 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     # print('    used_by:' + str(used_by))
     if "https://mvnrepository.com" not in crawled_repo:
         # time.sleep(random.randint(15, 20))
-        time.sleep(random.randint(1, 3))
+        time.sleep(random.randint(2, 5))
         headers = {'User-Agent': random.choice(agents)}
         library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False)
         if library.status_code == 403:
@@ -253,7 +253,7 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
 def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifactId, target_version):
     target_version_repo = None
     # time.sleep(random.randint(12, 15))
-    time.sleep(random.randint(1, 3))
+    time.sleep(random.randint(2, 5))
     headers = {'User-Agent': random.choice(agents)}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers, verify=False)
