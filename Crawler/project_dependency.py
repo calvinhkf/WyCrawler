@@ -15,7 +15,7 @@ from exception import CustomizeException
 from file_util import read_json, write_json, read_file, get_lib_name, save_lib
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-result_dir = "E:/data/curr_result_100_200"
+result_dir = "E:/data/curr_result_100_200_gradle_maven"
 repo_dir = "E:/data/repo_solve"
 
 lib_dict = {}
@@ -183,7 +183,7 @@ def more_denpendencies_of_proj(start_id,end_id):
                             repo_array.append(repo_url)
                     lib_obj['repo_array'] = repo_array
                     lib_dict[key] = lib_obj
-    write_json("more_proj_dependencies1.txt", lib_dict)
+    write_json("more_proj_dependencies4.txt", lib_dict)
 
 def more_denpendencies_from_list(origin_path,list_path):
     prev_lib_dic = read_json(origin_path)
@@ -221,11 +221,11 @@ def more_denpendencies_from_list(origin_path,list_path):
                 lib_obj['repo_array'] = repo_array
                 lib_dict[key] = lib_obj
     # write_json("more_proj_dependencies2.txt", lib_dict)
-    write_json("temp.txt", lib_dict)
+    write_json("10.15.temp.txt", lib_dict)
 
 def combine_more_proj_denpendencies():
-    lib_dict = read_json("10.12.txt")
-    json_data = read_json("temp.txt")
+    lib_dict = read_json("10.15.txt")
+    json_data = read_json("10.15.temp.txt")
     for key in json_data.keys():
         versions = json_data[key]['versions_array']
         repos = json_data[key]['repo_array']
@@ -253,7 +253,7 @@ def combine_more_proj_denpendencies():
                         repo_array.append(repo_url)
                 lib_obj['repo_array'] = repo_array
                 lib_dict[key] = lib_obj
-    write_json("10.12.temp.txt", lib_dict)
+    write_json("10.15.temp.txt", lib_dict)
 
 def dependency_dict_to_list(dic_path,list_path):
     json_data = read_json(dic_path)
@@ -268,6 +268,7 @@ def dependency_dict_to_list(dic_path,list_path):
     write_json(list_path, lib_list)
 
 def dependency_list_to_dict(list_path,dic_path):
+    count = 0
     json_data = read_json(list_path)
     print(len(json_data))
     lib_dic = {}
@@ -275,23 +276,24 @@ def dependency_list_to_dict(list_path,dic_path):
         key = lib_obj['lib_name']
         dic_obj = {}
         dic_obj['versions_array'] = lib_obj['versions_array']
-        dic_obj['repo_array'] = lib_obj['repo_array']
+        if 'repo_array' not in lib_obj:
+            dic_obj['repo_array'] = []
+        else:
+            dic_obj['repo_array'] = lib_obj['repo_array']
         lib_dic[key] = dic_obj
-
     write_json(dic_path, lib_dic)
 
 
 # get_denpendencies_of_proj(0, 7000)
-# lib_dict = read_json("10.12.temp.txt")
+# lib_dict = read_json("10.15.txt")
 # print(len(lib_dict))
 # dependency_dict_to_list()
 # handle_lib_by_range(1,4)
-# more_denpendencies_of_proj(4, 5539)
-# more_denpendencies_from_list("unduplicate_proj_dependencies.txt", "C:/Users/yw/Desktop/gradle100_200result.txt")
-# more_denpendencies_from_list("8.10.dic.txt", "temp.txt")
-# dependency_dict_to_list("8.7.dic.txt","temp.txt")
+# more_denpendencies_of_proj(5000, 7000)
+# more_denpendencies_from_list("10.12.dic.txt", "10.15.temp.txt")
+# dependency_dict_to_list("10.15.temp.txt","10.15.txt")
 # combine_more_proj_denpendencies()
 
 # dependency_dict_to_list("combined_proj_dependencies.txt", "test.txt")
-# dependency_dict_to_list("10.12.temp.txt", "10.12.txt")
-# dependency_list_to_dict("temp.txt","temp.txt")
+# dependency_list_to_dict("10.15.txt", "10.15.txt")
+# dependency_list_to_dict("C:/Users/yw/Desktop/gradle_maven100_200result.txt", "10.15.temp.txt")

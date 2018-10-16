@@ -122,6 +122,9 @@ def get_lib_list_of_one_version(path):
         # time.sleep(random.randint(1, 3))
         headers = {'User-Agent': random.choice(agents)}
         page = requests.get(path, headers=headers, verify=False)
+        if page.status_code == 403:
+            print("Exception status 403:" + path)
+            os._exit(0)
         soup = BeautifulSoup(page.text, 'lxml');
         list = soup.find_all('a')
         for li in list:
@@ -136,6 +139,9 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     time.sleep(random.randint(1, 3))
     headers = {'User-Agent': random.choice(agents)}
     library_version = requests.get(version_url, headers=headers, verify=False)
+    if library_version.status_code == 403:
+        print("Exception status 403:" + version_url)
+        os._exit(0)
     library_soup = BeautifulSoup(library_version.text, 'lxml');
     category_url = None
     if library_soup.find('h2', class_='im-title') is None:
@@ -210,6 +216,9 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
         time.sleep(random.randint(1, 3))
         headers = {'User-Agent': random.choice(agents)}
         library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False)
+        if library.status_code == 403:
+            print("Exception status 403:" + "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId)
+            os._exit(0)
         library_soup = BeautifulSoup(library.text, 'lxml');
         results = library_soup.find('ul', class_='tabs').find_all('li')
         for tab in results:
@@ -248,6 +257,9 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
     headers = {'User-Agent': random.choice(agents)}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers, verify=False)
+    if library_tab.status_code == 403:
+        print("Exception status 403:" + tab_url)
+        os._exit(0)
     library_soup = BeautifulSoup(library_tab.text, 'lxml');
     results = library_soup.find(class_='grid versions')
     version_idx, repository_idx, usages_idx, date_idx = -1, -1, -1, -1
@@ -301,6 +313,9 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
             time.sleep(random.randint(1, 3))
             headers = {'User-Agent': random.choice(agents)}
             library_version = requests.get(version_url, headers=headers, verify=False)
+            if library_version.status_code == 403:
+                print("Exception status 403:" + version_url)
+                os._exit(0)
             page = library_version.text
             library_soup = BeautifulSoup(library_version.text, 'lxml');
             results = library_soup.find('div', class_='im')
@@ -545,11 +560,11 @@ def handle_lib_by_range(start, end):
             handle_one_lib(json_data[i])
 
 def handle_one_lib(lib_obj):
-    print(lib_obj)
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     key = lib_obj['lib_name']
     if os.path.exists(output_dir+"/"+key+".json"):
         return
+    print(lib_obj)
     global repo_array,crawled_repo,library_versions_list,version_types_list,unsolved_lib_list
     crawled_repo = []
     library_versions_list = []
