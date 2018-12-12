@@ -603,4 +603,4 @@ def handle_one_lib(lib_obj):
 numa = sys.argv[2]
 numb = sys.argv[3]
 is_catch = sys.argv[5]
-# handle_lib_by_range(int(numa),int(numb))
+handle_lib_by_range(int(numa),int(numb))
