@@ -4,19 +4,8 @@ from exception import CustomizeException
 from file_util import read_json, write_json, read_file, get_lib_name, save_lib
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
-result_dir = "E:/data/curr_result_all"
-repo_dir = "E:/data/repo"
-
-lib_dict = {}
-
-import os
-
-from exception import CustomizeException
-from file_util import read_json, write_json, read_file, get_lib_name, save_lib
-
-headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 result_dir = "E:/data/curr_result_100_200_gradle_maven"
-repo_dir = "E:/data/repo_solve"
+repo_dir = "D:/data/repo"
 
 lib_dict = {}
 prev_lib_dic = {}
@@ -283,6 +272,90 @@ def dependency_list_to_dict(list_path,dic_path):
         lib_dic[key] = dic_obj
     write_json(dic_path, lib_dic)
 
+def get_denpendencies_of_commit_of_proj():
+    dir  = "D:/data/result"
+    file_list = os.listdir(dir)
+    for file in file_list:
+        if file.startswith("32_"):
+           continue
+        print("++++++++++++++ "+file)
+        data = read_json(os.path.join(dir,file))
+    # for project_id in range(start_id, end_id):
+    #     path = result_dir + "/" +str(project_id) + ".txt"
+    #     if not os.path.exists(path):
+    #         continue
+    #     print()
+    #     data = read_json(path)
+        project_id = None
+        module_ = None
+        do = False
+        for lib in data:
+            if 'id' in lib:
+                project_id = lib["id"]
+                print("-------------------- project_id: " + str(project_id))
+                continue
+            if "groupId" not in lib or "artifactId" not in lib or "version" not in lib or "type" not in lib:
+                print(False)
+                continue
+            groupId= lib["groupId"]
+            artifactId = lib["artifactId"]
+            version = lib["version"]
+            type_ = lib["type"]
+            if groupId is None or artifactId is None or version is None or type_ is None or '${' in groupId or '${' in artifactId or '${' in version or '${' in type_:
+                print("groupId: " + str(groupId) +"   artifactId: " + str(artifactId)+"   version: " + str(version)+"   type: " + str(type_) )
+                print(False)
+                continue
+            if project_id is None:
+                continue
+            classifier = None
+
+            if "classifier" in lib:
+                classifier = lib["classifier"]
+                if '${' in classifier:
+                    print("groupId: " + str(groupId) + "   artifactId: " + str(artifactId) + "   version: " + str(
+                        version) + "   type: " + str(type_) + "   classifier: " + str(classifier))
+                    print(False)
+                    continue
+
+            if type(version) == list:
+                continue
+            else:
+                key = groupId + " " + artifactId
+                value = version + " " + type_
+                if classifier is not None:
+                    value += " " + classifier
+                if key in lib_dict.keys():
+                    versions_set = lib_dict[key]['versions_set']
+                    repo_set = lib_dict[key]['repo_set']
+                    versions_set.add(value)
+                    repo_file = repo_dir + "/" + str(project_id) + ".txt"
+                    if os.path.exists(repo_file):
+                        print("exists path " + str(project_id))
+                        lines = read_file(repo_file)
+                        for i in range(len(lines)):
+                            repo_url = lines[i]
+                            if not repo_url.startswith("https://") and not repo_url.startswith("http://"):
+                                repo_url = "http://" + repo_url
+                            repo_set.add(repo_url)
+                else:
+                    lib_obj = {}
+                    versions_set = set()
+                    versions_set.add(value)
+                    lib_obj['versions_set'] = versions_set
+                    repo_set = []
+                    repo_file = repo_dir + "/" + str(project_id) + ".txt"
+                    if os.path.exists(repo_file):
+                        print("exists path " + str(project_id))
+                        lines = read_file(repo_file)
+                        for i in range(len(lines)):
+                            repo_url = lines[i]
+                            if not repo_url.startswith("https://") and not repo_url.startswith("http://"):
+                                repo_url = "http://" + repo_url
+                            repo_set.add(repo_url)
+                    lib_obj['repo_set'] = repo_set
+                    lib_dict[key] = lib_obj
+    write_json("unduplicate_proj_dependencies4.txt", lib_dict)
+
 
 # get_denpendencies_of_proj(0, 7000)
 # lib_dict = read_json("10.15.txt")
@@ -297,3 +370,4 @@ def dependency_list_to_dict(list_path,dic_path):
 # dependency_dict_to_list("combined_proj_dependencies.txt", "test.txt")
 # dependency_list_to_dict("10.15.txt", "10.15.txt")
 # dependency_list_to_dict("C:/Users/yw/Desktop/gradle_maven100_200result.txt", "10.15.temp.txt")
+get_denpendencies_of_commit_of_proj()

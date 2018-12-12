@@ -31,3 +31,8 @@ def read_file(path):
         for i in range(len(lines)):
             lines[i] = lines[i].strip('\n')
     return lines
+
+def append_file(file_path,content):
+    with open(file_path, "a") as f:
+        f.write(content + "\n")
+    f.close()

@@ -85,8 +85,19 @@ def duplicate_repo_url_in_db():
             if new_url in json_data:
                 print(url)
 
+def update_repo_url_dic():
+    repo_dic = read_json("repo_dic.txt")
+    print(len(repo_dic))
+    repo_dic["http://mvnrepository.com/repos/locationtech-releases"] = "https://repo.locationtech.org/content/repositories/releases"
+    repo_dic["http://mvnrepository.com/repos/onebusaway-releases"] = "http://nexus.onebusaway.org/nexus/content/repositories/releases"
+    repo_dic["http://mvnrepository.com/repos/mapr-drill"] = "https://repository.mapr.com/nexus/content/repositories/drill"
+    repo_dic["http://mvnrepository.com/repos/imagej-public"] = "https://maven.imagej.net/content/repositories/public"
+    print(len(repo_dic))
+    write_json("repo_dic.txt",repo_dic)
+
 # get_repo_url_from_maven("http://mvnrepository.com/repos/boundless")
 # duplicate_repo_url_in_db()
 # repo_url_count()
 # crawl_maven_repo_url()
 # update_url_in_db()
+# update_repo_url_dic()

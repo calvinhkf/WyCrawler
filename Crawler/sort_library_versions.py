@@ -36,10 +36,25 @@ def find_same_time_in_diff_versions():
     print(count)
 
 def find_same_version_in_diff_repo():
-    sql = "SELECT count(*) FROM library_versions group by group_str,name_str,version"
+    count = 0
+    sql = "SELECT count(*),group_str,name_str,version FROM library_versions group by group_str,name_str,version"
     query_result = database.querydb(db, sql)
-    print(len(query_result))
-    print(query_result[0])
+    for entry in query_result:
+        length = entry[0]
+        if length > 2:
+            count +=1
+            print(entry[1]+" "+entry[2]+" "+entry[3])
+            # sql = "SELECT * FROM library_versions where group_str = '" + entry[1] + "' and name_str = '" + entry[2] + "' and version = '" + entry[3] + "' and repository = '"+ entry[4] +"'"
+            # result = database.querydb(db,sql)
+            # if len(result) == 2:
+            #     delete_id = result[1][0]
+            #     sql = "DELETE FROM library_versions where id = " + str(delete_id)
+            #     # print(sql)
+            #     database.execute_sql(db,sql)
+                # raise CustomizeException(entry[1]+" "+entry[2]+" "+entry[3])
+    print(count)
+    # print(len(query_result))
+    # print(query_result[0])
 
 def update_record():
     count = 0
@@ -240,3 +255,4 @@ def get_data_for_crawling_date():
 # get_repos_with_null_date()
 # crawl_date_for_one_repo()
 # get_data_for_crawling_date()
+find_same_version_in_diff_repo()

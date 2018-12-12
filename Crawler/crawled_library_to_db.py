@@ -3,7 +3,7 @@ import os
 import database
 from exception import CustomizeException
 
-from file_util import save_lib, get_lib_name, read_json, write_json
+from file_util import save_lib, get_lib_name, read_json, write_json, read_file
 from handle_jar_db import db, insert_project_lib_usage
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
@@ -29,8 +29,8 @@ def in_unsolved_table(group,name1,version1,_type,classifier):
         return True
 
 def in_version_type_table(version_id,type_,classifier):
-    sql = "SELECT * FROM version_types WHERE type = '" + str(type_) + "' and version_id = " + str(
-        version_id) + " or version_id2 = " + str(version_id)
+    sql = "SELECT * FROM version_types WHERE type = '" + str(type_) + "' and (version_id = " + str(
+        version_id) + " or version_id2 = " + str(version_id) + ")"
     types = database.querydb(db, sql)
     for t in types:
         if (classifier is not None and classifier == t[4]) or (classifier == None and t[4] == None):
@@ -423,6 +423,104 @@ def update_version_type_to_db():
     cursor.executemany('INSERT INTO version_types (version_id,version_id2,type,classifier,jar_package_url) value (%s,%s,%s,%s,%s)',version_values)
     db.commit()
 
+def update_library_to_db2():
+    # temp = []
+    # repo_list = read_json("repo_list.txt")
+
+    version_values = []
+    repo_dic = read_json("repo_dic.txt")
+    count = 0
+    dir_path = "F:/wangying/2018-8-16-updated-jars/output/result"
+    result_list = os.listdir(dir_path)
+    old_new_dic = read_json("old_new_dic.txt")
+    for result in result_list:
+        lines = read_file(os.path.join(dir_path, result))
+        for i in range(0,len(lines)):
+            line = lines[i]
+            print("+++++++++++++++++++ " + str(i) + " " + line + "( " + result + ")")
+            if line in old_new_dic:
+                count += 1
+                line = old_new_dic[line]
+            lib_tuple = tuple(eval(line))
+            repository = lib_tuple[6]
+            if repository in repo_dic:
+                repository = repo_dic[repository]
+            # if repository not in repo_list:
+            #     if repository not in temp:
+            #         print(repository)
+            #         temp.append(repository)
+            groupId = lib_tuple[0]
+            artifactId = lib_tuple[1]
+            version = lib_tuple[2]
+            date = lib_tuple[5]
+            if not is_in_library_version(groupId, artifactId, version, repository):
+                version_values.append((groupId, artifactId, version,
+                     None, None, None, None, None, date, None, repository, None, None))
+                if len(version_values) == 5000:
+                    cursor.executemany(
+                        'INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                        version_values)
+                    db.commit()
+                    version_values = []
+                    print(5000)
+    cursor.executemany(
+        'INSERT INTO library_versions (group_str,name_str,version,url,license,categories,organization,home_page,date,files,repository,used_by,category_url) value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+        version_values)
+    db.commit()
+
+    print(count)
+
+def update_version_type_to_db2():
+    version_values = []
+    repo_dic = read_json("repo_dic.txt")
+    count = 0
+    dir_path = "F:/wangying/2018-8-16-updated-jars/output/result"
+    result_list = os.listdir(dir_path)
+    old_new_dic = read_json("old_new_dic.txt")
+    for result in result_list:
+        lines = read_file(os.path.join(dir_path, result))
+        for i in range(0, len(lines)):
+            line = lines[i]
+            print("+++++++++++++++++++ " + str(i) + " " + line + "( " + result + ")")
+            if line in old_new_dic:
+                count += 1
+                line = old_new_dic[line]
+            lib_tuple = tuple(eval(line))
+            repository = lib_tuple[6]
+            if repository in repo_dic:
+                repository = repo_dic[repository]
+            groupId = lib_tuple[0]
+            artifactId = lib_tuple[1]
+            version = lib_tuple[2]
+            _type = lib_tuple[3]
+            classifier = lib_tuple[4]
+            jar_package_url = lib_tuple[7]
+
+            sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
+                artifactId) + "' and version = '" + str(version) + "'"
+            version_info = database.querydb(db, sql)
+            if len(version_info) == 1 or len(version_info) == 2:
+                version_id = version_info[0][0]
+                type_id = in_version_type_table(version_id,_type,classifier)
+                if type_id < 0:
+                    version_id2 = None
+                    if len(version_info) == 2:
+                        version_id2 = version_info[1][0]
+                    # print(jar_package_url)
+                    version_values.append((version_id, version_id2, _type, classifier, jar_package_url))
+                    if len(version_values) == 5000:
+                        cursor.executemany('INSERT INTO version_types (version_id,version_id2,type,classifier,jar_package_url) value (%s,%s,%s,%s,%s)', version_values)
+                        db.commit()
+                        version_values = []
+                        print(5000)
+                    # version_type_id = insert_version_type(version_id, _type, classifier, jar_package_url)
+                # for unsolved_lib in unsolved_lib_list:
+                #     insert_unsolved_library_without_projectid(unsolved_lib["group"], unsolved_lib["name"], unsolved_lib["version"], unsolved_lib["_type"], unsolved_lib["classifier"])
+            else:
+                raise CustomizeException("group_str = " + str(groupId) + ",name_str = " + str(artifactId) + ",version = " + str(version)+" || length = " +str(len(version_info)))
+    cursor.executemany('INSERT INTO version_types (version_id,version_id2,type,classifier,jar_package_url) value (%s,%s,%s,%s,%s)',version_values)
+    db.commit()
+
 # for i in range(1213, 1214):
 #     # global project_array
 #     if not os.path.exists(output_path+str(i)+".txt"):
@@ -440,3 +538,5 @@ def update_version_type_to_db():
 #     path = result_path + str(i)+".txt"
 #     project_crawled_lib_usage(path)
 #
+# update_library_to_db2()
+update_version_type_to_db2()

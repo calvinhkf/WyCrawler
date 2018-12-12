@@ -100,7 +100,8 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
                     save_lib(url, lib_dir + lib_package)
                 success = True
                 break
-        elif lib_package.endswith("." + _type) and "-sources" not in lib_package and "-javadoc" not in lib_package:
+        # elif lib_package.endswith("." + _type) and "-sources" not in lib_package and "-javadoc" not in lib_package:
+        elif lib_package.endswith("." + _type) and "-sources" not in lib_package and "-javadoc" not in lib_package and not lib_package.endswith("-tests." + _type):
             url = None
             if classifier is not None:
                 if classifier in lib_package:
@@ -602,4 +603,4 @@ def handle_one_lib(lib_obj):
 numa = sys.argv[2]
 numb = sys.argv[3]
 is_catch = sys.argv[5]
-handle_lib_by_range(int(numa),int(numb))
+# handle_lib_by_range(int(numa),int(numb))
