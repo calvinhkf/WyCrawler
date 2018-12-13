@@ -125,7 +125,8 @@ def get_lib_list_of_one_version(path):
         page = requests.get(path, headers=headers, verify=False)
         if page.status_code == 403:
             print("Exception status 403:" + path)
-            os._exit(0)
+            if path.startswith("https://mvnrepository.com"):
+                os._exit(0)
         soup = BeautifulSoup(page.text, 'lxml');
         list = soup.find_all('a')
         for li in list:
@@ -142,7 +143,8 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     library_version = requests.get(version_url, headers=headers, verify=False)
     if library_version.status_code == 403:
         print("Exception status 403:" + version_url)
-        os._exit(0)
+        if version_url.startswith("https://mvnrepository.com"):
+            os._exit(0)
     library_soup = BeautifulSoup(library_version.text, 'lxml');
     category_url = None
     if library_soup.find('h2', class_='im-title') is None:
@@ -260,7 +262,8 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
     library_tab = requests.get(tab_url, headers=headers, verify=False)
     if library_tab.status_code == 403:
         print("Exception status 403:" + tab_url)
-        os._exit(0)
+        if tab_url.startswith("https://mvnrepository.com"):
+            os._exit(0)
     library_soup = BeautifulSoup(library_tab.text, 'lxml');
     results = library_soup.find(class_='grid versions')
     version_idx, repository_idx, usages_idx, date_idx = -1, -1, -1, -1
@@ -316,7 +319,8 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
             library_version = requests.get(version_url, headers=headers, verify=False)
             if library_version.status_code == 403:
                 print("Exception status 403:" + version_url)
-                os._exit(0)
+                if version_url.startswith("https://mvnrepository.com"):
+                    os._exit(0)
             page = library_version.text
             library_soup = BeautifulSoup(library_version.text, 'lxml');
             results = library_soup.find('div', class_='im')
