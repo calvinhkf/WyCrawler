@@ -598,6 +598,8 @@ def handle_one_lib(lib_obj):
             raise (CustomizeException("id: "+str(curr_project_id)+"\n key:" +str(key) + "\nvalues length != 2 or 3:" + str(version_info)))
         version = values[0]
         _type = values[1]
+        if _type.startswith("."):
+            _type = _type[1:]
         classifier = None
         if len(values) == 3:
             classifier = values[2]
