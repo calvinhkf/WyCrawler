@@ -11,6 +11,12 @@ from exception import CustomizeException
 from file_util import read_json, write_json, read_file, get_lib_name, save_lib
 from useragents import agents
 import sys
+# cookies = dict(map(lambda x:x.split('='), cookie.split("; ")))
+
+url = "https://mvnrepository.com"
+res = requests.get(url)
+cookies = dict(res.cookies.items())
+
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 
@@ -139,8 +145,8 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
     # time.sleep(random.randint(10, 18))
     time.sleep(random.randint(3, 5))
-    headers = {'User-Agent': random.choice(agents)}
-    library_version = requests.get(version_url, headers=headers, verify=False)
+    headers = {'User-Agent': random.choice(agents), 'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
+    library_version = requests.get(version_url, headers=headers, verify=False, cookies=cookies)
     if library_version.status_code == 403:
         print("Exception status 403:" + version_url)
         if version_url.startswith("https://mvnrepository.com"):
@@ -217,8 +223,8 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     if "https://mvnrepository.com" not in crawled_repo:
         # time.sleep(random.randint(15, 20))
         time.sleep(random.randint(2, 5))
-        headers = {'User-Agent': random.choice(agents)}
-        library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False)
+        headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/'}
+        library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False, cookies=cookies)
         if library.status_code == 403:
             print("Exception status 403:" + "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId)
             os._exit(0)
@@ -257,9 +263,9 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
     target_version_repo = None
     # time.sleep(random.randint(12, 15))
     time.sleep(random.randint(2, 5))
-    headers = {'User-Agent': random.choice(agents)}
+    headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
     print('------------------------- tab_url:' + tab_url)
-    library_tab = requests.get(tab_url, headers=headers, verify=False)
+    library_tab = requests.get(tab_url, headers=headers, verify=False, cookies=cookies)
     if library_tab.status_code == 403:
         print("Exception status 403:" + tab_url)
         if tab_url.startswith("https://mvnrepository.com"):
@@ -315,8 +321,8 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
             date = tds[tr_date].string.replace('\n', '')
             # time.sleep(random.randint(15, 25))
             time.sleep(random.randint(1, 3))
-            headers = {'User-Agent': random.choice(agents)}
-            library_version = requests.get(version_url, headers=headers, verify=False)
+            headers = {'User-Agent': random.choice(agents),'Referer': tab_url}
+            library_version = requests.get(version_url, headers=headers, verify=False, cookies=cookies)
             if library_version.status_code == 403:
                 print("Exception status 403:" + version_url)
                 if version_url.startswith("https://mvnrepository.com"):
@@ -426,6 +432,7 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
     maven_metadata_url = list_page_url + "/" + "maven-metadata.xml"
     success = False
     try:
+        headers = {'User-Agent': random.choice(agents)}
         meta_data = requests.get(maven_metadata_url, headers=headers, verify=False)
         if meta_data is not None:
             meta_data_soup = BeautifulSoup(meta_data.text, 'xml');
@@ -505,6 +512,7 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
     versions_meta_url = library_url + "/" + "maven-metadata.xml"
     try:
         # time.sleep(random.randint(3, 6))
+        headers = {'User-Agent': random.choice(agents)}
         versions_meta_data = requests.get(versions_meta_url, headers=headers, verify=False)
         if versions_meta_data is not None:
             meta_data_soup = BeautifulSoup(versions_meta_data.text, 'xml');
@@ -517,6 +525,7 @@ def get_other_library_versions_in_other_repo(repo_url,library_url, groupId,artif
                     version_detail_url = library_url + "/" + ver
                     version_detail_meta_url = version_detail_url + "/" + "maven-metadata.xml"
                     # time.sleep(random.randint(3, 6))
+                    headers = {'User-Agent': random.choice(agents)}
                     versions_meta_data = requests.get(version_detail_meta_url, headers=headers, verify=False)
                     meta_data_soup = BeautifulSoup(versions_meta_data.text, 'xml');
                     update_date = None
