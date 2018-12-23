@@ -102,6 +102,7 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
                 url = page_path + "/" + lib_package
             if url is not None:
                 package_url = lib_package
+                # no download
                 if not os.path.exists(lib_dir + lib_package):
                     save_lib(url, lib_dir + lib_package)
                 success = True
@@ -116,6 +117,7 @@ def download_lib_from_list(lib_list, page_path, _type, classifier):
                 url = page_path + "/" + lib_package
             if url is not None:
                 package_url = lib_package
+                # no download
                 if not os.path.exists(lib_dir + lib_package):
                     save_lib(url, lib_dir + lib_package)
                 success = True
@@ -126,7 +128,7 @@ def get_lib_list_of_one_version(path):
     newlist = []
     try:
         # time.sleep(random.randint(3, 6))
-        time.sleep(random.randint(30, 60))
+        time.sleep(random.randint(3, 6))
         headers = {'User-Agent': random.choice(agents)}
         page = requests.get(path, headers=headers, verify=False)
         if page.status_code == 403:
@@ -144,7 +146,7 @@ def get_lib_list_of_one_version(path):
 def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     version_url = "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId + "/" + version
     # time.sleep(random.randint(10, 18))
-    time.sleep(random.randint(30, 60))
+    time.sleep(random.randint(3, 6))
     headers = {'User-Agent': random.choice(agents), 'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
     library_version = requests.get(version_url, headers=headers, verify=False, cookies=cookies)
     if library_version.status_code == 403:
@@ -155,7 +157,14 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     category_url = None
     if library_soup.find('h2', class_='im-title') is None:
         print("can't find h2 'im-title' class")
-        get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
+        unsolved_library_dic = {}
+        unsolved_library_dic["group"] = groupId
+        unsolved_library_dic["name"] = artifactId
+        unsolved_library_dic["version"] = version
+        unsolved_library_dic["_type"] = _type
+        unsolved_library_dic["classifier"] = classifier
+        unsolved_lib_list.append(unsolved_library_dic)
+        # get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
         return
     titles = library_soup.find('h2', class_='im-title').find_all('a')
     if titles[len(titles) - 1].get_text() == version:
@@ -165,7 +174,14 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     results = library_soup.find('div', class_='im')
     if results is None:
         print("can't find 'im' class")
-        get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
+        unsolved_library_dic = {}
+        unsolved_library_dic["group"] = groupId
+        unsolved_library_dic["name"] = artifactId
+        unsolved_library_dic["version"] = version
+        unsolved_library_dic["_type"] = _type
+        unsolved_library_dic["classifier"] = classifier
+        unsolved_lib_list.append(unsolved_library_dic)
+        # get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
         return
     results = results.find_next_sibling(class_='grid')
     information_trs = results.find_all('tr')
@@ -221,21 +237,20 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     print('    files:' + str(files))
     # print('    used_by:' + str(used_by))
     if "https://mvnrepository.com" not in crawled_repo:
-        # time.sleep(random.randint(15, 20))
-        time.sleep(random.randint(30, 60))
-        headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/'}
-        library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False, cookies=cookies)
-        if library.status_code == 403:
-            print("Exception status 403:" + "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId)
-            os._exit(0)
-        library_soup = BeautifulSoup(library.text, 'lxml');
-        results = library_soup.find('ul', class_='tabs').find_all('li')
-        for tab in results:
-            temp = get_other_library_versions_in_maven("http://mvnrepository.com" + tab.a["href"],
-                                                       "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId,
-                                                       groupId, artifactId, version)
-            if temp is not None:
-                repository = temp
+        # time.sleep(random.randint(30, 60))
+        # headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/'}
+        # library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False, cookies=cookies)
+        # if library.status_code == 403:
+        #     print("Exception status 403:" + "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId)
+        #     os._exit(0)
+        # library_soup = BeautifulSoup(library.text, 'lxml');
+        # results = library_soup.find('ul', class_='tabs').find_all('li')
+        # for tab in results:
+        #     temp = get_other_library_versions_in_maven("http://mvnrepository.com" + tab.a["href"],
+        #                                                "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId,
+        #                                                groupId, artifactId, version)
+        #     if temp is not None:
+        #         repository = temp
         crawled_repo.append("https://mvnrepository.com")
 
     library_version_dic = {}
@@ -262,7 +277,7 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
 def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifactId, target_version):
     target_version_repo = None
     # time.sleep(random.randint(12, 15))
-    time.sleep(random.randint(30, 60))
+    time.sleep(random.randint(3, 6))
     headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers, verify=False, cookies=cookies)
@@ -320,7 +335,7 @@ def get_other_library_versions_in_maven(tab_url, category_url, groupId, artifact
                     "href"] + "'}"
             date = tds[tr_date].string.replace('\n', '')
             # time.sleep(random.randint(15, 25))
-            time.sleep(random.randint(30, 60))
+            time.sleep(random.randint(3, 6))
             headers = {'User-Agent': random.choice(agents),'Referer': tab_url}
             library_version = requests.get(version_url, headers=headers, verify=False, cookies=cookies)
             if library_version.status_code == 403:
@@ -461,6 +476,7 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
                     print(package_url)
                     lib_name = None
                     if package_url in lib_list:
+                        # no download
                         if not os.path.exists(lib_dir + package_url):
                             save_lib(list_page_url + "/" + package_url, lib_dir + package_url)
                         success = True
@@ -470,8 +486,8 @@ def save_lib_in_other_repo(repo_url, groupId, artifactId, version, _type, classi
                     if success:
                         # other versions
                         if repo_url not in crawled_repo:
-                            library_url = list_page_url[0:list_page_url.rindex('/')]
-                            get_other_library_versions_in_other_repo(repo_url,library_url, groupId, artifactId, version)
+                            # library_url = list_page_url[0:list_page_url.rindex('/')]
+                            # get_other_library_versions_in_other_repo(repo_url,library_url, groupId, artifactId, version)
                             crawled_repo.append(repo_url)
 
                         print('    repository:' + str(repo_url))
@@ -604,6 +620,15 @@ def handle_one_lib(lib_obj):
         if len(values) == 3:
             classifier = values[2]
         print(groupId + " ==== " + artifactId + " ==== " + version + " ==== " + _type + " ==== " + str(classifier))
+        if version.endswith("-SNAPSHOT"):
+            unsolved_library_dic = {}
+            unsolved_library_dic["group"] = groupId
+            unsolved_library_dic["name"] = artifactId
+            unsolved_library_dic["version"] = version
+            unsolved_library_dic["_type"] = _type
+            unsolved_library_dic["classifier"] = classifier
+            unsolved_lib_list.append(unsolved_library_dic)
+            continue
         get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier)
     save_obj = {}
     save_obj['library_versions_list'] = library_versions_list

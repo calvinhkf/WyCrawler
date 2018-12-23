@@ -1,7 +1,9 @@
 import json
 import random
 
+import os
 import requests
+import subprocess
 
 from useragents import agents
 
@@ -16,11 +18,13 @@ def write_json(path,json_data):
         json.dump(json_data, file_object)
 
 def save_lib(url,path):
-    headers = {'User-Agent': random.choice(agents)}
-    lib = requests.get(url, headers=headers)
-    with open(path, "wb") as f:
-        f.write(lib.content)
-    f.close()
+    # headers = {'User-Agent': random.choice(agents)}
+    # lib = requests.get(url, headers=headers)
+    # with open(path, "wb") as f:
+    #     f.write(lib.content)
+    # f.close()
+    cmd = "curl -o " + path + " " + url
+    process = subprocess.Popen(cmd)
 
 def get_lib_name(path):
     return path.split("/")[-1]
