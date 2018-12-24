@@ -24,7 +24,7 @@ def save_lib(url,path):
     #     f.write(lib.content)
     # f.close()
     cmd = "wget -O " + path + " " + url
-    process = subprocess.Popen(cmd)
+    process = subprocess.Popen(cmd.split(" "))
 
 def get_lib_name(path):
     return path.split("/")[-1]
