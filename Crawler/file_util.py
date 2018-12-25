@@ -4,7 +4,7 @@ import random
 import os
 import requests
 import subprocess
-
+import platform
 from useragents import agents
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
@@ -24,7 +24,11 @@ def save_lib(url,path):
     #     f.write(lib.content)
     # f.close()
     cmd = "wget -O " + path + " " + url
-    process = subprocess.Popen(cmd.split(" "))
+    pf = platform.system()
+    if pf == "Windows":
+        process = subprocess.Popen(cmd)
+    else:
+        process = subprocess.Popen(cmd.split(" "))
 
 def get_lib_name(path):
     return path.split("/")[-1]

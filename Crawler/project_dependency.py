@@ -214,7 +214,7 @@ def more_denpendencies_from_list(origin_path,list_path):
                 lib_obj['repo_array'] = repo_array
                 lib_dict[key] = lib_obj
     # write_json("more_proj_dependencies2.txt", lib_dict)
-    write_json("12.21.temp.txt", lib_dict)
+    write_json("12.24.txt", lib_dict)
 
 def combine_more_proj_denpendencies():
     lib_dict = read_json("10.15.txt")
@@ -388,7 +388,7 @@ def dereplication():
 
 def get_denpendencies_of_500():
     id_list = []
-    sql = "select * from project where stars > 500 and stars <= 1000"
+    sql = "select * from project where stars <= 500"
     query_result = database.querydb(db, sql)
     for proj in query_result:
         id = proj[0]
@@ -401,7 +401,7 @@ def get_denpendencies_of_500():
     for file in file_list:
         proj_id = int(file.replace(".txt", ""))
         print(proj_id)
-        if proj_id not in id_list or proj_id == 85:
+        if proj_id not in id_list or proj_id == 85 or proj_id == 2009:
             # print(proj_id)
             continue
         # if file.startswith("32_"):
@@ -525,7 +525,7 @@ def get_denpendencies_of_500():
         new_obj['versions_array'] = list(lib_obj['versions_set'])
         new_obj['repo_array'] = list(lib_obj['repo_set'])
         lib_dict[entry] = new_obj
-    write_json("unduplicate_proj_dependencies500-1000.txt", lib_dict)
+    write_json("unduplicate_proj_dependencies-500.txt", lib_dict)
 
 def rename():
     dir = "H:/RQ2-data/result_merge_gradle"
@@ -540,19 +540,21 @@ def rename():
 
 
 # get_denpendencies_of_proj(0, 7000)
-# lib_dict = read_json("unduplicate_proj_dependencies.txt")
+# lib_dict = read_json("unduplicate_proj_dependencies1000-5000.txt")
+# lib_dict = read_json("12.24.1000-5000.txt")
 # print(len(lib_dict))
 # dependency_dict_to_list()
 # handle_lib_by_range(1,4)
 # more_denpendencies_of_proj(5000, 7000)
-# more_denpendencies_from_list("10.15.dic.txt", "12.21.temp.txt")
-# dependency_dict_to_list("12.21.temp.txt","12.21.temp.txt")
+# more_denpendencies_from_list("12.12.dic.txt", "12.24.temp.txt")
+# dependency_dict_to_list("12.24.temp.txt","12.24.temp.txt")
 # combine_more_proj_denpendencies()
 
 # dependency_dict_to_list("combined_proj_dependencies.txt", "test.txt")
-# dependency_list_to_dict("10.15.txt", "10.15.dic.txt")
+# dependency_list_to_dict("12.12.txt", "12.12.dic.txt")
 # dependency_list_to_dict("C:/Users/yw/Desktop/gr
 # dereplication()adle_maven100_200result.txt", "10.15.temp.txt")
 # get_denpendencies_of_commit_of_proj()
 # rename()
-get_denpendencies_of_500()
+# get_denpendencies_of_500()
+# data = read_json( "H:/RQ2-data/result_merge_maven/2009.txt")
