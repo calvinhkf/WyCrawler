@@ -157,14 +157,14 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     category_url = None
     if library_soup.find('h2', class_='im-title') is None:
         print("can't find h2 'im-title' class")
-        unsolved_library_dic = {}
-        unsolved_library_dic["group"] = groupId
-        unsolved_library_dic["name"] = artifactId
-        unsolved_library_dic["version"] = version
-        unsolved_library_dic["_type"] = _type
-        unsolved_library_dic["classifier"] = classifier
-        unsolved_lib_list.append(unsolved_library_dic)
-        # get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
+        # unsolved_library_dic = {}
+        # unsolved_library_dic["group"] = groupId
+        # unsolved_library_dic["name"] = artifactId
+        # unsolved_library_dic["version"] = version
+        # unsolved_library_dic["_type"] = _type
+        # unsolved_library_dic["classifier"] = classifier
+        # unsolved_lib_list.append(unsolved_library_dic)
+        get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
         return
     titles = library_soup.find('h2', class_='im-title').find_all('a')
     if titles[len(titles) - 1].get_text() == version:
@@ -174,14 +174,14 @@ def get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier):
     results = library_soup.find('div', class_='im')
     if results is None:
         print("can't find 'im' class")
-        unsolved_library_dic = {}
-        unsolved_library_dic["group"] = groupId
-        unsolved_library_dic["name"] = artifactId
-        unsolved_library_dic["version"] = version
-        unsolved_library_dic["_type"] = _type
-        unsolved_library_dic["classifier"] = classifier
-        unsolved_lib_list.append(unsolved_library_dic)
-        # get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
+        # unsolved_library_dic = {}
+        # unsolved_library_dic["group"] = groupId
+        # unsolved_library_dic["name"] = artifactId
+        # unsolved_library_dic["version"] = version
+        # unsolved_library_dic["_type"] = _type
+        # unsolved_library_dic["classifier"] = classifier
+        # unsolved_lib_list.append(unsolved_library_dic)
+        get_lib_from_other_repo(groupId, artifactId, version, _type, classifier)
         return
     results = results.find_next_sibling(class_='grid')
     information_trs = results.find_all('tr')
@@ -620,15 +620,16 @@ def handle_one_lib(lib_obj):
         if len(values) == 3:
             classifier = values[2]
         print(groupId + " ==== " + artifactId + " ==== " + version + " ==== " + _type + " ==== " + str(classifier))
-        if version.endswith("-SNAPSHOT"):
-            unsolved_library_dic = {}
-            unsolved_library_dic["group"] = groupId
-            unsolved_library_dic["name"] = artifactId
-            unsolved_library_dic["version"] = version
-            unsolved_library_dic["_type"] = _type
-            unsolved_library_dic["classifier"] = classifier
-            unsolved_lib_list.append(unsolved_library_dic)
-            continue
+        # snapshot other repo
+        # if version.endswith("-SNAPSHOT"):
+        #     unsolved_library_dic = {}
+        #     unsolved_library_dic["group"] = groupId
+        #     unsolved_library_dic["name"] = artifactId
+        #     unsolved_library_dic["version"] = version
+        #     unsolved_library_dic["_type"] = _type
+        #     unsolved_library_dic["classifier"] = classifier
+        #     unsolved_lib_list.append(unsolved_library_dic)
+        #     continue
         get_lib_from_maven_repo(groupId, artifactId, version, _type, classifier)
     save_obj = {}
     save_obj['library_versions_list'] = library_versions_list
