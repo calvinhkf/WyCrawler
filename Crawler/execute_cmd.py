@@ -72,7 +72,7 @@ def execute():
         timeout = 900
         print("++++++++++++++++ cmd : "+cmd)
         start = datetime.datetime.now()
-        process = subprocess.Popen(cmd)
+        process = subprocess.Popen(cmd.split(" "))
         while process.poll() is None:
             time.sleep(0.2)
             now = datetime.datetime.now()
