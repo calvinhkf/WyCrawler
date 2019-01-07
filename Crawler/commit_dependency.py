@@ -219,40 +219,56 @@ def jar_url():
     write_json("meta.json")
 
 def db_jar_list():
-    # final_dic = read_json("final_jar_dic.txt")
-    # print(len(final_dic))
+    final_dic = read_json("final_jar_dic.txt")
+    print(len(final_dic))
 
-    final_dic = {}
+    # final_dic = {}
 
     db = database.connectdb()
     sql = "SELECT * FROM version_types"
     query_result = database.querydb(db, sql)
     for entry in query_result:
-        jar_name = entry["jar_package_url"]
-        _type = entry["type"]
-        classifier = entry["classifier"]
-        version_id = entry["version_id"]
+        jar_name = entry[5]
+        _type = entry[3]
+        classifier = entry[4]
+        version_id = entry[1]
         sql = "SELECT * FROM library_versions where id = " + str(version_id)
         query_result = database.querydb(db, sql)
-        groupId = query_result[0][1]
-        artifactId = query_result[0][2]
-        version = query_result[0][3]
+        groupId = query_result[0][2]
+        artifactId = query_result[0][3]
+        version = query_result[0][4]
         key = groupId + " " + artifactId + " " + version + " " + _type
         if classifier is not None:
             key += " " + classifier
         if key not in final_dic:
             final_dic[key] = jar_name
+            print(key + " : " + jar_name)
     print(len(final_dic))
-    write_json("final_jar_test.txt", final_dic)
+    write_json("final_jar_dic.txt", final_dic)
+
+def add_compare_jar():
+    dir = "proj_update_lib"
+    file_list = os.listdir(dir)
+    for file in file_list:
+        project_id = int(file.replace(".txt"))
+        json_data = read_json(os.path.join(dir, file))
+        for commit in json_data.keys():
+            jar_list = json_data[commit]
+            for key in jar_list.keys():
+                jar_name = jar_list[key]
+                if os.path.exists("D:/data/lib_list/" + str(project_id) + "_" + commit + ".txt"):
+                    origin_list = read_json("D:/data/lib_list/" + str(project_id) + "_" + commit + ".txt")
+                    origin_list.append(jar_name)
+
 
 
 # combina_dependency()
 # final_count()
-# proj_jar_list()
+proj_jar_list()
 # append_proj_jar_list_gradle()
 # divide_to_machine()
 # append_final_jar()
 # proj()
 # jars_to_diff_machine()
-db_jar_list()
+# db_jar_list()
 
