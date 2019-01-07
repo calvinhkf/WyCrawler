@@ -1,6 +1,8 @@
 import os
 import shutil
 
+import sys
+
 import database
 
 from exception import CustomizeException
@@ -46,7 +48,7 @@ def proj_jar_list():
     file_list = os.listdir(dir)
     for file in file_list:
         project_id = int(file.split("_")[0])
-        sql = "SELECT * FROM project WHERE stars > 5000 and id = " + str(project_id)
+        sql = "SELECT * FROM project WHERE stars > 500 and id = " + str(project_id)
         query_result = database.querydb(db,sql)
         if len(query_result) <= 0:
             continue
@@ -87,7 +89,7 @@ def append_proj_jar_list_gradle():
     file_list = os.listdir(dir)
     for file in file_list:
         project_id = int(file.replace(".txt",""))
-        sql = "SELECT * FROM project WHERE stars > 5000 and id = " + str(project_id)
+        sql = "SELECT * FROM project WHERE stars > 500 and id = " + str(project_id)
         query_result = database.querydb(db,sql)
         if len(query_result) <= 0:
             continue
@@ -108,15 +110,15 @@ def append_proj_jar_list_gradle():
                 if key in jars_dic:
                     file_jars.append(jars_dic[key])
             if len(file_jars) > 0:
-                file_jars = list(set(file_jars))
-                write_json("D:/data/lib_list_test/"+str(project_id) + "_" + str(commit) + ".txt", file_jars)
-                # origin_path = "D:/data/lib_list/"+str(project_id) + "_" + str(commit) + ".txt"
-                # if os.path.exists(origin_path):
-                #     print(origin_path)
-                #     origin = read_json(origin_path)
-                #     file_jars.extend(origin)
                 # file_jars = list(set(file_jars))
-                # write_json(origin_path, file_jars)
+                # write_json("D:/data/lib_list_test/"+str(project_id) + "_" + str(commit) + ".txt", file_jars)
+                origin_path = "D:/data/lib_list/"+str(project_id) + "_" + str(commit) + ".txt"
+                if os.path.exists(origin_path):
+                    print(origin_path)
+                    origin = read_json(origin_path)
+                    file_jars.extend(origin)
+                file_jars = list(set(file_jars))
+                write_json(origin_path, file_jars)
 
 def divide_to_machine():
     # db = database.connectdb()
@@ -126,7 +128,7 @@ def divide_to_machine():
     # for file in file_list:
     #     name = file.replace(".txt", "")
     #     projectId = int(name)
-    #     sql = "SELECT * FROM project WHERE stars > 5000 and id = " + str(projectId)
+    #     sql = "SELECT * FROM project WHERE stars > 500 and id = " + str(projectId)
     #     query_result = database.querydb(db, sql)
     #     if len(query_result) > 0:
     #         total_list.append(projectId)
@@ -180,12 +182,10 @@ def jars_to_diff_machine():
             result = list(set(result))
             write_json("H:/api_call_update/batch_scope/" + str(num) + "_jar.txt",result)
 
-def move_jars():
-    src_dir = "H:/api_call_update/batch/"
-    dst_dir = ""
-    jars = read_json("H:/api_call_update/batch_scope/0_jar.txt")
+def move_jars(file_path,src_dir,dst_dir):
+    jars = read_json(file_path)
     for jar in jars:
-        shutil.copyfile("I:/libs/lib_5000Plus/all/lib/ " + jar, ".sh")
+        shutil.copyfile(src_dir + jar, dst_dir + jar.split("/")[-1])
 
 
 def proj():
@@ -207,16 +207,38 @@ def proj():
     # write_json("proj_in_usage.txt",result)
 
 def jar_url():
-    final_dic = {}
-    dir = "F:/libs/lib_500-1000/all/lib"
-    jars = os.listdir(dir)
-    for jar in jars:
-        if jar.endswith(".jar"):
-            if jar not in final_dic:
-                final_dic[jar] = "libs/lib_500-1000/all/lib"
-            else:
-                raise CustomizeException("contains key : " + jar)
-    write_json("meta.json")
+    final_dic = read_json("meta.json")
+    print(len(final_dic))
+
+    # final_dic = {}
+    # dir = "I:/libs/lib_5000Plus/all/lib"
+    # jars = os.listdir(dir)
+    # for jar in jars:
+    #     if jar.endswith(".jar"):
+    #         if jar not in final_dic:
+    #             final_dic[jar] = "libs/lib_500-1000/all/lib"
+    #         # else:
+    #         #     raise CustomizeException("contains key : " + jar)
+    # write_json("meta.json", final_dic)
+
+    for i in range(0,10):
+        final = []
+        path = "H:/api_call_update/batch_scope/" + str(i) + "_jar.txt"
+        if not os.path.exists(path):
+            continue
+        json_data = read_json(path)
+        json_data = list(set(json_data))
+        for jar_name in json_data:
+            # if jar_name not in final_dic:
+            #     print(jar_name)
+            if jar_name in final_dic:
+                dir = final_dic[jar_name]
+                path = dir + "/" + jar_name
+                final.append(path)
+        write_json("H:/api_call_update/batch_scope/" + str(i) + "_path.txt", final)
+
+
+
 
 def db_jar_list():
     final_dic = read_json("final_jar_dic.txt")
@@ -247,28 +269,56 @@ def db_jar_list():
     write_json("final_jar_dic.txt", final_dic)
 
 def add_compare_jar():
-    dir = "proj_update_lib"
+    db = database.connectdb()
+    dir = "H:/proj_update_lib2"
     file_list = os.listdir(dir)
     for file in file_list:
-        project_id = int(file.replace(".txt"))
+        project_id = int(file.replace(".txt",""))
+        sql = "SELECT * FROM project WHERE stars > 500 and id = " + str(project_id)
+        query_result = database.querydb(db, sql)
+        if len(query_result) <= 0:
+            continue
         json_data = read_json(os.path.join(dir, file))
         for commit in json_data.keys():
+            # origin_path = "D:/data/lib_list/" + str(project_id) + "_" + commit + ".txt"
+            # origin_list = read_json(origin_path)
+            new = []
             jar_list = json_data[commit]
             for key in jar_list.keys():
                 jar_name = jar_list[key]
-                if os.path.exists("D:/data/lib_list/" + str(project_id) + "_" + commit + ".txt"):
-                    origin_list = read_json("D:/data/lib_list/" + str(project_id) + "_" + commit + ".txt")
-                    origin_list.append(jar_name)
+                # if jar_name not in origin_list:
+                #     raise CustomizeException(str(project_id) + "_" + commit + " " + jar_name)
+                new.append(jar_name)
+            if len(new) > 0:
+                origin_path = "D:/data/lib_list/" + str(project_id) + "_" + commit + ".txt"
+                if os.path.exists(origin_path):
+                    origin_list = read_json(origin_path)
+                    new.extend(origin_list)
+                new = list(set(new))
+                write_json(origin_path, new)
 
-
+def count():
+    count = 0
+    for i in range(0,10):
+        path = "H:/api_call_update/batch_scope/" + str(i) + ".txt"
+        json_data = read_json(path)
+        count += len(json_data)
+    print(count)
 
 # combina_dependency()
 # final_count()
-proj_jar_list()
+# proj_jar_list()
 # append_proj_jar_list_gradle()
 # divide_to_machine()
 # append_final_jar()
 # proj()
 # jars_to_diff_machine()
 # db_jar_list()
-
+# add_compare_jar()
+# 10_5cc449bcced5baf6bdd852e6283868bbe246918b graylog2-server-2.2.0-alpha.2.jar
+# count()
+# jar_url()
+file_path = sys.argv[1]
+src_dir = sys.argv[2]
+dst_dir = sys.argv[3]
+move_jars(file_path,src_dir,dst_dir)
