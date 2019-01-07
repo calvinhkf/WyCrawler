@@ -32,13 +32,13 @@ def append_file(file_path, content):
     f.close()
 
 def generate_batch():
-    path = "12.25.500-1000+.txt"
+    path = "12.24.1000-5000+.txt"
     json_data = read_json(path)
     length = len(json_data)
     # print()
     for i in range(0,length):
-        cmd = "python3 -u crawl_library.py d " + str(i) + " " + str(i+1) + " 12.25.500-1000+.txt y"
-        append_file("12.25.500-1000+.sh", cmd)
+        cmd = "python3 -u crawl_library.py d " + str(i) + " " + str(i+1) + " 12.24.1000-5000+.txt y"
+        append_file("12.24.1000-5000+.sh", cmd)
 
 
 # def execute():
@@ -81,5 +81,5 @@ def execute():
                 os.popen('taskkill /pid '+str(process.pid)+' -f')
                 break
 
-execute()
-# generate_batch()
+# execute()
+generate_batch()

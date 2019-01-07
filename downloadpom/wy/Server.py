@@ -1,6 +1,9 @@
 #coding=utf-8  
 from http.server import BaseHTTPRequestHandler  
 import cgi
+
+import time
+
 from handle_pom import get_pom, get_pom_by_repo_url
 
 
@@ -58,6 +61,9 @@ class PostHandler(BaseHTTPRequestHandler):
   
 def StartServer():
     print('server started')
+    # print('*')
+    # time.sleep(20)
+    # print('*')
     from http.server import HTTPServer  
     sever = HTTPServer(("",8080),PostHandler)  
     sever.serve_forever()  

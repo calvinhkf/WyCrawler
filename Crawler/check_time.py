@@ -6,6 +6,7 @@ import sys
 
 import database
 from exception import CustomizeException
+from file_util import read_file
 
 db = database.connectdb()
 
@@ -110,23 +111,45 @@ def get_maven_proj_update_within_three_months(num):
             type_ = entry["proj-type"]
             # if type_ == "proj-type: maven":
             # if type_ == "proj-type: maven-gradle":
-            if type_ == "proj-type: maven-gradle":
-                url = entry["url"]
-                sql = "SELECT * FROM project WHERE url = '" + url + "'"
-                query_result = database.querydb(db, sql)
-                if len(query_result) > 0:
-                    gradle_array.append(url)
-                    # with open("gradle_maven_url_three_months.txt", "a") as f:
-                    #     f.write(str(query_result[0][0]) + "\n")
-                    #     f.write(query_result[0][1] + "\n")
-                    # f.close()
-                else:
-                    raise CustomizeException("Not in db:" + url)
-                cnt += 1
+            # if type_ == "proj-type: maven-gradle":
+            url = entry["url"]
+            sql = "SELECT * FROM project WHERE url = '" + url + "'"
+            query_result = database.querydb(db, sql)
+            if len(query_result) > 0:
+                gradle_array.append(url)
+                with open("three_months.txt", "a") as f:
+                    f.write(str(query_result[0][0]) + "\n")
+                    f.write(query_result[0][1] + "\n")
+                f.close()
+            else:
+                raise CustomizeException("Not in db:" + url)
+            cnt += 1
     print(cnt)
+    print(gradle_array)
 
-    return gradle_array
+    # return gradle_array
 
+
+def get_update_proj_in_three_months():
+    lines = read_file("three_months.txt")
+    proj_ids = []
+    proj_id = -1
+    proj_path = None
+    for line in lines:
+        if not line.startswith("https"):
+            proj_id = line
+            if proj_id not in proj_ids:
+                proj_ids.append(proj_id)
+
+    print(len(proj_ids))
+
+    update_path = "E:/data/proj_update_lib"
+    files = os.listdir(update_path)
+    for file_name in files:
+        id = file_name.replace(".txt","")
+        if id in proj_ids:
+            print(id)
+            # os.remove(os.path.join(update_path,file_name))
 
 # arg = sys.argv[1]
 # input_repo_time_compare(int(arg))
@@ -144,4 +167,5 @@ def get_maven_proj_update_within_three_months(num):
 # input_repo_time_compare(52)
 # input_repo_time_compare(90)
 
-get_maven_proj_update_within_three_months(90)
+# get_maven_proj_update_within_three_months(90)
+get_update_proj_in_three_months()
