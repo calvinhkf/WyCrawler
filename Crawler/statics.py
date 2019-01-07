@@ -6,7 +6,7 @@ import operator
 
 import database
 from exception import CustomizeException
-from file_util import read_json
+from file_util import read_json, write_json
 
 db = database.connectdb()
 
@@ -53,7 +53,7 @@ def draw_bar(x_labels,y):
     plt.bar(index, y, width=0.4, color='lightblue')
 
     x = range(len(x_labels))
-    plt.xticks(x, x_labels, rotation=60)
+    plt.xticks(x, x_labels, rotation=90)
     # plt.xticks(x, x_labels)
     # plt.ylabel("Java项目数量（个）")
     # plt.xlabel("第三方库数量")
@@ -172,15 +172,20 @@ def project_library_rq1():
     # data_group(usage_count, 10)
 
 def library_project_rq1():
-    usage_count = []
-    for id in range(3453):
-        sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE library_id = " + str(id)
-        usage_info = database.querydb(db, sql)
-        usage_count.append(len(usage_info))
-        # print(len(usage_info))
-        # print()
-    # print(len(usage_count))
+    usage_count = read_json("pic.txt")
     data_group(usage_count, 2)
+    # usage_count = []
+    # count = 0
+    # for id in range(8998):
+    #     sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE library_id = " + str(id)
+    #     usage_info = database.querydb(db, sql)
+    #     count += len(usage_info)
+    #     usage_count.append(len(usage_info))
+    #     # print(len(usage_info))
+    #     # print()
+    # print(count)
+    # write_json("pic.txt",usage_count)
+    # data_group(usage_count, 5)
 
 def top_category_rq1():
     usage_count = {}
@@ -349,61 +354,61 @@ def gap_by_library_rq3():
 
 
 def library_change_distribution_rq3():
-    # read_project_id()
-    # all_up = 0
-    # all_down = 0
-    # all_unchange = 0
-    # all_unknown = 0
-    # for id in project:
-    #     up = 0
-    #     down = 0
-    #     unchange = 0
-    #     unknown = 0
-    #     print('------------'+str(id))
-    #     sql = "SELECT DISTINCT (library_id) FROM project_lib_usage WHERE project_id = " + str(id)
-    #     usage_info = database.querydb(db, sql)
-    #     total = len(usage_info)
-    #     print(total)
-    #     for usage in usage_info:
-    #         library_id = usage[0]
-    #         sql = "SELECT * FROM lib_update WHERE lib_id = "+str(library_id)+" and curr_release_time_num != -1 and curr_time > curr_release_time_num and project_id = " + str(
-    #             id)
-    #         up_info = database.querydb(db, sql)
-    #         if len(up_info) != 0:
-    #             up += 1
-    #             continue
-    #         sql = "SELECT * FROM lib_update WHERE lib_id = " + str(
-    #             library_id) + " and curr_release_time_num != -1 and curr_time < curr_release_time_num and project_id = " + str(
-    #             id)
-    #         down_info = database.querydb(db, sql)
-    #         if len(down_info) != 0:
-    #             down += 1
-    #             continue
-    #         sql = "SELECT * FROM lib_update WHERE lib_id = " + str(
-    #             library_id) + " and curr_release_time_num = -1"
-    #         unknown_info = database.querydb(db, sql)
-    #         if len(unknown_info) != 0:
-    #             unknown += 1
-    #         else:
-    #             unchange += 1
-    #     print(up)
-    #     print(down)
-    #     print(unknown)
-    #     print(unchange)
-    #     all_up += up
-    #     all_down += down
-    #     all_unchange += unchange
-    #     all_unknown += unknown
-    # print(all_up)
-    # print(all_down)
-    # print(all_unknown)
-    # print(all_unchange)
+    read_project_id()
+    all_up = 0
+    all_down = 0
+    all_unchange = 0
+    all_unknown = 0
+    for id in project:
+        up = 0
+        down = 0
+        unchange = 0
+        unknown = 0
+        print('------------'+str(id))
+        sql = "SELECT DISTINCT (library_id) FROM project_lib_usage WHERE project_id = " + str(id)
+        usage_info = database.querydb(db, sql)
+        total = len(usage_info)
+        print(total)
+        for usage in usage_info:
+            library_id = usage[0]
+            sql = "SELECT * FROM lib_update WHERE lib_id = "+str(library_id)+" and curr_release_time_num != -1 and curr_time > curr_release_time_num and project_id = " + str(
+                id)
+            up_info = database.querydb(db, sql)
+            if len(up_info) != 0:
+                up += 1
+                continue
+            sql = "SELECT * FROM lib_update WHERE lib_id = " + str(
+                library_id) + " and curr_release_time_num != -1 and curr_time < curr_release_time_num and project_id = " + str(
+                id)
+            down_info = database.querydb(db, sql)
+            if len(down_info) != 0:
+                down += 1
+                continue
+            sql = "SELECT * FROM lib_update WHERE lib_id = " + str(
+                library_id) + " and curr_release_time_num = -1"
+            unknown_info = database.querydb(db, sql)
+            if len(unknown_info) != 0:
+                unknown += 1
+            else:
+                unchange += 1
+        print(up)
+        print(down)
+        print(unknown)
+        print(unchange)
+        all_up += up
+        all_down += down
+        all_unchange += unchange
+        all_unknown += unknown
+    print(all_up)
+    print(all_down)
+    print(all_unknown)
+    print(all_unchange)
     # 4040
     # 39
     # 1810
     # 3523
     # sizes = [all_up, all_down, all_unchange, all_unknown]
-    sizes = [4040, 39, 1810,3523]
+    # sizes = [4040, 39, 1810,3523]
     labels = ["向上更新","向下更新","未知","未更新"]
     draw_pie(labels, sizes)
 
@@ -730,8 +735,8 @@ def library_percent_rq3():
     data_group(percent_count, 1)
 
 
-project_library_rq1()
-# library_project_rq1()
+# project_library_rq1()
+library_project_rq1()
 # top_category_rq1()
 # library_project_category_rq1(3)
 # no_update_library_rq3()

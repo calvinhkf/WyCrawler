@@ -541,8 +541,8 @@ def rename():
 
 # get_denpendencies_of_proj(0, 7000)
 # lib_dict = read_json("unduplicate_proj_dependencies1000-5000.txt")
-# lib_dict = read_json("12.24.1000-5000.txt")
-# print(len(lib_dict))
+lib_dict = read_json("12.25.500-1000+.txt")
+print(len(lib_dict))
 # dependency_dict_to_list()
 # handle_lib_by_range(1,4)
 # more_denpendencies_of_proj(5000, 7000)

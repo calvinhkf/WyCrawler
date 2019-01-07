@@ -170,7 +170,8 @@ def collect_proj_with_bugs():
     bug_version_dir = "C:/RQ3/lib_versions"
     files = os.listdir(bug_version_dir)
     for file in files:
-        if file == "org.apache.commons commons-lang3.txt" or file == "org.apache.httpcomponents httpclient_orgin.txt":
+        if file != "org.slf4j slf4j-log4j12.txt":
+        # if file == "org.apache.commons commons-lang3.txt" or file == "org.apache.httpcomponents httpclient_orgin.txt":
             continue
         result = {}
         name_str = file.replace(".txt","")
@@ -284,7 +285,7 @@ def read_projs_with_bugs_for_lib():
 # parse_for_LANG()
 # parse_for_LOG4J2()
 # parse_for_SLF4J()
-# collect_proj_with_bugs()
+collect_proj_with_bugs()
 # collect_proj_with_bugs_for_lang3()
-read_projs_with_bugs()
+# read_projs_with_bugs()
 # read_projs_with_bugs_for_lib()
