@@ -53,7 +53,7 @@ def draw_bar(x_labels,y):
     plt.bar(index, y, width=0.4, color='lightblue')
 
     x = range(len(x_labels))
-    plt.xticks(x, x_labels, rotation=60)
+    plt.xticks(x, x_labels, rotation=90)
     # plt.xticks(x, x_labels)
     # plt.ylabel("Java项目数量（个）")
     # plt.xlabel("第三方库数量")
@@ -64,8 +64,8 @@ def draw_bar(x_labels,y):
     # plt.ylabel("Java项目数量（个）")
     # plt.xlabel("Top category")
 
-    # plt.xlabel("Java项目数量")
-    # plt.ylabel("第三方库数量（个）")
+    plt.xlabel("Java项目数量")
+    plt.ylabel("第三方库数量（个）")
 
     # plt.xlabel("第三方库更新延迟时间间隔（天）")
     # plt.ylabel("Java项目数量（个）")
@@ -73,8 +73,8 @@ def draw_bar(x_labels,y):
     # plt.xlabel("第三方库更新延迟时间间隔（天）")
     # plt.ylabel("第三方库数量（个）")
 
-    plt.xlabel("使用第三方库API占所有API的比例（%）")
-    plt.ylabel("Java项目数量（个）")
+    # plt.xlabel("使用第三方库API占所有API的比例（%）")
+    # plt.ylabel("Java项目数量（个）")
 
     # plt.xlabel("被用到的API数量占所有API的比例（%）")
     # plt.ylabel("第三方库数量（个）")
@@ -172,13 +172,21 @@ def project_library_rq1():
     # data_group(usage_count, 10)
 
 def library_project_rq1():
-    usage_count = []
-    for id in range(3453):
-        sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE library_id = " + str(id)
-        usage_info = database.querydb(db, sql)
-        usage_count.append(len(usage_info))
-        # print(len(usage_info))
-        # print()
+    # usage_count = []
+    # for id in range(3453):
+    #     sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE library_id = " + str(id)
+    #     usage_info = database.querydb(db, sql)
+    #     usage_count.append(len(usage_info))
+    #     # print(len(usage_info))
+    #     # print()
+    # # print(len(usage_count))
+    # data_group(usage_count, 2)
+    # count = 0
+    usage_count = read_json("J:/pic.txt")
+    # for co in usage_count:
+    #     print(co)
+    #     count += co
+    # print(count)
     # print(len(usage_count))
     data_group(usage_count, 2)
 
@@ -730,8 +738,8 @@ def library_percent_rq3():
     data_group(percent_count, 1)
 
 
-project_library_rq1()
-# library_project_rq1()
+# project_library_rq1()
+library_project_rq1()
 # top_category_rq1()
 # library_project_category_rq1(3)
 # no_update_library_rq3()

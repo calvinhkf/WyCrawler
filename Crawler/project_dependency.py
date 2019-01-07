@@ -214,7 +214,7 @@ def more_denpendencies_from_list(origin_path,list_path):
                 lib_obj['repo_array'] = repo_array
                 lib_dict[key] = lib_obj
     # write_json("more_proj_dependencies2.txt", lib_dict)
-    write_json("12.24.txt", lib_dict)
+    write_json("12.26.temp.txt", lib_dict)
 
 def combine_more_proj_denpendencies():
     lib_dict = read_json("10.15.txt")
@@ -396,12 +396,12 @@ def get_denpendencies_of_500():
     print(id_list)
     print(len(id_list))
     # return
-    dir = "H:/RQ2-data/result_merge_maven"
+    dir = "F:/result_merge_maven"
     file_list = os.listdir(dir)
     for file in file_list:
         proj_id = int(file.replace(".txt", ""))
         print(proj_id)
-        if proj_id not in id_list or proj_id == 85 or proj_id == 2009:
+        if proj_id not in id_list or proj_id == 85 or proj_id == 2009 or proj_id == 2957:
             # print(proj_id)
             continue
         # if file.startswith("32_"):
@@ -474,10 +474,10 @@ def get_denpendencies_of_500():
                             repo_set.add(repo_url)
                     lib_obj['repo_set'] = repo_set
                     lib_dict[key] = lib_obj
-        if not os.path.exists("H:/RQ2-data/result_merge_gradle_id/"+str(project_id)+".txt"):
+        if not os.path.exists("F:/result_merge_gradle_id/"+str(project_id)+".txt"):
             continue
-        content = read_json("H:/RQ2-data/result_merge_gradle_id/"+str(project_id)+".txt")
-        print("result_merge_gradle_id : " + "H:/RQ2-data/result_merge_gradle_id/"+str(project_id)+".txt")
+        content = read_json("F:/result_merge_gradle_id/"+str(project_id)+".txt")
+        print("result_merge_gradle_id : " + "F:/result_merge_gradle_id/"+str(project_id)+".txt")
         for key in content.keys():
             if key != "name":
                 data = content[key]
@@ -538,23 +538,77 @@ def rename():
         project_id = query_result[0][0]
         shutil.copyfile(os.path.join(dir,file), "H:/RQ2-data/result_merge_gradle_id/"+str(project_id)+".txt")
 
+def get_unsolved_lib():
+    result = {}
+    repo_search = read_json("12.24.dic.txt")
+    lib_names = repo_search.keys()
+    for i in range(0,10):
+        path = "H:/libs/lib_1000-5000/dependency" + str(i) + "/dependency_library_info"
+    # path = "H:/libs/lib_1000-5000/all/dependency_library_info"
+        print(path)
+        files = os.listdir(path)
+        for file in files:
+            key = file.replace(".json", "")
+            if key not in lib_names:
+                # print(key)
+                continue
+            content = read_json(os.path.join(path,file))
+            unsolved_lib_list = content["unsolved_lib_list"]
+            version_set = set()
+            for unsolved_lib in unsolved_lib_list:
+                version = unsolved_lib["version"]
+                _type = unsolved_lib["_type"]
+                classifier = unsolved_lib["classifier"]
+                value = version + " " +_type
+                if classifier is not None:
+                    value += " " + classifier
+                version_set.add(value)
+            if len(version_set) == 0:
+                continue
+            new_obj = {}
+            new_obj["versions_array"] = list(version_set)
+            new_obj["repo_array"] = repo_search[key]['repo_array']
+            result[key] = new_obj
+
+    write_json("12.24.1000-5000+.txt", result)
+
+def check_json_file():
+    lib_search = read_json("12.21.txt")
+    lib_keys = []
+    print(len(lib_search))
+    # for lib in lib_search:
+    #     key = lib["lib_name"]
+    #     if not os.path.exists("H:/libs/lib_5000Plus/all/dependency_library_info/" + key + ".json"):
+    #         print(key)
+
+    for lib in lib_search:
+        key = lib["lib_name"]
+        lib_keys.append(key)
+    dir = "H:/libs/lib_5000Plus/all/dependency_library_info"
+    files = os.listdir(dir)
+    for file in files:
+        name = file.replace(".json","")
+        if name not in lib_keys:
+            print(name)
 
 # get_denpendencies_of_proj(0, 7000)
-# lib_dict = read_json("unduplicate_proj_dependencies1000-5000.txt")
-# lib_dict = read_json("12.24.1000-5000.txt")
+# lib_dict = read_json("unduplicate_proj_dependencies500-1000.txt")
+# lib_dict = read_json("12.21+.txt")
 # print(len(lib_dict))
 # dependency_dict_to_list()
 # handle_lib_by_range(1,4)
 # more_denpendencies_of_proj(5000, 7000)
-# more_denpendencies_from_list("12.12.dic.txt", "12.24.temp.txt")
-# dependency_dict_to_list("12.24.temp.txt","12.24.temp.txt")
+# more_denpendencies_from_list("12.25.dic.txt", "12.26.temp.txt")
+# dependency_dict_to_list("12.24.1000-5000+.txt","12.24.1000-5000+.txt")
 # combine_more_proj_denpendencies()
 
 # dependency_dict_to_list("combined_proj_dependencies.txt", "test.txt")
-# dependency_list_to_dict("12.12.txt", "12.12.dic.txt")
+# dependency_list_to_dict("12.25.500-1000.txt", "12.25.dic.txt")
 # dependency_list_to_dict("C:/Users/yw/Desktop/gr
 # dereplication()adle_maven100_200result.txt", "10.15.temp.txt")
-# get_denpendencies_of_commit_of_proj()
+get_denpendencies_of_commit_of_proj()
 # rename()
 # get_denpendencies_of_500()
 # data = read_json( "H:/RQ2-data/result_merge_maven/2009.txt")
+# get_unsolved_lib()
+# check_json_file()
