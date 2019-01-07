@@ -11,7 +11,7 @@ def combina_dependency():
     write_to_final_jar(final_dic)
 
 def write_to_final_jar(final_dic):
-    dir = "I:/libs/lib_5000Plus+/all/dependency_library_info"
+    dir = "I:/libs/lib_500-1000+/all/dependency_library_info"
     files = os.listdir(dir)
     for file in files:
         print("========================== " + dir + "/" + file)
@@ -28,14 +28,14 @@ def write_to_final_jar(final_dic):
                 key += " " + classifier
             if key not in final_dic:
                 final_dic[key] = jar_package_url
-            else:
-                raise CustomizeException("repeat key: " + key + "( " + final_dic[key] + "," + jar_package_url + " )")
+            # else:
+            #     raise CustomizeException("repeat key: " + key + "( " + final_dic[key] + "," + jar_package_url + " )")
     write_json("final_jar_dic.txt", final_dic)
 
 def append_final_jar():
     final_dic = read_json("final_jar_dic.txt")
     print(len(final_dic))
-    write_to_final_jar(final_dic)
+    # write_to_final_jar(final_dic)
 
 def proj_jar_list():
     db = database.connectdb()
@@ -206,6 +206,46 @@ def proj():
     #     result.append(obj)
     # write_json("proj_in_usage.txt",result)
 
+def jar_url():
+    final_dic = {}
+    dir = "F:/libs/lib_500-1000/all/lib"
+    jars = os.listdir(dir)
+    for jar in jars:
+        if jar.endswith(".jar"):
+            if jar not in final_dic:
+                final_dic[jar] = "libs/lib_500-1000/all/lib"
+            else:
+                raise CustomizeException("contains key : " + jar)
+    write_json("meta.json")
+
+def db_jar_list():
+    # final_dic = read_json("final_jar_dic.txt")
+    # print(len(final_dic))
+
+    final_dic = {}
+
+    db = database.connectdb()
+    sql = "SELECT * FROM version_types"
+    query_result = database.querydb(db, sql)
+    for entry in query_result:
+        jar_name = entry["jar_package_url"]
+        _type = entry["type"]
+        classifier = entry["classifier"]
+        version_id = entry["version_id"]
+        sql = "SELECT * FROM library_versions where id = " + str(version_id)
+        query_result = database.querydb(db, sql)
+        groupId = query_result[0][1]
+        artifactId = query_result[0][2]
+        version = query_result[0][3]
+        key = groupId + " " + artifactId + " " + version + " " + _type
+        if classifier is not None:
+            key += " " + classifier
+        if key not in final_dic:
+            final_dic[key] = jar_name
+    print(len(final_dic))
+    write_json("final_jar_test.txt", final_dic)
+
+
 # combina_dependency()
 # final_count()
 # proj_jar_list()
@@ -213,5 +253,6 @@ def proj():
 # divide_to_machine()
 # append_final_jar()
 # proj()
-jars_to_diff_machine()
+# jars_to_diff_machine()
+db_jar_list()
 
