@@ -67,7 +67,7 @@ def generate_batch():
 def execute():
     lines = read_file(batch_path)
     # for cmd in lines:
-    for i in range(num1,num2):
+    for i in range(num1, num2):
         cmd = lines[i]
         timeout = 900
         print("++++++++++++++++ cmd : "+cmd)
@@ -81,5 +81,5 @@ def execute():
                 os.popen('taskkill /pid '+str(process.pid)+' -f')
                 break
 
-# execute()
-generate_batch()
+execute()
+# generate_batch()

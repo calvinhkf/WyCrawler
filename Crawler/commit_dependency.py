@@ -5,7 +5,7 @@ import sys
 
 import database
 
-from exception import CustomizeException
+# from exception import CustomizeException
 from file_util import read_json, write_json
 
 def combina_dependency():
@@ -150,6 +150,17 @@ def divide_to_machine():
     #             new_list.append(id)
     #     write_json("H:/api_call_update/batch_scope/"+str(i)+".txt",new_list)
 
+    # dir = "H:/api_call_update/batch_scope"
+    # file_list = os.listdir(dir)
+    # for file in file_list:
+    #     num = int(file.replace(".txt", ""))
+    #     json_data = read_json(os.path.join(dir, file))
+    #     if len(json_data) > 0:
+    #         if os.path.exists(dir + "/" + str(num)):
+    #             os.mkdir(dir + "/" + str(num))
+    #         for id in json_data:
+    #             shutil.copyfile("H:/api_call_update/batch/"+str(id)+".sh", dir + "/" + str(num) + "/"+str(id)+".sh")
+
     dir = "H:/api_call_update/batch_scope"
     file_list = os.listdir(dir)
     for file in file_list:
@@ -182,6 +193,23 @@ def jars_to_diff_machine():
             result = list(set(result))
             write_json("H:/api_call_update/batch_scope/" + str(num) + "_jar.txt",result)
 
+def lib_list_to_diff_machine():
+    dir = "H:/api_call_update/batch_scope"
+    for i in range(0,10):
+        path = dir + "/" + str(i) + ".txt"
+        proj_list = read_json(path)
+        if len(proj_list) > 0:
+            print(proj_list)
+            if not os.path.exists("D:/data/"+str(i)):
+                os.mkdir("D:/data/"+str(i))
+            jars_files = os.listdir("D:/data/lib_list")
+            for entry in jars_files:
+                project_id = int(entry.split("_")[0])
+                # print(project_id)
+                if project_id in proj_list:
+                    if not os.path.exists("D:/data/"+str(i) + "/" + entry):
+                        shutil.copyfile("D:/data/lib_list/" + entry, "D:/data/"+str(i) + "/" + entry)
+
 def move_jars(file_path,src_dir,dst_dir):
     jars = read_json(file_path)
     for jar in jars:
@@ -210,17 +238,19 @@ def jar_url():
     final_dic = read_json("meta.json")
     print(len(final_dic))
 
-    # final_dic = {}
-    # dir = "I:/libs/lib_5000Plus/all/lib"
+    # # final_dic = {}
+    # dir = "I:/libs/lib_RQ1-all/lib_all"
     # jars = os.listdir(dir)
     # for jar in jars:
     #     if jar.endswith(".jar"):
     #         if jar not in final_dic:
-    #             final_dic[jar] = "libs/lib_500-1000/all/lib"
+    #             final_dic[jar] = "libs/lib_RQ1-all/lib_all"
     #         # else:
     #         #     raise CustomizeException("contains key : " + jar)
     # write_json("meta.json", final_dic)
 
+    # print("rxjava-1.2.4.jar" in final_dic)
+    # count = 0
     for i in range(0,10):
         final = []
         path = "H:/api_call_update/batch_scope/" + str(i) + "_jar.txt"
@@ -231,13 +261,18 @@ def jar_url():
         for jar_name in json_data:
             # if jar_name not in final_dic:
             #     print(jar_name)
-            if jar_name in final_dic:
-                dir = final_dic[jar_name]
-                path = dir + "/" + jar_name
-                final.append(path)
+            # jar_name = jar_name.strip()
+            if jar_name.endswith(".jar"):
+                if jar_name in final_dic:
+                    dir = final_dic[jar_name]
+                    path = dir + "/" + jar_name
+                    final.append(path)
+                # else:
+                #     count += 1
+                #     if jar_name.startswith("rxjava-1.2.4"):
+                #         print(jar_name)
+    # print(count)
         write_json("H:/api_call_update/batch_scope/" + str(i) + "_path.txt", final)
-
-
 
 
 def db_jar_list():
@@ -310,6 +345,7 @@ def count():
 # proj_jar_list()
 # append_proj_jar_list_gradle()
 # divide_to_machine()
+lib_list_to_diff_machine()
 # append_final_jar()
 # proj()
 # jars_to_diff_machine()
@@ -318,7 +354,8 @@ def count():
 # 10_5cc449bcced5baf6bdd852e6283868bbe246918b graylog2-server-2.2.0-alpha.2.jar
 # count()
 # jar_url()
-file_path = sys.argv[1]
-src_dir = sys.argv[2]
-dst_dir = sys.argv[3]
-move_jars(file_path,src_dir,dst_dir)
+
+# file_path = sys.argv[1]
+# src_dir = sys.argv[2]
+# dst_dir = sys.argv[3]
+# move_jars(file_path,src_dir,dst_dir)
