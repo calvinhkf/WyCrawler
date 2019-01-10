@@ -9,9 +9,15 @@ from useragents import agents
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 def read_json(path):
-    with open(path, encoding='utf-8') as json_file:
-        data = json.load(json_file)
-        return data
+    try:
+        with open(path, encoding='utf-8') as json_file:
+            data = json.load(json_file)
+            return data
+    except Exception as e:
+        with open(path, encoding='gbk') as json_file:
+            data = json.load(json_file)
+            return data
+
 
 def write_json(path,json_data):
     with open(path, 'w', encoding='utf-8') as file_object:
