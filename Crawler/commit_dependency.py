@@ -214,7 +214,8 @@ def lib_list_to_diff_machine():
 def move_jars(file_path,src_dir,dst_dir):
     jars = read_json(file_path)
     for jar in jars:
-        shutil.copyfile(src_dir + jar, dst_dir + jar.split("/")[-1])
+        if not os.path.exists(dst_dir + jar.split("/")[-1]):
+            shutil.copyfile(src_dir + jar, dst_dir + jar.split("/")[-1])
 
 
 def proj():
@@ -341,6 +342,27 @@ def count():
         count += len(json_data)
     print(count)
 
+def proj_jars():
+    dir = "D:/data/lib_list"
+    files = os.listdir(dir)
+    result = []
+    for file in files:
+        project_id = file.split("_")[0]
+        if project_id == "130" or project_id == "1907" or project_id == "2594":
+            jar_list = read_json(os.path.join(dir, file))
+            result.extend(jar_list)
+    result = list(set(result))
+
+    new_list=[]
+    final_dic = read_json("meta.json")
+    print(len(final_dic))
+    for jar_name in result:
+        if jar_name.endswith(".jar"):
+            if jar_name in final_dic:
+                dir_path = final_dic[jar_name]
+                new_list.append(dir_path + "/" +jar_name)
+    write_json("jar_list.txt", new_list)
+
 # combina_dependency()
 # final_count()
 # proj_jar_list()
@@ -356,8 +378,9 @@ def count():
 # count()
 # jar_url()
 
-# file_path = sys.argv[1]
-# src_dir = sys.argv[2]
-# dst_dir = sys.argv[3]
-# move_jars(file_path,src_dir,dst_dir)
+file_path = sys.argv[1]
+src_dir = sys.argv[2]
+dst_dir = sys.argv[3]
+move_jars(file_path,src_dir,dst_dir)
 # handle_batch()
+# proj_jars()

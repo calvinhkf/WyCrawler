@@ -102,8 +102,8 @@ def generate_batch():
         commit_time = read_json("I:/commit_update_call/commit_time/" + project_id + ".txt")
         nums = read_json(os.path.join(dir, file))
         for commit in nums.keys():
-            # if final_time - commit_time[commit] <= time_interval(60) and final_time - commit_time[commit] > time_interval(30):
-            if final_time - commit_time[commit] <= time_interval(30):
+            if final_time - commit_time[commit] <= time_interval(120) and final_time - commit_time[commit] > time_interval(90):
+            # if final_time - commit_time[commit] <= time_interval(30):
                 total_num = int(nums[commit])
                 i = 0
                 while i < total_num:
@@ -112,7 +112,7 @@ def generate_batch():
                     if end > total_num:
                         end = total_num
                     cmd = "java -jar apicallupdate.jar " + project_id + " " + commit + " " + str(start) + " " + str(end)
-                    append_file("I:/commit_update_call/batch/new_batch_30/" + project_id + ".sh", cmd)
+                    append_file("I:/commit_update_call/batch/new_batch_120/" + project_id + ".sh", cmd)
                     i += 100
 
 
@@ -160,7 +160,7 @@ def commit_count():
     com_commits = read_json("commits.txt")
     count = 0
     commits = set()
-    dir = "I:/commit_update_call/batch/new_batch_30"
+    dir = "I:/commit_update_call/batch/new_batch_60"
     files = os.listdir(dir)
     for file in files:
         project_id = file.replace(".sh", "")
@@ -170,9 +170,9 @@ def commit_count():
             commits.add(project_id + " " + com)
         # count += len(commits)
     print(len(commits))
-    for entry in com_commits:
-        if entry not in commits:
-            print(entry)
+    # for entry in com_commits:
+    #     if entry not in commits:
+    #         print(entry)
 
 def divide_batch():
     # count = 0
@@ -203,12 +203,12 @@ def divide_batch():
     files = os.listdir(dir)
     for file in files:
         id = file.replace(".txt", "")
-        if not os.path.exists("I:/commit_update_call/batch/new_batch_30/" + id):
-            os.mkdir("I:/commit_update_call/batch/new_batch_30/" + id)
+        if not os.path.exists("I:/commit_update_call/batch/new_batch_120/" + id):
+            os.mkdir("I:/commit_update_call/batch/new_batch_120/" + id)
         proj_list = read_json(os.path.join(dir, file))
         for proj in proj_list:
-            if os.path.exists("I:/commit_update_call/batch/new_batch_30/" + str(proj) + ".sh"):
-                shutil.copyfile("I:/commit_update_call/batch/new_batch_30/" + str(proj) + ".sh","I:/commit_update_call/batch/new_batch_30/" + id + "/" + str(proj) + " .sh")
+            if os.path.exists("I:/commit_update_call/batch/new_batch_120/" + str(proj) + ".sh"):
+                shutil.copyfile("I:/commit_update_call/batch/new_batch_120/" + str(proj) + ".sh","I:/commit_update_call/batch/new_batch_120/" + id + "/" + str(proj) + " .sh")
 
 def handle_batch():
     for i in range(0, 7):
