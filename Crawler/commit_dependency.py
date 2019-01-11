@@ -6,7 +6,8 @@ import sys
 import database
 
 # from exception import CustomizeException
-from file_util import read_json, write_json
+from file_util import read_json, write_json, read_file
+
 
 def combina_dependency():
     final_dic = {}
@@ -345,7 +346,7 @@ def count():
 # proj_jar_list()
 # append_proj_jar_list_gradle()
 # divide_to_machine()
-lib_list_to_diff_machine()
+# lib_list_to_diff_machine()
 # append_final_jar()
 # proj()
 # jars_to_diff_machine()
@@ -359,3 +360,4 @@ lib_list_to_diff_machine()
 # src_dir = sys.argv[2]
 # dst_dir = sys.argv[3]
 # move_jars(file_path,src_dir,dst_dir)
+# handle_batch()
