@@ -4,7 +4,7 @@ import shutil
 import database
 
 from exception import CustomizeException
-from file_util import read_json, write_json, read_file, get_lib_name, save_lib
+from file_util import read_json, write_json, read_file, get_lib_name, save_lib, append_file
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 result_dir = "E:/data/curr_result_100_200_gradle_maven"
@@ -540,37 +540,37 @@ def rename():
 
 def get_unsolved_lib():
     result = {}
-    repo_search = read_json("12.24.dic.txt")
+    repo_search = read_json("12.26.dic.txt")
     lib_names = repo_search.keys()
-    for i in range(0,10):
-        path = "H:/libs/lib_1000-5000/dependency" + str(i) + "/dependency_library_info"
-    # path = "H:/libs/lib_1000-5000/all/dependency_library_info"
-        print(path)
-        files = os.listdir(path)
-        for file in files:
-            key = file.replace(".json", "")
-            if key not in lib_names:
-                # print(key)
-                continue
-            content = read_json(os.path.join(path,file))
-            unsolved_lib_list = content["unsolved_lib_list"]
-            version_set = set()
-            for unsolved_lib in unsolved_lib_list:
-                version = unsolved_lib["version"]
-                _type = unsolved_lib["_type"]
-                classifier = unsolved_lib["classifier"]
-                value = version + " " +_type
-                if classifier is not None:
-                    value += " " + classifier
-                version_set.add(value)
-            if len(version_set) == 0:
-                continue
-            new_obj = {}
-            new_obj["versions_array"] = list(version_set)
-            new_obj["repo_array"] = repo_search[key]['repo_array']
-            result[key] = new_obj
+    # for i in range(0,10):
+        # path = "H:/libs/lib_200-500/dependency" + str(i) + "/dependency_library_info"
+    path = "H:/libs/lib_200-500/all/dependency_library_info"
+    print(path)
+    files = os.listdir(path)
+    for file in files:
+        key = file.replace(".json", "")
+        if key not in lib_names:
+            # print(key)
+            continue
+        content = read_json(os.path.join(path, file))
+        unsolved_lib_list = content["unsolved_lib_list"]
+        version_set = set()
+        for unsolved_lib in unsolved_lib_list:
+            version = unsolved_lib["version"]
+            _type = unsolved_lib["_type"]
+            classifier = unsolved_lib["classifier"]
+            value = version + " " +_type
+            if classifier is not None:
+                value += " " + classifier
+            version_set.add(value)
+        if len(version_set) == 0:
+            continue
+        new_obj = {}
+        new_obj["versions_array"] = list(version_set)
+        new_obj["repo_array"] = repo_search[key]['repo_array']
+        result[key] = new_obj
 
-    write_json("12.24.1000-5000+.txt", result)
+    write_json("12.26.-500+.txt", result)
 
 def check_json_file():
     lib_search = read_json("12.21.txt")
@@ -591,24 +591,34 @@ def check_json_file():
         if name not in lib_keys:
             print(name)
 
+def generate_batch():
+    path = "12.26.-500+.txt"
+    json_data = read_json(path)
+    length = len(json_data)
+    # print()
+    for i in range(0, length):
+        cmd = "python3 -u crawl_library.py d " + str(i) + " " + str(i + 1) + " 12.26.-500+.txt y"
+        append_file("12.26.-500+.sh", cmd)
+
 # get_denpendencies_of_proj(0, 7000)
 # lib_dict = read_json("unduplicate_proj_dependencies500-1000.txt")
-# lib_dict = read_json("12.21+.txt")
+# lib_dict = read_json("12.26.-500.txt")
 # print(len(lib_dict))
 # dependency_dict_to_list()
 # handle_lib_by_range(1,4)
 # more_denpendencies_of_proj(5000, 7000)
 # more_denpendencies_from_list("12.25.dic.txt", "12.26.temp.txt")
-# dependency_dict_to_list("12.24.1000-5000+.txt","12.24.1000-5000+.txt")
+# dependency_dict_to_list("12.26.-500+.txt","12.26.-500+.txt")
 # combine_more_proj_denpendencies()
 
 # dependency_dict_to_list("combined_proj_dependencies.txt", "test.txt")
-# dependency_list_to_dict("12.25.500-1000.txt", "12.25.dic.txt")
+# dependency_list_to_dict("12.26.-500.txt", "12.26.dic.txt")
 # dependency_list_to_dict("C:/Users/yw/Desktop/gr
 # dereplication()adle_maven100_200result.txt", "10.15.temp.txt")
-get_denpendencies_of_commit_of_proj()
+# get_denpendencies_of_commit_of_proj()
 # rename()
 # get_denpendencies_of_500()
 # data = read_json( "H:/RQ2-data/result_merge_maven/2009.txt")
 # get_unsolved_lib()
 # check_json_file()
+generate_batch()
