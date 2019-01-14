@@ -59,11 +59,15 @@ def project_num():
 def extract_commit_api_call():
     total_count = 0
     error_count = 0
-    dir = "I:/commit_update_call/result/30/call_8"
+    commit_update_call_dir = "F:/"
+    lib_file_dir = "G:/"
+    dir = commit_update_call_dir +"commit_update_call/result/60/call_8"
     if not os.path.exists(dir + "/result"):
         os.mkdir(dir + "/result")
     file_list = os.listdir(dir)
     for file in file_list:
+        if not file.endswith(".txt"):
+            continue
         print("+++++++++++++++++++++++++++++++" + file)
         project_api_call = {}
         temp = file.replace(".txt", "").split("_")
@@ -81,16 +85,17 @@ def extract_commit_api_call():
     # print(total_count)
     # print(error_count/total_count)
             one_list = list(eval(line))[:-2]
+            # print(one_list)
             for each in one_list:
                 new_call = preprocess(each)
                 calls.append(new_call)
-        commit_dic = read_json("I:/commit_update_call/proj_update_lib/" + str(project_id) + ".json")
+        commit_dic = read_json(commit_update_call_dir + "commit_update_call/proj_update_lib/" + str(project_id) + ".txt")
         if commit in commit_dic:
             lib_dic = commit_dic[commit]
             for key in lib_dic.keys():
                 lib = lib_dic[key]
                 print(lib)
-                api_list = get_api_list_of_lib(lib)
+                api_list = get_api_list_of_lib(lib, lib_file_dir)
                 if api_list is not None:
                     # print(api_list)
                     api_call_dic = {}
@@ -118,7 +123,7 @@ def extract_api_call():
         lib_list = read_json("C:/lib_list/" + str(project_id) + ".json")
         for lib in lib_list:
             print(lib)
-            api_list = get_api_list_of_lib(lib)
+            api_list = get_api_list_of_lib(lib, "F:/")
             if api_list is not None:
                 # print(api_list)
                 api_call_dic = {}
@@ -133,8 +138,8 @@ def extract_api_call():
                     project_api_call[lib] = api_call_dic
         write_json("E:/project_call/api_call/" + file, project_api_call)
 
-def get_api_list_of_lib(lib):
-    dir_path = "F:/"
+def get_api_list_of_lib(lib, dir_path):
+    # dir_path = "F:/"
     json_data = None
     if os.path.exists(dir_path + "RQ1-data/RQ1_Lib APIs/LibToFieldsAll/lib_field/" + lib + ".json"):
         json_data = read_json(dir_path + "RQ1-data/RQ1_Lib APIs/LibToFieldsAll/lib_field/" + lib + ".json")

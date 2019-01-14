@@ -40,11 +40,19 @@ def get_lib_name(path):
     return path.split("/")[-1]
 
 def read_file(path):
-    with open(path, "r", encoding='utf-8') as f:
-        lines = f.readlines()
-        for i in range(len(lines)):
-            lines[i] = lines[i].strip('\n')
-    return lines
+    try:
+        with open(path, "r", encoding='utf-8') as f:
+            lines = f.readlines()
+            for i in range(len(lines)):
+                lines[i] = lines[i].strip('\n')
+        return lines
+    except Exception as e:
+        with open(path, "r", encoding='gbk') as f:
+            lines = f.readlines()
+            for i in range(len(lines)):
+                lines[i] = lines[i].strip('\n')
+        return lines
+
 
 def append_file(file_path,content):
     with open(file_path, "a", encoding='utf-8') as f:
