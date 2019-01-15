@@ -6,7 +6,7 @@ import operator
 
 import database
 from exception import CustomizeException
-from file_util import read_json
+from file_util import read_json, write_json
 
 db = database.connectdb()
 
@@ -20,7 +20,7 @@ def data_group(li,step):
     length = li[-1]//step
     if li[-1] % step > 0:
         length += 1
-    length=int(round(length, 0))
+    length = int(round(length, 0))
     label_list = ['']*length
     value_list = [0]*length
     for i in range(length):
@@ -28,7 +28,8 @@ def data_group(li,step):
         #     label_list[i] = str(i + 1)
         # else:
         #     label_list[i] = str(float(i * step)) + "-" + str(float((i + 1) * step))
-        label_list[i] = str(float(i * step)) + "-" + str(float((i + 1) * step))
+        # label_list[i] = str(float(i * step)) + "-" + str(float((i + 1) * step))
+        label_list[i] = str(i * step) + "-" + str((i + 1) * step)
     li.sort()
     for num in li:
         index = num // step
@@ -53,19 +54,19 @@ def draw_bar(x_labels,y):
     plt.bar(index, y, width=0.4, color='lightblue')
 
     x = range(len(x_labels))
-    plt.xticks(x, x_labels, rotation=90)
+    plt.xticks(x, x_labels, rotation=60)
     # plt.xticks(x, x_labels)
     # plt.ylabel("Java项目数量（个）")
     # plt.xlabel("第三方库数量")
 
-    # plt.xlabel("Java项目数量")
-    # plt.ylabel("第三方库数量（个）")
+    plt.xlabel("Java项目数量")
+    plt.ylabel("第三方库数量（个）")
 
     # plt.ylabel("Java项目数量（个）")
     # plt.xlabel("Top category")
 
-    plt.xlabel("Java项目数量")
-    plt.ylabel("第三方库数量（个）")
+    # plt.xlabel("Java项目数量")
+    # plt.ylabel("第三方库数量（个）")
 
     # plt.xlabel("第三方库更新延迟时间间隔（天）")
     # plt.ylabel("Java项目数量（个）")
@@ -78,8 +79,6 @@ def draw_bar(x_labels,y):
 
     # plt.xlabel("被用到的API数量占所有API的比例（%）")
     # plt.ylabel("第三方库数量（个）")
-
-
 
     # plt.legend()
     for a, b in zip(index, y):
@@ -97,7 +96,8 @@ def draw_barh(labels, value):
     # plt.ylabel("Java项目数量（个）")bels, rotation=60)
     plt.yticks(y_, labels)
 
-    plt.xlabel("Java项目数量\n\nTesting Frameworks")
+    # plt.xlabel("Java项目数量\n\nTesting Frameworks")
+    plt.xlabel("Java项目数量")
     # plt.ylabel("第三方库数量（个）")
 
 
@@ -139,10 +139,18 @@ def draw_pie(labels,sizes):
     plt.show()
 
 def read_project_id():
-    project_id = read_json("project.txt")
-    for id in project_id:
-        project.append(int(id))
+    global project
+    project = read_json("project200+.txt")
+    print(len(project))
+    print(project)
+
+    # sql = "SELECT distinct(project_id) FROM project_lib_usage"
+    # query_result = database.querydb(db, sql)
+    # for entry in query_result:
+    #     project.append(entry[0])
+    # print(len(project))
     # print(project)
+    # write_json("project200+.txt", project)
 
 def read_project_api_num():
     with open("C:\\Users\\yw\\Desktop\\num.txt", "r") as f:
@@ -158,57 +166,101 @@ def read_project_api_num():
 
 
 def project_library_rq1():
+    global project
     read_project_id()
     usage_count = []
     for id in project:
-        sql = "SELECT DISTINCT(library_id) FROM project_lib_usage WHERE project_id = " + str(id)
+        # print(id)
+        sql = "SELECT count(DISTINCT(library_id)) FROM project_lib_usage WHERE project_id = " + str(id)
         usage_info = database.querydb(db, sql)
-        usage_count.append(len(usage_info))
-        if len(usage_info) == 732:
-            print(id)
+        usage_count.append(usage_info[0][0])
+        # usage_count.append(len(usage_info))
+        # if len(usage_info) == 732:
+        #     print(id)
         # print(str(id)+" "+str(len(usage_info)))
     usage_count.sort()
     print(usage_count)
-    # data_group(usage_count, 10)
+    data_group(usage_count, 10)
 
 def library_project_rq1():
-    # usage_count = []
-    # for id in range(3453):
-    #     sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE library_id = " + str(id)
-    #     usage_info = database.querydb(db, sql)
-    #     usage_count.append(len(usage_info))
-    #     # print(len(usage_info))
-    #     # print()
-    # # print(len(usage_count))
-    # data_group(usage_count, 2)
+    libraries = []
+    sql = "SELECT distinct(library_id) FROM project_lib_usage"
+    query_result = database.querydb(db, sql)
+    for entry in query_result:
+        libraries.append(entry[0])
+    print(len(libraries))
+    print(libraries)
+
+    usage_count = []
+    for id in libraries:
+        sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE library_id = " + str(id)
+        usage_info = database.querydb(db, sql)
+        usage_count.append(len(usage_info))
+        # print(len(usage_info))
+        # print()
+    # print(len(usage_count))
+    data_group(usage_count, 4)
     # count = 0
-    usage_count = read_json("J:/pic.txt")
+    # usage_count = read_json("J:/pic.txt")
     # for co in usage_count:
     #     print(co)
     #     count += co
     # print(count)
     # print(len(usage_count))
-    data_group(usage_count, 2)
+    # data_group(usage_count, 2)
 
 def top_category_rq1():
-    usage_count = {}
-    for i in range(177):
-        sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE category_id = " + str(i)
-        usage_info = database.querydb(db, sql)
-        sql = "SELECT * FROM library_categories WHERE id = " + str(i)
-        library_category = database.querydb(db, sql)
-        if len(library_category) != 0:
-            usage_count[library_category[0][1]] = len(usage_info)
-        # print(len(usage_info))
-        # print()
+    # usage_count = {}
+    # for i in range(177):
+    #     sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE category_id = " + str(i)
+    #     usage_info = database.querydb(db, sql)
+    #     sql = "SELECT * FROM library_categories WHERE id = " + str(i)
+    #     library_category = database.querydb(db, sql)
+    #     if len(library_category) != 0:
+    #         usage_count[library_category[0][1]] = len(usage_info)
+    #     # print(len(usage_info))
+    #     # print()
+    #
+    # sorted_usage = sorted(usage_count.items(), key=lambda d: d[1], reverse=True)
+    # sorted_usage = sorted_usage[:15]
+    # values = [value for key, value in sorted_usage]
+    # keys = [key for key, value in sorted_usage]
+    # print(sorted_usage)
+    # # for i in range(len(usage_count)):
+    # draw_bar(keys,values)
 
-    sorted_usage = sorted(usage_count.items(), key=lambda d: d[1], reverse=True)
-    sorted_usage = sorted_usage[:15]
+    # libraries = []
+    # sql = "SELECT distinct(library_id) FROM project_lib_usage"
+    # query_result = database.querydb(db, sql)
+    # for entry in query_result:
+    #     libraries.append(entry[0])
+    # print(len(libraries))
+    # print(libraries)
+    # usage_count = {}
+    # for i in libraries:
+    #     sql = "SELECT DISTINCT(project_id) FROM project_lib_usage WHERE library_id = " + str(i)
+    #     usage_info = database.querydb(db, sql)
+    #     sql = "SELECT * FROM library WHERE id = " + str(i)
+    #     library = database.querydb(db, sql)
+    #     if len(library) != 0:
+    #         name = library[0][1] + " " + library[0][2]
+    #         usage_count[name] = len(usage_info)
+    #         # print(len(usage_info))
+    #         # print()
+
+    # sorted_usage = sorted(usage_count.items(), key=lambda d: d[1], reverse=True)
+    # sorted_usage = sorted_usage[:15]
+
+    # sorted_usage = [('junit junit', 995), ('org.slf4j slf4j-api', 518), ('com.google.guava guava', 407), ('commons-io commons-io', 333), ('org.mockito mockito-core', 329), ('com.fasterxml.jackson.core jackson-databind', 300), ('org.apache.commons commons-lang3', 259), ('log4j log4j', 256), ('ch.qos.logback logback-classic', 238), ('org.slf4j slf4j-log4j12', 220), ('org.apache.httpcomponents httpclient', 216), ('javax.servlet javax.servlet-api', 205), ('com.google.code.gson gson', 193), ('commons-codec commons-codec', 183), ('commons-lang commons-lang', 182)]
+    sorted_usage = [('JUnit', 995), ('SLF4J API Module', 518), ('Guava: Google Core Libraries For Java', 407), ('Apache Commons IO', 333), ('Mockito Core', 329), ('Jackson Databind', 300), ('Apache Commons Lang', 259), ('Apache Log4j', 256), ('Logback Classic Module', 238), ('SLF4J LOG4J 12 Binding', 220), ('Apache HttpClient', 216), ('Java Servlet API', 205), ('Gson', 193), ('Apache Commons Codec', 183), ('Commons Lang', 182)]
+    sorted_usage = sorted_usage[::-1]
+    print(sorted_usage)
     values = [value for key, value in sorted_usage]
     keys = [key for key, value in sorted_usage]
+
     print(sorted_usage)
     # for i in range(len(usage_count)):
-    draw_bar(keys,values)
+    draw_barh(keys, values)
 
 def top_library_rq1():
     usage_count = {}
@@ -739,8 +791,8 @@ def library_percent_rq3():
 
 
 # project_library_rq1()
-library_project_rq1()
-# top_category_rq1()
+# library_project_rq1()
+top_category_rq1()
 # library_project_category_rq1(3)
 # no_update_library_rq3()
 # no_update_project_rq3()
