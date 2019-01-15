@@ -94,12 +94,14 @@ def count():
 def generate_batch():
     time_str = time.strptime("2018-05-01 00:00:00", '%Y-%m-%d %H:%M:%S')
     final_time = int(time.mktime(time_str))
-    dir = "I:/commit_update_call/batch/num"
+    dir = "F:/commit_update_call/batch/num"
     files = os.listdir(dir)
     for file in files:
         print(file)
         project_id = file.replace(".txt", "")
-        commit_time = read_json("I:/commit_update_call/commit_time/" + project_id + ".txt")
+        # if project_id != "130" and project_id != "1907" and project_id != "2594":
+        #     continue
+        commit_time = read_json("F:/commit_update_call/commit_time/" + project_id + ".txt")
         nums = read_json(os.path.join(dir, file))
         for commit in nums.keys():
             if final_time - commit_time[commit] <= time_interval(120) and final_time - commit_time[commit] > time_interval(90):
@@ -112,7 +114,7 @@ def generate_batch():
                     if end > total_num:
                         end = total_num
                     cmd = "java -jar apicallupdate.jar " + project_id + " " + commit + " " + str(start) + " " + str(end)
-                    append_file("I:/commit_update_call/batch/new_batch_120/" + project_id + ".sh", cmd)
+                    append_file("F:/commit_update_call/batch/new_batch_120/" + project_id + ".sh", cmd)
                     i += 100
 
 
@@ -211,8 +213,8 @@ def divide_batch():
                 shutil.copyfile("I:/commit_update_call/batch/new_batch_120/" + str(proj) + ".sh","I:/commit_update_call/batch/new_batch_120/" + id + "/" + str(proj) + " .sh")
 
 def handle_batch():
-    for i in range(0, 7):
-        dir = "I:/commit_update_call/batch/" + str(i)
+    for i in range(11, 12):
+        dir = "F:/commit_update_call/batch/" + str(i)
         files = os.listdir(dir)
         for file in files:
             if not file.endswith(".sh"):
@@ -226,7 +228,7 @@ def handle_batch():
                 commit = cmd_str[4]
                 num = int(cmd_str[6])
                 num_dic[commit] = num
-            write_json("I:/commit_update_call/batch/" + project_id + ".txt", num_dic)
+            write_json("F:/commit_update_call/batch/" + project_id + ".txt", num_dic)
 
 # compare()
 # get_all_commits()
@@ -234,7 +236,7 @@ def handle_batch():
 # projects()
 # data = read_json("update_proj_500+.json")
 # print(len(data))
-# generate_batch()
+generate_batch()
 # commit_count()
-divide_batch()
+# divide_batch()
 # handle_batch()
