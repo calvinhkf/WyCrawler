@@ -14,7 +14,7 @@ def combina_dependency():
     write_to_final_jar(final_dic)
 
 def write_to_final_jar(final_dic):
-    dir = "I:/libs/lib_500-1000+/all/dependency_library_info"
+    dir = "G:/libs/lib_200-500+/all/dependency_library_info"
     files = os.listdir(dir)
     for file in files:
         print("========================== " + dir + "/" + file)
@@ -365,7 +365,7 @@ def proj_jars():
 
 # combina_dependency()
 # final_count()
-# proj_jar_list()
+proj_jar_list()
 # append_proj_jar_list_gradle()
 # divide_to_machine()
 # lib_list_to_diff_machine()
@@ -378,9 +378,9 @@ def proj_jars():
 # count()
 # jar_url()
 
-file_path = sys.argv[1]
-src_dir = sys.argv[2]
-dst_dir = sys.argv[3]
-move_jars(file_path,src_dir,dst_dir)
+# file_path = sys.argv[1]
+# src_dir = sys.argv[2]
+# dst_dir = sys.argv[3]
+# move_jars(file_path,src_dir,dst_dir)
 # handle_batch()
 # proj_jars()

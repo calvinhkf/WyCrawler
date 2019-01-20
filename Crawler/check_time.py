@@ -107,7 +107,7 @@ def get_maven_proj_update_within_three_months(num):
         download_time3 = int(time.mktime(download_time2))
         head_commit_time3 = int(time.mktime(head_commit_time2))
 
-        if download_time3 - head_commit_time3 <= time_interval(num):
+        if download_time3 - head_commit_time3 <= time_interval(90):
             type_ = entry["proj-type"]
             # if type_ == "proj-type: maven":
             # if type_ == "proj-type: maven-gradle":
@@ -117,7 +117,7 @@ def get_maven_proj_update_within_three_months(num):
             query_result = database.querydb(db, sql)
             if len(query_result) > 0:
                 gradle_array.append(url)
-                with open("three_months.txt", "a") as f:
+                with open("four_months.txt", "a") as f:
                     f.write(str(query_result[0][0]) + "\n")
                     f.write(query_result[0][1] + "\n")
                 f.close()
@@ -167,5 +167,5 @@ def get_update_proj_in_three_months():
 # input_repo_time_compare(52)
 # input_repo_time_compare(90)
 
-# get_maven_proj_update_within_three_months(90)
+get_maven_proj_update_within_three_months(90)
 # get_update_proj_in_three_months()

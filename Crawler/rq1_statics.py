@@ -1,4 +1,7 @@
 import os
+import sys
+import database
+from exception import CustomizeException
 
 from file_util import read_json, write_json, read_file
 
@@ -32,6 +35,161 @@ def merge_project_call():
             call_list.extend(new_list)
     print(call_list)
     write_json("E:/project_call/total/" + str(curr_id) + ".txt", call_list)
+
+def filter_test_code():
+    array = ["0_fdse", "1_Thinkpad", "2_11", "3_lj", "4_zfy", "5_ZW", "6_Thinkpad", "7_huangkaifeng", "8_admin", "9_huangkaifeng"]
+    # array = ["1_Thinkpad", "2_11", "3_lj", "4_zfy", "5_ZW", "6_Thinkpad", "7_huangkaifeng", "8_admin",
+    #          "9_huangkaifeng"]
+    # array = [ "8_admin", "9_huangkaifeng"]
+    for machine_str in array:
+        dir = "E:/project_call/" + machine_str + "/call"
+        # print(dir)
+        file_list = os.listdir(dir)
+        curr_id = None
+        proj_content = {}
+        for file in file_list:
+            file_array = file.replace(".txt", "").split("_")
+            project_id = file_array[0]
+            if project_id not in ["2714", "3441", "1964", "3162", "5535", "988", "610", "1641", "4859", "9", "5538", "4178", "2955"]:
+                continue
+            print(file)
+            file_id = file_array[1]
+            file_paths = read_json("F:/RQ1/file_path/" + str(project_id) + ".json")
+            path = file_paths[file_id]
+            if "\\src\\test\\" in path:
+                continue
+            # print(path)
+            json_data = read_json(os.path.join(dir, file))
+            # print(json_data)
+            num = json_data[-1]
+            json_data = json_data[:-1]
+            # print(json_data)
+            new_list = []
+            for call in json_data:
+                new_call = preprocess(call)
+                new_list.append(new_call)
+            new_list.append(num)
+            # print(new_list)
+            # write_json("E:/project_call/total_preprocessed_exclude_test/" + file, new_list)
+            if curr_id is None:
+                curr_id = project_id
+                # if len(new_list) > 0:
+                proj_content[file_id] = new_list
+            elif curr_id != project_id:
+                if os.path.exists("E:/project_call/total_preprocessed_exclude_test/" + str(curr_id) + ".txt"):
+                    raise CustomizeException("repeat project id:" + curr_id)
+                    sys.exit(0)
+                write_json("E:/project_call/total_preprocessed_exclude_test/" + str(curr_id) + ".txt", proj_content)
+                curr_id = project_id
+                proj_content = {}
+                proj_content[file_id] = new_list
+            else:
+                proj_content[file_id] = new_list
+        if os.path.exists("E:/project_call/total_preprocessed_exclude_test/" + str(curr_id) + ".txt"):
+            raise CustomizeException("repeat project id:" + curr_id)
+            sys.exit(0)
+        write_json("E:/project_call/total_preprocessed_exclude_test/" + str(curr_id) + ".txt", proj_content)
+
+    #     content = read_json(os.path.join(dir, file))
+    #     if content is None:
+    #         continue
+    #     new_list = content[:-1]
+    #     if curr_id is None:
+    #         curr_id = project_id
+    #         call_list.extend(new_list)
+    #     elif curr_id != project_id:
+    #         write_json("E:/project_call/total_exclude_test/" + str(curr_id) + ".txt", call_list)
+    #         curr_id = None
+    #         call_list = []
+    #     else:
+    #         call_list.extend(new_list)
+    # print(call_list)
+    # write_json("E:/project_call/total/" + str(curr_id) + ".txt", call_list)
+
+def extract_api_call_by_file():
+    ssd_dir = "G:/"
+    dir = "E:/project_call/total_preprocessed_exclude_test"
+    file_list = os.listdir(dir)
+    for file in file_list:
+        if os.path.exists("E:/project_call/api_call_exclude_test/" + file):
+            continue
+        print("+++++++++++++++++++++++++++++++" + file)
+        project_api_call = {}
+        project_id = int(file.replace(".txt", ""))
+        calls_by_file = read_json(os.path.join(dir, file))
+        lib_list = read_json("C:/lib_list/" + str(project_id) + ".json")
+        for lib in lib_list:
+            jar_dic = {}
+            print(lib)
+            if os.path.exists(ssd_dir + "RQ1-data/RQ1_Lib APIs/preprocessed_api/" + lib + ".json"):
+                json_data = read_json(ssd_dir + "RQ1-data/RQ1_Lib APIs/preprocessed_api/" + lib + ".json")
+                for file_id in calls_by_file.keys():
+                    file_dic = {}
+                    calls = calls_by_file[file_id][:-1]
+                    # print(calls)
+                    # print(calls_by_file[file_id])
+                    for call in calls:
+                        call = call.replace(" ", "").replace("$", ".")
+                        for class_name in json_data.keys():
+                            api_list = json_data[class_name][:-1]
+                            if api_list is not None and call in api_list:
+                                if call in file_dic:
+                                    api_dic = file_dic[call]
+                                    api_dic["count"] = api_dic["count"] + 1
+                                else:
+                                    api_dic = {}
+                                    api_dic["count"] = 1
+                                    api_dic["class"] = class_name
+                                    file_dic[call] = api_dic
+                                break
+                    if len(file_dic) > 0:
+                        jar_dic[file_id] = file_dic
+            if len(jar_dic) > 0:
+                project_api_call[lib] = jar_dic
+        write_json("E:/project_call/api_call_exclude_test/" + file, project_api_call)
+
+def check_project_length():
+    # id = 258
+    # data = read_json("E:/project_call/total_preprocessed_exclude_test/" + str(id) + ".txt")
+    # print(len(data))
+    # projs = set()
+    # array = ["0_fdse", "1_Thinkpad", "2_11", "3_lj", "4_zfy", "5_ZW", "6_Thinkpad", "7_huangkaifeng", "8_admin",
+    #          "9_huangkaifeng"]
+    # for machine_str in array:
+    #     dir = "E:/project_call/" + machine_str + "/call"
+    #     # print(dir)
+    #     file_list = os.listdir(dir)
+    #     for file in file_list:
+    #         print(file)
+    #         file_array = file.replace(".txt", "").split("_")
+    #         project_id = file_array[0]
+    #         projs.add(project_id)
+    # print(len(projs))
+    # print(projs)
+    # write_json("pj_exclude_test.txt", list(projs))
+    # for pj in projs:
+    #     if not os.path.exists("E:/project_call/total_preprocessed_exclude_test/" + str(pj) + ".txt"):
+    #         print(pj)
+
+    file_paths = read_json("F:/RQ1/file_path/4.json")
+
+    machine_str = "0_fdse"
+    dir = "E:/project_call/" + machine_str + "/call"
+    file_list = os.listdir(dir)
+    count = 0
+    for file in file_list:
+        # print(file)
+        file_array = file.replace(".txt", "").split("_")
+        project_id = file_array[0]
+        file_id = file_array[1]
+        if project_id == "4":
+            path = file_paths[file_id]
+            if "\\src\\test\\" in path:
+                continue
+            count += 1
+    print(count)
+    data = read_json("E:/project_call/total_preprocessed_exclude_test1/4.txt")
+    print(len(data))
 
 def project_num():
     ids = set()
@@ -168,6 +326,65 @@ def get_api_list_of_lib(lib, dir_path):
         return None
     return api_list
 
+def lib_api_preprocess():
+    dir = "G:/RQ1-data/RQ1_Lib APIs/LibToFieldsAll/lib_field"
+    files = os.listdir(dir)
+    for file in files:
+        print(file)
+        if os.path.exists("G:/RQ1-data/RQ1_Lib APIs/preprocessed_api/" + file):
+            continue
+        api_dic = {}
+        json_data = read_json(os.path.join(dir, file))
+        if json_data is not None:
+            class_names = set()
+            for clazz in json_data:
+                class_names.add(clazz["className"])
+            for clazz in json_data:
+                # print(clazz["className"])
+                class_name = get_class_name(clazz["className"], class_names)
+                if class_name in api_dic:
+                    api_list = api_dic[class_name]
+                else:
+                    api_list = []
+                    api_dic[class_name] = api_list
+                fields = clazz["fields"]
+                for field in fields:
+                    # print( clazz["className"] + "." + field["fieldName"])
+                    api = clazz["className"] + "." + field["fieldName"]
+                    api = api.replace("$", ".")
+                    api_list.append(api)
+                    # print(api)
+                methods = clazz["methods"]
+                for method in methods:
+                    # print(method)
+                    index = method.find(": ")
+                    new_method = method[index + 2:]
+                    new_method = new_method[new_method.find(" ") + 1:-1]
+                    start = new_method.find("(")
+                    method_name = new_method[:start]
+                    if method_name == "<init>":
+                        dot_index = clazz["className"].rfind(".")
+                        if dot_index < 0:
+                            new_method = clazz["className"] + new_method[start:]
+                        else:
+                            new_method = clazz["className"][dot_index+1:] + new_method[start:]
+                    api = clazz["className"] + "." + new_method
+                    api = api.replace("$", ".")
+                    # print(api)
+                    api_list.append(api)
+                    # print(api)
+        write_json("G:/RQ1-data/RQ1_Lib APIs/preprocessed_api/" + file, api_dic)
+        # break
+
+def get_class_name(curr_name, class_names):
+    # print("++++++++++++++ " + curr_name)
+    for name in class_names:
+        if curr_name.startswith(name):
+            if name + "." in curr_name or name + "$" in curr_name:
+                curr_name = name
+    # print(curr_name)
+    return curr_name
+
 def project_call_preprocess():
     dir = "E:/project_call/total"
     file_list = os.listdir(dir)
@@ -219,12 +436,97 @@ def remove_generics(arguments):
     # print(arguments)
     return arguments
 
+def version_time_gap():
+    db = database.connectdb()
+    sql = "SELECT * FROM project_lib_usage"
+    query_result = database.querydb(db, sql)
+    for entry in query_result:
+        project_id = entry[0]
+        version_type_id = entry[1]
+        version_id = entry[4]
+        # print(version_id)
+        sql = "SELECT library_id,repository,parsed_date date FROM library_versions where id = " + str(version_id)
+        version_info = database.querydb(db, sql)
+        library_id = version_info[0][0]
+        repository = version_info[0][1]
+        parsed_date = version_info[0][2]
+        print(str(library_id) + " " + repository)
+        sql = "SELECT count(*) FROM library_versions where library_id = " + str(library_id) + " and repository = '" + repository+ "'"
+        total_result = database.querydb(db, sql)
+        total_count = total_result[0][0]
+        sql = "SELECT count(*) FROM library_versions where library_id = " + str(
+            library_id) + " and repository = '" + repository + "' and parsed_date > '" + parsed_date + "'"
+        new_result = database.querydb(db, sql)
+        new_count = new_result[0][0]
+
+def get_update_projs():
+    proj_dic = {}
+    json_data = read_json("E:/Workspace_eclipse/ThirdPartyLibraryAnalysis/proj_in_usage.txt")
+    for data in json_data:
+        id = data["id"]
+        path = data["local_addr"].replace("F:/wangying/projects_last_unzips/","").replace("D:/", "").replace("E:/", "").replace("F:/", "")
+        proj_dic[id] = path
+    dir = "E:/data/proj_update_lib"
+    files = os.listdir(dir)
+    new_dic = {}
+    for file in files:
+        project_id = int(file.replace(".txt", ""))
+        if project_id == 1492:
+            path = "maven500/belaban__fdse__JGroups"
+        elif project_id == 5422:
+            path = "gradle200_500/rsocket__fdse__rsocket-java"
+        else:
+            path = proj_dic[project_id]
+        new_dic[project_id] = path
+
+    print(len(new_dic))
+    write_json("C:/RQ1/update_projs.json", new_dic)
+
+def get_all_calls_contain_dollar():
+    result = []
+    dir = "E:/project_call/total_preprocessed_exclude_test"
+    files = os.listdir(dir)
+    for file in files:
+        json_data = read_json(os.path.join(dir, file))
+        for key in json_data.keys():
+            call_list = json_data[key]
+            for call in call_list:
+                if "$" in call:
+                    result.append(call)
+    write_json("E:/project_call/dollar.txt", result)
+
+def project_percent():
+    dir = ""
+    files = os.listdir(dir)
+    for file in files:
+        project_count = 0
+        proj_dic = read_json(os.path.join(dir, file))
+        for lib in proj_dic.keys():
+            lib_dic = proj_dic[lib]
+            for file_id in lib_dic.keys():
+                file_dic = lib_dic[file_id]
+                for api in file_dic.keys():
+                    api_dic = file_dic[api]
+                    count = api_dic["count"]
+                    project_count += count
+        project_call = read_json("E:/project_call/total_preprocessed_exclude_test")
+
+
+
+# version_time_gap()
+# get_update_projs()
+# filter_test_code()
+# check_project_length()
+# lib_api_preprocess()
+# get_all_calls_contain_dollar()
+# check_project_length()
+extract_api_call_by_file()
 #130 126（2）
 # merge_project_call()
 # extract_api_call()
 # content = read_json("E:/project_call/6_Thinkpad/call/2979_1513.txt")
 # project_num()
 # project_call_preprocess()
-extract_commit_api_call()
+# extract_commit_api_call()
 # remove_generics("java.lang.Iterable<java.lang.String>, java.util.List<java.lang.String>")
 # remove_generics("java.util.Deque<java.util.List<org.openjdk.source.tree.AnnotationTree<Aaaa>>>, org.openjdk.source.tree.Tree<pack.Test<1233>>")
