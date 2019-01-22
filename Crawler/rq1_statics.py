@@ -50,7 +50,7 @@ def filter_test_code():
         for file in file_list:
             file_array = file.replace(".txt", "").split("_")
             project_id = file_array[0]
-            if project_id not in ["2714", "3441", "1964", "3162", "5535", "988", "610", "1641", "4859", "9", "5538", "4178", "2955"]:
+            if project_id not in ["3162", "4859", "2955"]:
                 continue
             print(file)
             file_id = file_array[1]
@@ -108,7 +108,7 @@ def filter_test_code():
 
 def extract_api_call_by_file():
     ssd_dir = "G:/"
-    dir = "E:/project_call/total_preprocessed_exclude_test"
+    dir = "E:/project_call/total_preprocessed_exclude_test1"
     file_list = os.listdir(dir)
     for file in file_list:
         if os.path.exists("E:/project_call/api_call_exclude_test/" + file):
@@ -511,6 +511,74 @@ def project_percent():
                     project_count += count
         project_call = read_json("E:/project_call/total_preprocessed_exclude_test")
 
+def test_proj():
+    # result = {}
+    # count = 0
+    # dir = "F:/RQ1/file_path"
+    # files = os.listdir(dir)
+    # print(len(files))
+    # for file in files:
+    #     project_id = file.replace(".json", "")
+    #     contain = False
+    #     data = read_json(os.path.join(dir, file))
+    #     for key in data.keys():
+    #         if "\\src\\test\\" in data[key]:
+    #             count += 1
+    #             contain = True
+    #             break
+    #     if not contain:
+    #         result[project_id] = data
+    # print(count)
+    # write_json("F:/RQ1/no_test.txt", result)
+
+    result = {}
+    count = 0
+    json_data = read_json("F:/RQ1/no_test6.txt")
+    print(len(json_data))
+    # for project_id in json_data.keys():
+    #     contain = False
+    #     data = json_data[project_id]
+    #     for key in data.keys():
+    #         # \\test\\ \\tests\\ \\javatests\\ \\Tests\\ tests\\ test\\
+    #         if "test\\" in data[key]:
+    #             count += 1
+    #             contain = True
+    #             break
+    #     if not contain:
+    #         result[project_id] = data
+    # print(count)
+    # write_json("F:/RQ1/no_test6.txt", result)
+
+def no_test_proj():
+    result = []
+    json_data = read_json("F:/RQ1/no_test6.txt")
+    print(len(json_data))
+    for key in json_data.keys():
+        result.append(int(key))
+    result.append(3162)
+    result.append(4859)
+    result.append(2955)
+    result = list(set(result))
+    print(result)
+    print(len(result))
+    write_json("no_test_proj.txt", result)
+
+def delete_no_test_project():
+    count = 0
+    no_test_proj = read_json("no_test_proj.txt")
+    # dir = "F:/commit_update_call/proj_update_lib"
+    for i in [2, 5, 6, 8]:
+        dir = "F:/commit_update_call/batch_200star/new_batch_120/" + str(i)
+        print(dir)
+        files = os.listdir(dir)
+        for file in files:
+            project_id = int(file.replace(".sh", "").strip())
+            if project_id in no_test_proj:
+                print(project_id)
+                os.remove(os.path.join(dir, file))
+                count += 1
+    print()
+    print(count)
 
 
 # version_time_gap()
@@ -520,7 +588,10 @@ def project_percent():
 # lib_api_preprocess()
 # get_all_calls_contain_dollar()
 # check_project_length()
-extract_api_call_by_file()
+# extract_api_call_by_file()
+# test_proj()
+# no_test_proj()
+delete_no_test_project()
 #130 126（2）
 # merge_project_call()
 # extract_api_call()
