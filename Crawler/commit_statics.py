@@ -92,16 +92,20 @@ def count():
     # print(count)
 
 def generate_batch():
+    first_list = read_json("I:/commit_update_call/batch_scope/200star/8.txt")
+    # second_list = read_json("I:/commit_update_call/batch_scope/200star/8.txt")
     time_str = time.strptime("2018-05-01 00:00:00", '%Y-%m-%d %H:%M:%S')
     final_time = int(time.mktime(time_str))
-    dir = "F:/commit_update_call/batch/num"
+    dir = "I:/commit_update_call/batch/num"
     files = os.listdir(dir)
     for file in files:
         print(file)
         project_id = file.replace(".txt", "")
+        if int(project_id) not in first_list:
+            continue
         # if project_id != "130" and project_id != "1907" and project_id != "2594":
         #     continue
-        commit_time = read_json("F:/commit_update_call/commit_time/" + project_id + ".txt")
+        commit_time = read_json("I:/commit_update_call/commit_time/" + project_id + ".txt")
         nums = read_json(os.path.join(dir, file))
         for commit in nums.keys():
             if final_time - commit_time[commit] <= time_interval(120) and final_time - commit_time[commit] > time_interval(90):
@@ -114,7 +118,7 @@ def generate_batch():
                     if end > total_num:
                         end = total_num
                     cmd = "java -jar apicallupdate.jar " + project_id + " " + commit + " " + str(start) + " " + str(end)
-                    append_file("F:/commit_update_call/batch/new_batch_120/" + project_id + ".sh", cmd)
+                    append_file("I:/commit_update_call/batch_200star/new_batch_120/8/" + project_id + ".sh", cmd)
                     i += 100
 
 
@@ -213,8 +217,8 @@ def divide_batch():
                 shutil.copyfile("I:/commit_update_call/batch/new_batch_120/" + str(proj) + ".sh","I:/commit_update_call/batch/new_batch_120/" + id + "/" + str(proj) + " .sh")
 
 def handle_batch():
-    for i in range(11, 12):
-        dir = "F:/commit_update_call/batch/" + str(i)
+    for i in [2, 8]:
+        dir = "J:/commit_update_call/batch_200star/" + str(i)
         files = os.listdir(dir)
         for file in files:
             if not file.endswith(".sh"):
@@ -228,7 +232,7 @@ def handle_batch():
                 commit = cmd_str[4]
                 num = int(cmd_str[6])
                 num_dic[commit] = num
-            write_json("F:/commit_update_call/batch/" + project_id + ".txt", num_dic)
+            write_json("J:/commit_update_call/" + project_id + ".txt", num_dic)
 
 # compare()
 # get_all_commits()

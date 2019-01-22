@@ -49,7 +49,7 @@ def proj_jar_list():
     file_list = os.listdir(dir)
     for file in file_list:
         project_id = int(file.split("_")[0])
-        sql = "SELECT * FROM project WHERE stars > 500 and id = " + str(project_id)
+        sql = "SELECT * FROM project WHERE stars <= 500 and id = " + str(project_id)
         query_result = database.querydb(db,sql)
         if len(query_result) <= 0:
             continue
@@ -86,11 +86,11 @@ def append_proj_jar_list_gradle():
 
     jars_dic = read_json("final_jar_dic.txt")
 
-    dir = "I:/RQ2-data/result_merge_gradle_id"
+    dir = "H:/RQ2-data/result_merge_gradle_id"
     file_list = os.listdir(dir)
     for file in file_list:
         project_id = int(file.replace(".txt",""))
-        sql = "SELECT * FROM project WHERE stars > 500 and id = " + str(project_id)
+        sql = "SELECT * FROM project WHERE stars <= 500 and id = " + str(project_id)
         query_result = database.querydb(db,sql)
         if len(query_result) <= 0:
             continue
@@ -124,17 +124,28 @@ def append_proj_jar_list_gradle():
 def divide_to_machine():
     # db = database.connectdb()
     # total_list = []
-    # dir = "H:/proj_update_lib"
+    # dir = "I:/commit_update_call/proj_update_lib"
     # file_list = os.listdir(dir)
     # for file in file_list:
     #     name = file.replace(".txt", "")
     #     projectId = int(name)
-    #     sql = "SELECT * FROM project WHERE stars > 500 and id = " + str(projectId)
+    #     sql = "SELECT * FROM project WHERE stars <= 500 and id = " + str(projectId)
     #     query_result = database.querydb(db, sql)
     #     if len(query_result) > 0:
     #         total_list.append(projectId)
     # print(total_list)
     # print(len(total_list))
+    #
+    total_list = read_json("I:/commit_update_call/batch_scope/200star/8.txt")
+    print(total_list)
+    first = total_list[:len(total_list)//2]
+    second = total_list[len(total_list) // 2:]
+    print(first)
+    print(second)
+    print(len(first))
+    print(len(second))
+    write_json("I:/commit_update_call/batch_scope/200star/6.txt", first)
+    write_json("I:/commit_update_call/batch_scope/200star/8.txt", second)
     #
     # dir = "I:/分机器跑的数据/data"
     # for i in range(0,10):
@@ -162,22 +173,22 @@ def divide_to_machine():
     #         for id in json_data:
     #             shutil.copyfile("H:/api_call_update/batch/"+str(id)+".sh", dir + "/" + str(num) + "/"+str(id)+".sh")
 
-    dir = "H:/api_call_update/batch_scope"
-    file_list = os.listdir(dir)
-    for file in file_list:
-        num = int(file.replace(".txt", ""))
-        json_data = read_json(os.path.join(dir, file))
-        if len(json_data) > 0:
-            if os.path.exists(dir + "/" + str(num)):
-                os.mkdir(dir + "/" + str(num))
-            for id in json_data:
-                shutil.copyfile("H:/api_call_update/batch/"+str(id)+".sh", dir + "/" + str(num) + "/"+str(id)+".sh")
+    # dir = "H:/api_call_update/batch_scope"
+    # file_list = os.listdir(dir)
+    # for file in file_list:
+    #     num = int(file.replace(".txt", ""))
+    #     json_data = read_json(os.path.join(dir, file))
+    #     if len(json_data) > 0:
+    #         if os.path.exists(dir + "/" + str(num)):
+    #             os.mkdir(dir + "/" + str(num))
+    #         for id in json_data:
+    #             shutil.copyfile("H:/api_call_update/batch/"+str(id)+".sh", dir + "/" + str(num) + "/"+str(id)+".sh")
 
 def jars_to_diff_machine():
     # projs = [1107, 1109, 1213, 130, 138, 180, 193, 197, 2, 20, 205, 223, 258, 262, 270, 271, 279, 30, 34, 346, 347, 351, 359,
     #  38, 388, 4, 446, 447, 556, 591, 6, 654, 660, 68, 692, 709, 797, 8, 84, 966]
     # print(len(projs))
-    dir = "H:/api_call_update/batch_scope"
+    dir = "I:/commit_update_call/batch_scope/200star"
     file_list = os.listdir(dir)
     for file in file_list:
         num = int(file.replace(".txt", ""))
@@ -192,11 +203,13 @@ def jars_to_diff_machine():
                 if project_id in proj_list:
                     result.extend(read_json(os.path.join("D:/data/lib_list", entry)))
             result = list(set(result))
-            write_json("H:/api_call_update/batch_scope/" + str(num) + "_jar.txt",result)
+            write_json("I:/commit_update_call/batch_scope/200star/" + str(num) + "_jar.txt",result)
 
 def lib_list_to_diff_machine():
-    dir = "H:/api_call_update/batch_scope"
-    for i in range(0,10):
+    dir = "I:/commit_update_call/batch_scope/200star"
+    # dir = "H:/api_call_update/batch_scope"
+    # for i in range(0,10):
+    for i in [2, 8]:
         path = dir + "/" + str(i) + ".txt"
         proj_list = read_json(path)
         if len(proj_list) > 0:
@@ -239,23 +252,28 @@ def proj():
 def jar_url():
     final_dic = read_json("meta.json")
     print(len(final_dic))
+    # print(final_dic["shadow-1.2.3.jar"])
 
-    # # final_dic = {}
-    # dir = "I:/libs/lib_RQ1-all/lib_all"
+    # # # final_dic = {}
+    # # dir = "H:/libs/lib_200-500/all/lib"
+    # dir = "H:/libs/lib_RQ1-all/add_lib"
     # jars = os.listdir(dir)
     # for jar in jars:
     #     if jar.endswith(".jar"):
-    #         if jar not in final_dic:
-    #             final_dic[jar] = "libs/lib_RQ1-all/lib_all"
+    #         # if jar not in final_dic:
+    #             # final_dic[jar] = "libs/lib_200-500/all/lib"
+    #         final_dic[jar] = "libs/lib_RQ1-all/add_lib"
     #         # else:
     #         #     raise CustomizeException("contains key : " + jar)
+    # print(len(final_dic))
     # write_json("meta.json", final_dic)
 
     # print("rxjava-1.2.4.jar" in final_dic)
-    # count = 0
-    for i in range(0,10):
+    count = 0
+    # for i in range(0,10):
+    for i in [2, 8]:
         final = []
-        path = "H:/api_call_update/batch_scope/" + str(i) + "_jar.txt"
+        path = "I:/commit_update_call/batch_scope/200star/" + str(i) + "_jar.txt"
         if not os.path.exists(path):
             continue
         json_data = read_json(path)
@@ -269,12 +287,10 @@ def jar_url():
                     dir = final_dic[jar_name]
                     path = dir + "/" + jar_name
                     final.append(path)
-                # else:
-                #     count += 1
-                #     if jar_name.startswith("rxjava-1.2.4"):
-                #         print(jar_name)
+                else:
+                    count += 1
     # print(count)
-        write_json("H:/api_call_update/batch_scope/" + str(i) + "_path.txt", final)
+        write_json("I:/commit_update_call/batch_scope/200star/" + str(i) + "_path.txt", final)
 
 
 def db_jar_list():
@@ -365,7 +381,7 @@ def proj_jars():
 
 # combina_dependency()
 # final_count()
-proj_jar_list()
+# proj_jar_list()
 # append_proj_jar_list_gradle()
 # divide_to_machine()
 # lib_list_to_diff_machine()
@@ -376,7 +392,7 @@ proj_jar_list()
 # add_compare_jar()
 # 10_5cc449bcced5baf6bdd852e6283868bbe246918b graylog2-server-2.2.0-alpha.2.jar
 # count()
-# jar_url()
+jar_url()
 
 # file_path = sys.argv[1]
 # src_dir = sys.argv[2]
