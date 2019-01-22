@@ -6,7 +6,7 @@ import sys
 
 import database
 from exception import CustomizeException
-from file_util import read_file
+from file_util import read_file, write_json, read_json
 
 db = database.connectdb()
 
@@ -97,8 +97,10 @@ def get_maven_proj_update_within_three_months(num):
     with open('E:/data/projs.8.11.time.json', 'r') as f:
         content = f.read()
         m_dict = json.loads(content)
+        print(len(m_dict))
     cnt = 0
     print(len(m_dict))
+    final_result = {}
     for entry in m_dict:
         download_time = entry['download_time']
         head_commit_time = entry['head_commit_time']
@@ -107,7 +109,7 @@ def get_maven_proj_update_within_three_months(num):
         download_time3 = int(time.mktime(download_time2))
         head_commit_time3 = int(time.mktime(head_commit_time2))
 
-        if download_time3 - head_commit_time3 <= time_interval(90):
+        if download_time3 - head_commit_time3 > time_interval(90) and download_time3 - head_commit_time3 <= time_interval(120):
             type_ = entry["proj-type"]
             # if type_ == "proj-type: maven":
             # if type_ == "proj-type: maven-gradle":
@@ -117,15 +119,32 @@ def get_maven_proj_update_within_three_months(num):
             query_result = database.querydb(db, sql)
             if len(query_result) > 0:
                 gradle_array.append(url)
-                with open("four_months.txt", "a") as f:
-                    f.write(str(query_result[0][0]) + "\n")
-                    f.write(query_result[0][1] + "\n")
-                f.close()
+                url = url.replace("https://github.com/", "").replace("/", "__fdse__")
+                if os.path.exists("F:/gradle_maven200_500/" + url):
+                    url = "gradle_maven200_500/" + url
+                elif os.path.exists("F:/gradle_maven500/" + url):
+                    url = "gradle_maven500/" + url
+                elif os.path.exists("F:/gradle200_500/" + url):
+                    url = "gradle200_500/" + url
+                elif os.path.exists("F:/gradle500/" + url):
+                    url = "gradle500/" + url
+                elif os.path.exists("F:/maven200_500/" + url):
+                    url = "maven200_500/" + url
+                elif os.path.exists("F:/maven500/" + url):
+                    url = "maven500/" + url
+                else:
+                    raise CustomizeException("Not in local:" + url)
+                final_result[str(query_result[0][0])] = url
+                # with open("four_months.txt", "a") as f:
+                #     f.write(str(query_result[0][0]) + "\n")
+                #     f.write(query_result[0][1] + "\n")
+                # f.close()
             else:
                 raise CustomizeException("Not in db:" + url)
             cnt += 1
     print(cnt)
     print(gradle_array)
+    write_json("four_month.txt", final_result)
 
     # return gradle_array
 
@@ -167,5 +186,10 @@ def get_update_proj_in_three_months():
 # input_repo_time_compare(52)
 # input_repo_time_compare(90)
 
-get_maven_proj_update_within_three_months(90)
+# get_maven_proj_update_within_three_months(90)
 # get_update_proj_in_three_months()
+data = read_json("four_month.txt")
+for key in data.keys():
+    data[key] = data[key].replace("gradle_maven200_500/", "").replace("gradle_maven500/", "").replace("gradle200_500/", "").replace("gradle500/", "").replace("maven200_500/", "").replace("maven500/", "")
+print(len(data))
+write_json("four_month.txt", data)
