@@ -188,41 +188,61 @@ def jars_to_diff_machine():
     # projs = [1107, 1109, 1213, 130, 138, 180, 193, 197, 2, 20, 205, 223, 258, 262, 270, 271, 279, 30, 34, 346, 347, 351, 359,
     #  38, 388, 4, 446, 447, 556, 591, 6, 654, 660, 68, 692, 709, 797, 8, 84, 966]
     # print(len(projs))
-    dir = "I:/commit_update_call/batch_scope/200star"
-    file_list = os.listdir(dir)
-    for file in file_list:
-        num = int(file.replace(".txt", ""))
-        proj_list = read_json(os.path.join(dir, file))
-        if len(proj_list) > 0:
-            print(proj_list)
-            result = []
-            jars_files = os.listdir("D:/data/lib_list")
-            for entry in jars_files:
-                project_id = int(entry.split("_")[0])
-                # print(project_id)
-                if project_id in proj_list:
-                    result.extend(read_json(os.path.join("D:/data/lib_list", entry)))
-            result = list(set(result))
-            write_json("I:/commit_update_call/batch_scope/200star/" + str(num) + "_jar.txt",result)
+    # dir = "I:/commit_update_call/batch_scope/200star"
+    # file_list = os.listdir(dir)
+    # for file in file_list:
+    #     num = int(file.replace(".txt", ""))
+    #     proj_list = read_json(os.path.join(dir, file))
+    #     if len(proj_list) > 0:
+    #         print(proj_list)
+    #         result = []
+    #         jars_files = os.listdir("D:/data/lib_list")
+    #         for entry in jars_files:
+    #             project_id = int(entry.split("_")[0])
+    #             # print(project_id)
+    #             if project_id in proj_list:
+    #                 result.extend(read_json(os.path.join("D:/data/lib_list", entry)))
+    #         result = list(set(result))
+    #         write_json("I:/commit_update_call/batch_scope/200star/" + str(num) + "_jar.txt",result)
+
+    proj_list = [1878]
+    result = []
+    jars_files = os.listdir("D:/data/lib_list")
+    for entry in jars_files:
+        project_id = int(entry.split("_")[0])
+        # print(project_id)
+        if project_id in proj_list:
+            result.extend(read_json(os.path.join("D:/data/lib_list", entry)))
+    result = list(set(result))
+    write_json("I:/commit_update_call/batch_scope/single_proj/1878_jar.txt", result)
 
 def lib_list_to_diff_machine():
-    dir = "I:/commit_update_call/batch_scope/200star"
-    # dir = "H:/api_call_update/batch_scope"
-    # for i in range(0,10):
-    for i in [2, 8]:
-        path = dir + "/" + str(i) + ".txt"
-        proj_list = read_json(path)
-        if len(proj_list) > 0:
-            print(proj_list)
-            if not os.path.exists("D:/data/"+str(i)):
-                os.mkdir("D:/data/"+str(i))
-            jars_files = os.listdir("D:/data/lib_list")
-            for entry in jars_files:
-                project_id = int(entry.split("_")[0])
-                # print(project_id)
-                if project_id in proj_list:
-                    if not os.path.exists("D:/data/"+str(i) + "/" + entry):
-                        shutil.copyfile("D:/data/lib_list/" + entry, "D:/data/"+str(i) + "/" + entry)
+    # dir = "I:/commit_update_call/batch_scope/200star"
+    # # dir = "H:/api_call_update/batch_scope"
+    # # for i in range(0,10):
+    # for i in [2, 8]:
+    #     path = dir + "/" + str(i) + ".txt"
+    #     proj_list = read_json(path)
+    #     if len(proj_list) > 0:
+    #         print(proj_list)
+    #         if not os.path.exists("D:/data/"+str(i)):
+    #             os.mkdir("D:/data/"+str(i))
+    #         jars_files = os.listdir("D:/data/lib_list")
+    #         for entry in jars_files:
+    #             project_id = int(entry.split("_")[0])
+    #             # print(project_id)
+    #             if project_id in proj_list:
+    #                 if not os.path.exists("D:/data/"+str(i) + "/" + entry):
+    #                     shutil.copyfile("D:/data/lib_list/" + entry, "D:/data/"+str(i) + "/" + entry)
+
+    proj_list = [1878]
+    jars_files = os.listdir("D:/data/lib_list")
+    for entry in jars_files:
+        project_id = int(entry.split("_")[0])
+        # print(project_id)
+        if project_id in proj_list:
+            # if not os.path.exists("D:/data/" + str(i) + "/" + entry):
+            shutil.copyfile("D:/data/lib_list/" + entry, "D:/data/lib_list_distribution/single_proj/1878/" + entry)
 
 def move_jars(file_path,src_dir,dst_dir):
     jars = read_json(file_path)
@@ -268,29 +288,40 @@ def jar_url():
     # print(len(final_dic))
     # write_json("meta.json", final_dic)
 
-    # print("rxjava-1.2.4.jar" in final_dic)
-    count = 0
-    # for i in range(0,10):
-    for i in [2, 8]:
-        final = []
-        path = "I:/commit_update_call/batch_scope/200star/" + str(i) + "_jar.txt"
-        if not os.path.exists(path):
-            continue
-        json_data = read_json(path)
-        json_data = list(set(json_data))
-        for jar_name in json_data:
-            # if jar_name not in final_dic:
-            #     print(jar_name)
-            # jar_name = jar_name.strip()
-            if jar_name.endswith(".jar"):
-                if jar_name in final_dic:
-                    dir = final_dic[jar_name]
-                    path = dir + "/" + jar_name
-                    final.append(path)
-                else:
-                    count += 1
-    # print(count)
-        write_json("I:/commit_update_call/batch_scope/200star/" + str(i) + "_path.txt", final)
+    # count = 0
+    # # for i in range(0,10):
+    # for i in [2, 8]:
+    #     final = []
+    #     path = "I:/commit_update_call/batch_scope/200star/" + str(i) + "_jar.txt"
+    #     if not os.path.exists(path):
+    #         continue
+    #     json_data = read_json(path)
+    #     json_data = list(set(json_data))
+    #     for jar_name in json_data:
+    #         # if jar_name not in final_dic:
+    #         #     print(jar_name)
+    #         # jar_name = jar_name.strip()
+    #         if jar_name.endswith(".jar"):
+    #             if jar_name in final_dic:
+    #                 dir = final_dic[jar_name]
+    #                 path = dir + "/" + jar_name
+    #                 final.append(path)
+    #             else:
+    #                 count += 1
+    # # print(count)
+    #     write_json("I:/commit_update_call/batch_scope/200star/" + str(i) + "_path.txt", final)
+    final = []
+    path = "I:/commit_update_call/batch_scope/single_proj/1878_jar.txt"
+    json_data = read_json(path)
+    json_data = list(set(json_data))
+    for jar_name in json_data:
+        if jar_name.endswith(".jar"):
+            if jar_name in final_dic:
+                dir = final_dic[jar_name]
+                path = dir + "/" + jar_name
+                final.append(path)
+    write_json("I:/commit_update_call/batch_scope/single_proj/1878_path.txt", final)
+
 
 
 def db_jar_list():
