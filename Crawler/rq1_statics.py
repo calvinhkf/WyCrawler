@@ -512,6 +512,25 @@ def project_percent():
         project_call = read_json("E:/project_call/total_preprocessed_exclude_test")
 
 def test_proj():
+    result = {}
+    count = 0
+    dir = "E:/project_call/total_preprocessed_exclude_test/"
+    files = os.listdir(dir)
+    print(len(files))
+    for file in files:
+        project_id = file.replace(".txt", "")
+        contain = False
+        data = read_json(os.path.join(dir, file))
+        for key in data.keys():
+            if "\\src\\test\\" in data[key]:
+                contain = True
+                break
+        if not contain:
+            # result[project_id] = data
+            if os.path.exists("E:/project_call/total_preprocessed_exclude_test/" + str(project_id) + ".txt"):
+                count += 1
+    print(count)
+
     # result = {}
     # count = 0
     # dir = "F:/RQ1/file_path"
@@ -523,18 +542,19 @@ def test_proj():
     #     data = read_json(os.path.join(dir, file))
     #     for key in data.keys():
     #         if "\\src\\test\\" in data[key]:
-    #             count += 1
     #             contain = True
     #             break
     #     if not contain:
-    #         result[project_id] = data
+    #         # result[project_id] = data
+    #         if os.path.exists("E:/project_call/total_preprocessed_exclude_test/" + str(project_id) + ".txt"):
+    #             count += 1
     # print(count)
     # write_json("F:/RQ1/no_test.txt", result)
 
-    result = {}
-    count = 0
-    json_data = read_json("F:/RQ1/no_test6.txt")
-    print(len(json_data))
+    # result = {}
+    # count = 0
+    # json_data = read_json("F:/RQ1/no_test.txt")
+    # print(len(json_data))
     # for project_id in json_data.keys():
     #     contain = False
     #     data = json_data[project_id]
@@ -566,20 +586,44 @@ def no_test_proj():
 def delete_no_test_project():
     count = 0
     no_test_proj = read_json("no_test_proj.txt")
-    # dir = "F:/commit_update_call/proj_update_lib"
-    for i in [2, 5, 6, 8]:
-        dir = "F:/commit_update_call/batch_200star/new_batch_120/" + str(i)
-        print(dir)
-        files = os.listdir(dir)
-        for file in files:
-            project_id = int(file.replace(".sh", "").strip())
-            if project_id in no_test_proj:
-                print(project_id)
-                os.remove(os.path.join(dir, file))
-                count += 1
+    # for i in [2, 5, 6, 8]:
+    #     dir = "F:/commit_update_call/batch_200star/new_batch_120/" + str(i)
+    #     print(dir)
+    #     files = os.listdir(dir)
+    #     for file in files:
+    #         project_id = int(file.replace(".sh", "").strip())
+    #         if project_id in no_test_proj:
+    #             print(project_id)
+    #             os.remove(os.path.join(dir, file))
+    #             count += 1
+    # print()
+    # print(count)
+    dir = "E:/project_call/total_preprocessed_exclude_test"
+    print(dir)
+    files = os.listdir(dir)
+    for file in files:
+        project_id = int(file.replace(".txt", "").strip())
+        if project_id in no_test_proj:
+            print(project_id)
+            os.remove(os.path.join(dir, file))
+            count += 1
     print()
     print(count)
 
+def project_statics():
+    # projs = []
+    # db = database.connectdb()
+    # sql = "SELECT distinct(project_id) FROM project_lib_usage"
+    # query_result = database.querydb(db, sql)
+    # for entry in query_result:
+    #     projs.append(entry[0])
+    # print(projs)
+    # print(len(projs))
+    # for proj in projs:
+    #     if not os.path.exists("F:/RQ1/file_path/" + str(proj) + ".json"):
+    #        print(proj)
+    data = read_json("F:/RQ1/filepath.json")
+    print(len(data))
 
 # version_time_gap()
 # get_update_projs()
@@ -589,9 +633,10 @@ def delete_no_test_project():
 # get_all_calls_contain_dollar()
 # check_project_length()
 # extract_api_call_by_file()
-# test_proj()
+test_proj()
+# project_statics()
 # no_test_proj()
-delete_no_test_project()
+# delete_no_test_project()
 #130 126（2）
 # merge_project_call()
 # extract_api_call()

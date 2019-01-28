@@ -93,6 +93,7 @@ def time_interval(days):
 
 
 def get_maven_proj_update_within_three_months(num):
+    proj_array = []
     gradle_array = []
     with open('E:/data/projs.8.11.time.json', 'r') as f:
         content = f.read()
@@ -109,7 +110,8 @@ def get_maven_proj_update_within_three_months(num):
         download_time3 = int(time.mktime(download_time2))
         head_commit_time3 = int(time.mktime(head_commit_time2))
 
-        if download_time3 - head_commit_time3 > time_interval(90) and download_time3 - head_commit_time3 <= time_interval(120):
+        # if download_time3 - head_commit_time3 > time_interval(90) and download_time3 - head_commit_time3 <= time_interval(120):
+        if download_time3 - head_commit_time3 <= time_interval(90):
             type_ = entry["proj-type"]
             # if type_ == "proj-type: maven":
             # if type_ == "proj-type: maven-gradle":
@@ -118,22 +120,30 @@ def get_maven_proj_update_within_three_months(num):
             sql = "SELECT * FROM project WHERE url = '" + url + "'"
             query_result = database.querydb(db, sql)
             if len(query_result) > 0:
-                gradle_array.append(url)
+                id = query_result[0][0]
+                # gradle_array.append(url)
                 url = url.replace("https://github.com/", "").replace("/", "__fdse__")
-                if os.path.exists("F:/gradle_maven200_500/" + url):
-                    url = "gradle_maven200_500/" + url
-                elif os.path.exists("F:/gradle_maven500/" + url):
-                    url = "gradle_maven500/" + url
-                elif os.path.exists("F:/gradle200_500/" + url):
-                    url = "gradle200_500/" + url
-                elif os.path.exists("F:/gradle500/" + url):
-                    url = "gradle500/" + url
-                elif os.path.exists("F:/maven200_500/" + url):
-                    url = "maven200_500/" + url
-                elif os.path.exists("F:/maven500/" + url):
-                    url = "maven500/" + url
+                name = url
+                if os.path.exists("D:/gradle_maven200_500/" + url):
+                    url = "D:/gradle_maven200_500/" + url
+                elif os.path.exists("D:/gradle_maven500/" + url):
+                    url = "D:/gradle_maven500/" + url
+                elif os.path.exists("C:/gradle200_500/" + url):
+                    url = "C:/gradle200_500/" + url
+                elif os.path.exists("C:/gradle500/" + url):
+                    url = "C:/gradle500/" + url
+                elif os.path.exists("E:/maven200_500/" + url):
+                    url = "E:/maven200_500/" + url
+                elif os.path.exists("E:/maven500/" + url):
+                    url = "E:/maven500/" + url
                 else:
                     raise CustomizeException("Not in local:" + url)
+                obj = {}
+                obj["id"] = id
+                obj["name"] = name
+                obj["local_addr"] = url
+                proj_array.append(obj)
+
                 final_result[str(query_result[0][0])] = url
                 # with open("four_months.txt", "a") as f:
                 #     f.write(str(query_result[0][0]) + "\n")
@@ -142,9 +152,11 @@ def get_maven_proj_update_within_three_months(num):
             else:
                 raise CustomizeException("Not in db:" + url)
             cnt += 1
-    print(cnt)
-    print(gradle_array)
-    write_json("four_month.txt", final_result)
+    # print(cnt)
+    print(proj_array)
+    print(len(proj_array))
+    write_json("three_month.txt", proj_array)
+    # write_json("four_month.txt", final_result)
 
     # return gradle_array
 
@@ -186,10 +198,10 @@ def get_update_proj_in_three_months():
 # input_repo_time_compare(52)
 # input_repo_time_compare(90)
 
-# get_maven_proj_update_within_three_months(90)
+get_maven_proj_update_within_three_months(90)
 # get_update_proj_in_three_months()
-data = read_json("four_month.txt")
-for key in data.keys():
-    data[key] = data[key].replace("gradle_maven200_500/", "").replace("gradle_maven500/", "").replace("gradle200_500/", "").replace("gradle500/", "").replace("maven200_500/", "").replace("maven500/", "")
-print(len(data))
-write_json("four_month.txt", data)
+# data = read_json("four_month.txt")
+# for key in data.keys():
+#     data[key] = data[key].replace("gradle_maven200_500/", "").replace("gradle_maven500/", "").replace("gradle200_500/", "").replace("gradle500/", "").replace("maven200_500/", "").replace("maven500/", "")
+# print(len(data))
+# write_json("four_month.txt", data)
