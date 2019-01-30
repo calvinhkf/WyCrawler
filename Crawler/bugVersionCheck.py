@@ -278,6 +278,51 @@ def read_projs_with_bugs_for_lib():
         whole_list = list(set(whole_list))
         print(name_str + " ("+str(len(whole_list))+")")
 
+def divide_for_x():
+    new_data = {}
+    groupId = "org.apache.commons"
+    artifactId = "commons-lang3"
+    data = read_json("J:/org.apache.commons commons-lang3.txt")
+    for key in data.keys():
+        if key == "3.x":
+            sql = "SELECT distinct(version) FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
+                artifactId) + "' and version like '3.%'"
+            info = database.querydb(db, sql)
+            # sql = "SELECT distinct project_id FROM project_lib_usage where "
+            for i in range(0, len(info)):
+                print(info[i])
+                version = str(info[i][0])
+                sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
+                    artifactId) + "' and version = '" + str(version) + "'"
+                version_info = database.querydb(db, sql)
+                if len(version_info) == 2:
+                    version_id = version_info[0][0]
+                    version_id2 = version_info[1][0]
+                    sql = "SELECT distinct project_id FROM project_lib_usage where version_id = " + str(
+                        version_id) + " or version_id = " + str(version_id2)
+                    query_result = database.querydb(db, sql)
+                elif len(version_info) == 1:
+                    version_id = version_info[0][0]
+                    sql = "SELECT distinct project_id FROM project_lib_usage where version_id = " + str(
+                        version_id)
+                    query_result = database.querydb(db, sql)
+                else:
+                    raise CustomizeException("length != 2: " + version)
+                proj_ids = []
+                for entry in query_result:
+                    project_id = entry[0]
+                    proj_ids.append(project_id)
+                if version in data:
+                    # print(data[version])
+                    data[version].extend(proj_ids)
+                    # print(data[version])
+                    new_data[version] = list(set(data[version]))
+                else:
+                    new_data[version] = proj_ids
+    data.pop("3.x")
+    for key in new_data.keys():
+        data[key] = new_data[key]
+    write_json("J:/new.txt", data)
 
 # group_str = 'org.apache.commons' and name_str = 'commons-lang3' and version like '3.%'
 
@@ -286,6 +331,7 @@ def read_projs_with_bugs_for_lib():
 # parse_for_LOG4J2()
 # parse_for_SLF4J()
 # collect_proj_with_bugs()
-collect_proj_with_bugs_for_lang3()
+# collect_proj_with_bugs_for_lang3()
 # read_projs_with_bugs()
 # read_projs_with_bugs_for_lib()
+divide_for_x()

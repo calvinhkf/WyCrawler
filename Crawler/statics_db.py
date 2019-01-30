@@ -133,12 +133,13 @@ def update_lib_usage():
         #         database.execute_sql(db, sql)
         version_type_id = entry[1]
         project_id = entry[0]
+        module_ = entry[2]
         sql = "SELECT * FROM version_types WHERE type_id = " + str(version_type_id)
         type_info = database.querydb(db, sql)
         if len(type_info) != 0:
             version_id = type_info[0][1]
             sql = "UPDATE project_lib_usage SET version_id = " + str(version_id) + " WHERE version_type_id =" + str(
-                version_type_id) + " AND project_id = " + str(project_id)
+                version_type_id) + " AND project_id = " + str(project_id) + " AND module = '" + module_ + "'"
             database.execute_sql(db, sql)
 
 def update_lib_update():
@@ -308,6 +309,6 @@ def top_library():
 # get_api_call_lib()
 # api_count()
 # get_libraries()
-# update_lib_usage()
+update_lib_usage()
 # top_library()//70583
 # update_type_id_in_lib_update()

@@ -539,4 +539,4 @@ def update_version_type_to_db2():
 #     project_crawled_lib_usage(path)
 #
 # update_library_to_db2()
-update_version_type_to_db2()
+# update_version_type_to_db2()
