@@ -12,11 +12,11 @@ def parse_bug_info():
     version_dic["CODEC"] = "commons-codec commons-codec"
     version_dic["COLLECTIONS"] = "commons-collections commons-collections"
     version_dic["COMMON-IO"] = "commons-io commons-io"
-    version_dic["HTTPCLIENT"] = "org.apache.httpcomponentnents httpclient"
+    version_dic["HTTPCLIENT"] = "org.apache.httpcomponents httpclient"
     version_dic["LOGBACK"] = "ch.qos.logback logback-classic"
     version_dic["LOGGING"] = "commons-logging commons-logging"
 
-    bug_info_dir = "C:/RQ3"
+    bug_info_dir = "C:/RQ3/JIRA-3"
     bug_files = os.listdir(bug_info_dir)
     for file in bug_files:
         file_name = file.replace(".txt","")
@@ -24,7 +24,7 @@ def parse_bug_info():
         if file_name not in version_dic:
             continue
         name_str = version_dic[file_name]
-        if os.path.exists("C:/RQ3/" + name_str + ".txt"):
+        if os.path.exists("C:/RQ3/JIRA-3/affect_versions/" + name_str + ".txt"):
             continue
         # name_str.split(" : ")
         bugs = read_json(os.path.join(bug_info_dir,file))
@@ -40,8 +40,8 @@ def parse_bug_info():
                     version = version.strip()
                     if version not in result:
                         result.append(version)
-        print("C:/RQ3/" + name_str + ".txt")
-        write_json("C:/RQ3/" + name_str + ".txt", result)
+        print("C:/RQ3/JIRA-3/affect_versions/" + name_str + ".txt")
+        write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str + ".txt", result)
         print(result)
         # break
 
@@ -49,8 +49,8 @@ def parse_for_LANG():
     result = []
     result3 = []
     name_str = "commons-lang commons-lang"
-    name_str3 = "org.apache.commonsmons commons-lang3"
-    bug_info_dir = "C:/RQ3"
+    name_str3 = "org.apache.commons commons-lang3"
+    bug_info_dir = "C:/RQ3/JIRA-3"
     bug_files = os.listdir(bug_info_dir)
     for file in bug_files:
         if file == "LANG.txt":
@@ -72,8 +72,8 @@ def parse_for_LANG():
                             if version not in result3:
                                 result3.append(version)
             # print("C:/RQ3/" + name_str + ".txt")
-            write_json("C:/RQ3/" + name_str + ".txt", result)
-            write_json("C:/RQ3/" + name_str3 + ".txt", result3)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str + ".txt", result)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str3 + ".txt", result3)
             # print(result)
 
 def parse_for_LOG4J2():
@@ -81,7 +81,7 @@ def parse_for_LOG4J2():
     result_core = []
     name_str = "log4j log4j"
     core_str = "org.apache.logging.log4j log4j-core"
-    bug_info_dir = "C:/RQ3"
+    bug_info_dir = "C:/RQ3/JIRA-3"
     bug_files = os.listdir(bug_info_dir)
     for file in bug_files:
         if file == "LOG4J2.txt":
@@ -107,8 +107,8 @@ def parse_for_LOG4J2():
                                 if version not in result:
                                     result.append(version)
             # print("C:/RQ3/" + name_str + ".txt")
-            write_json("C:/RQ3/" + name_str + ".txt", result)
-            write_json("C:/RQ3/" + core_str + ".txt", result_core)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str + ".txt", result)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + core_str + ".txt", result_core)
             # print(result)
 
 def parse_for_SLF4J():
@@ -120,7 +120,7 @@ def parse_for_SLF4J():
     name_str2 = "org.slf4j jcl-over-slf4j"
     name_str3 = "org.slf4j slf4j-log4j12"
     name_str4 = "org.slf4j slf4j-api"
-    bug_info_dir = "C:/RQ3"
+    bug_info_dir = "C:/RQ3/JIRA-3"
     bug_files = os.listdir(bug_info_dir)
     for file in bug_files:
         if file == "SLF4J.txt":
@@ -145,17 +145,17 @@ def parse_for_SLF4J():
                             elif com == "jcl-over-slf4j":
                                 if version not in result2:
                                     result2.append(version)
-                            elif com == "log4j-over-slf4j":
-                                if version not in result3:
-                                    result3.append(version)
+                            # elif com == "log4j-over-slf4j":
+                            #     if version not in result3:
+                            #         result3.append(version)
                             elif com == "Core API":
                                 if version not in result4:
                                     result4.append(version)
             # print("C:/RQ3/" + name_str + ".txt")
-            write_json("C:/RQ3/" + name_str1 + ".txt", result1)
-            write_json("C:/RQ3/" + name_str2 + ".txt", result2)
-            write_json("C:/RQ3/" + name_str3 + ".txt", result3)
-            write_json("C:/RQ3/" + name_str4 + ".txt", result4)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str1 + ".txt", result1)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str2 + ".txt", result2)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str3 + ".txt", result3)
+            write_json("C:/RQ3/JIRA-3/affect_versions/" + name_str4 + ".txt", result4)
             # print(result)
 
 
@@ -167,11 +167,11 @@ def lib_classification():
     # read_json("COLLECTIONS.txt")
 
 def collect_proj_with_bugs():
-    bug_version_dir = "C:/RQ3/lib_versions"
+    bug_version_dir = "C:/RQ3/JIRA-3/affect_versions"
     files = os.listdir(bug_version_dir)
     for file in files:
-        if file != "org.slf4j slf4j-log4j12.txt":
-        # if file == "org.apache.commons commons-lang3.txt" or file == "org.apache.httpcomponents httpclient_orgin.txt":
+        # if file != "org.slf4j slf4j-log4j12.txt":
+        if file == "org.apache.commons commons-lang3.txt" or file == "org.apache.httpcomponents httpclient_orgin.txt":
             continue
         result = {}
         name_str = file.replace(".txt","")
@@ -203,10 +203,10 @@ def collect_proj_with_bugs():
                 project_id = entry[0]
                 proj_ids.append(project_id)
             result[version] = proj_ids
-        write_json("C:/RQ3/projects/"+file, result)
+        write_json("C:/RQ3/JIRA-3/projects/"+file, result)
 
 def collect_proj_with_bugs_for_lang3():
-    bug_version_dir = "C:/RQ3/lib_versions"
+    bug_version_dir = "C:/RQ3/JIRA-3/affect_versions"
     files = os.listdir(bug_version_dir)
     for file in files:
         if file != "org.apache.commons commons-lang3.txt":
@@ -253,7 +253,7 @@ def collect_proj_with_bugs_for_lang3():
                 project_id = entry[0]
                 proj_ids.append(project_id)
             result[version] = proj_ids
-        write_json("C:/RQ3/projects/"+file, result)
+        write_json("C:/RQ3/JIRA-3/projects/"+file, result)
 
 def read_projs_with_bugs():
     projects_dir = "C:/RQ3/projects"
@@ -281,11 +281,11 @@ def read_projs_with_bugs_for_lib():
 
 # group_str = 'org.apache.commons' and name_str = 'commons-lang3' and version like '3.%'
 
-        # parse_bug_info()
+# parse_bug_info()
 # parse_for_LANG()
 # parse_for_LOG4J2()
 # parse_for_SLF4J()
-collect_proj_with_bugs()
-# collect_proj_with_bugs_for_lang3()
+# collect_proj_with_bugs()
+collect_proj_with_bugs_for_lang3()
 # read_projs_with_bugs()
 # read_projs_with_bugs_for_lib()
