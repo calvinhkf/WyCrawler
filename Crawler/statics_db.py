@@ -106,40 +106,51 @@ def get_libraries():
 
 
 def update_lib_usage():
-    sql = "SELECT * FROM project_lib_usage"
+    # sql = "SELECT * FROM project_lib_usage"
+    # usage_info = database.querydb(db, sql)
+    # for entry in usage_info:
+    #     # version_type_id = entry[1]
+    #     # project_id = entry[0]
+    #     # library_id = entry[3]
+    #     # sql = "SELECT * FROM library_category_relation WHERE library_id = " + str(library_id)
+    #     # relation = database.querydb(db, sql)
+    #     # if len(relation) != 0:
+    #     #     category_id = relation[0][0]
+    #     #     sql = "UPDATE project_lib_usage SET category_id = " + str(category_id) + " WHERE version_type_id =" + str(
+    #     #         version_type_id) + " AND project_id = " + str(project_id)
+    #     #     database.execute_sql(db, sql)
+    #     # version_type_id = entry[1]
+    #     # project_id = entry[0]
+    #     # sql = "SELECT * FROM version_types WHERE type_id = " +str(version_type_id)
+    #     # type_info = database.querydb(db, sql)
+    #     # if len(type_info) != 0:
+    #     #     version_id = type_info[0][1]
+    #     #     sql = "SELECT * FROM library_versions WHERE id = " + str(version_id)
+    #     #     version_info = database.querydb(db, sql)
+    #     #     if len(version_info) != 0:
+    #     #         library_id = version_info[0][1]
+    #     #         sql = "UPDATE project_lib_usage SET library_id = " + str(library_id) + " WHERE version_type_id =" + str(version_type_id) + " AND project_id = " + str(project_id)
+    #     #         database.execute_sql(db, sql)
+    #     version_type_id = entry[1]
+    #     project_id = entry[0]
+    #     module_ = entry[2]
+    #     sql = "SELECT * FROM version_types WHERE type_id = " + str(version_type_id)
+    #     type_info = database.querydb(db, sql)
+    #     if len(type_info) != 0:
+    #         version_id = type_info[0][1]
+    #         sql = "UPDATE project_lib_usage SET version_id = " + str(version_id) + " WHERE version_type_id =" + str(
+    #             version_type_id) + " AND project_id = " + str(project_id) + " AND module = '" + module_ + "'"
+    #         database.execute_sql(db, sql)
+
+    sql = "SELECT distinct(version_id) FROM project_lib_usage"
     usage_info = database.querydb(db, sql)
     for entry in usage_info:
-        # version_type_id = entry[1]
-        # project_id = entry[0]
-        # library_id = entry[3]
-        # sql = "SELECT * FROM library_category_relation WHERE library_id = " + str(library_id)
-        # relation = database.querydb(db, sql)
-        # if len(relation) != 0:
-        #     category_id = relation[0][0]
-        #     sql = "UPDATE project_lib_usage SET category_id = " + str(category_id) + " WHERE version_type_id =" + str(
-        #         version_type_id) + " AND project_id = " + str(project_id)
-        #     database.execute_sql(db, sql)
-        # version_type_id = entry[1]
-        # project_id = entry[0]
-        # sql = "SELECT * FROM version_types WHERE type_id = " +str(version_type_id)
-        # type_info = database.querydb(db, sql)
-        # if len(type_info) != 0:
-        #     version_id = type_info[0][1]
-        #     sql = "SELECT * FROM library_versions WHERE id = " + str(version_id)
-        #     version_info = database.querydb(db, sql)
-        #     if len(version_info) != 0:
-        #         library_id = version_info[0][1]
-        #         sql = "UPDATE project_lib_usage SET library_id = " + str(library_id) + " WHERE version_type_id =" + str(version_type_id) + " AND project_id = " + str(project_id)
-        #         database.execute_sql(db, sql)
-        version_type_id = entry[1]
-        project_id = entry[0]
-        module_ = entry[2]
-        sql = "SELECT * FROM version_types WHERE type_id = " + str(version_type_id)
-        type_info = database.querydb(db, sql)
-        if len(type_info) != 0:
-            version_id = type_info[0][1]
-            sql = "UPDATE project_lib_usage SET version_id = " + str(version_id) + " WHERE version_type_id =" + str(
-                version_type_id) + " AND project_id = " + str(project_id) + " AND module = '" + module_ + "'"
+        version_id = entry[0]
+        sql = "SELECT * FROM library_versions WHERE id = " + str(version_id)
+        version_info = database.querydb(db, sql)
+        if len(version_info) != 0:
+            library_id = version_info[0][1]
+            sql = "UPDATE project_lib_usage SET library_id = " + str(library_id) + " WHERE version_id =" + str(version_id)
             database.execute_sql(db, sql)
 
 def update_lib_update():

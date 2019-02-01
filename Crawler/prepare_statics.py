@@ -350,6 +350,24 @@ def insert_project_lib_usage(project_id, version_type_id, module_):
     else:
         raise CustomizeException("repeat : " + str(project_id) + " " + str(version_type_id) + " " + str(module_))
 
+def compare():
+    count = 0
+    curr_list = []
+    sql = "SELECT distinct project_id FROM project_lib_usage"
+    curr = database.querydb(db, sql)
+    for entry in curr:
+        proj_id = entry[0]
+        curr_list.append(proj_id)
+    sql = "SELECT distinct project_id FROM `project_lib_usage_1.31`"
+    prev = database.querydb(db, sql)
+    for entry in prev:
+        proj_id = entry[0]
+        if proj_id not in curr_list:
+            print(proj_id)
+            count += 1
+    print(count)
+
+
 # divide_batch()
 # android_proj()
 # json_data = read_json("E:/data/projs.json");
@@ -380,4 +398,5 @@ db = database.connectdb()
 #     print(file)
 #     project_lib_usage_to_db(os.path.join(dir, file))
 
-project_lib_usage_to_db_gradle()
+# project_lib_usage_to_db_gradle()
+compare()
