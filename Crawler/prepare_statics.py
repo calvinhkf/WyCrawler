@@ -177,33 +177,33 @@ def gradle_dependency_process():
         if not "dependencyUrlList" in data:
             count += 1
             continue
-    print(count)
-        # dependency_list = data["dependencyUrlList"]
-        # record_dic = {}
-        # new_list = []
-        # for dependency in dependency_list:
-        #     groupId = dependency["groupId"]
-        #     artifactId = dependency["artifactId"]
-        #     _type = dependency["type"]
-        #     version = dependency["version"]
-        #     path = dependency["path"]
-        #     value = groupId + " " + artifactId + " " + version + " " + _type
-        #     if path in record_dic:
-        #         if not value in record_dic[path]:
-        #             record_dic[path].append(value)
-        #             new_list.append(dependency)
-        #     else:
-        #         array = []
-        #         array.append(value)
-        #         record_dic[path] = array
-        #         new_list.append(dependency)
-        # write_json("D:/data/data_copy/RQ1/dependency/gradle_or_both/" + str(project_id) + ".txt", new_list)
+    # print(count)
+        dependency_list = data["dependencyUrlList"]
+        record_dic = {}
+        new_list = []
+        for dependency in dependency_list:
+            groupId = dependency["groupId"]
+            artifactId = dependency["artifactId"]
+            _type = dependency["type"]
+            version = dependency["version"]
+            path = dependency["path"]
+            value = groupId + " " + artifactId + " " + version + " " + _type
+            if path in record_dic:
+                if not value in record_dic[path]:
+                    record_dic[path].append(value)
+                    new_list.append(dependency)
+            else:
+                array = []
+                array.append(value)
+                record_dic[path] = array
+                new_list.append(dependency)
+        write_json("D:/data/data_copy/RQ1/dependency/gradle_or_both/" + str(project_id) + ".txt", new_list)
         # break
 
 def maven_dependency_process():
     count = 0
     db = database.connectdb()
-    dir = "D:/data/data_copy/RQ1/dependency/maven_or_both"
+    dir = "D:/data/data_copy/RQ1/dependency/test"
     files = os.listdir(dir)
     for file in files:
         print("+++++++++++++++++++++++ " + file)
@@ -238,22 +238,23 @@ def maven_dependency_process():
                 new_list.append(dependency)
         if len(dependency_list)-1 != len(new_list):
             print(str(len(dependency_list)-1) + " || " + str(len(new_list)))
-        write_json("D:/data/data_copy/RQ1/dependency/maven_or_both_new/" + file, new_list)
+        write_json("D:/data/data_copy/RQ1/dependency/test_new/" + file, new_list)
         # break
 
-def project_lib_usage_to_db(path):
+def project_lib_usage_to_db(project_id, path):
     if not os.path.exists(path):
         return
     print("+++++++++++++++++++++++++++++++++++" + str(path))
     data = read_json(path)
-    project_id = None
     module_ = None
     do = False
+    # print(len(data))
     for lib in data:
-        if 'id' in lib:
-            project_id = lib["id"]
-            print("-------------------- project_id: " + str(project_id))
-            continue
+        # print(lib)
+        # if 'id' in lib:
+        #     project_id = lib["id"]
+        #     print("-------------------- project_id: " + str(project_id))
+        #     continue
         if "groupId" not in lib or "artifactId" not in lib or "version" not in lib or "type" not in lib:
             print(False)
             continue
@@ -266,8 +267,6 @@ def project_lib_usage_to_db(path):
                 version) + "   type: " + str(type_))
             print(False)
             continue
-        if project_id is None:
-            raise CustomizeException("no project id")
         classifier = None
 
         if "classifier" in lib:
@@ -291,6 +290,8 @@ def project_lib_usage_to_db_gradle():
     files = os.listdir(dir)
     for file in files:
         project_id = int(file.replace(".txt", ""))
+        # if project_id != 359:
+        #     continue
         print("+++++++++++++++++++++++++++++++++++" + str(file))
         data = read_json(os.path.join(dir, file))
         for lib in data:
@@ -319,6 +320,7 @@ def project_lib_usage_to_db_gradle():
                 search_before_insert(project_id, groupId, artifactId, version, type_, classifier, module_)
 
 def search_before_insert(project_id, groupId, artifactId, version, type_, classifier, module_):
+    # print("----------------------- " + str(project_id) + " " + str(groupId) + " " + str(artifactId) + " " + str(version) + " " + str(type_) + " " + str(classifier) + " " + str(module_))
     sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
         artifactId) + "' and version = '" + str(version) + "'"
     version_info = database.querydb(db, sql)
@@ -330,6 +332,7 @@ def search_before_insert(project_id, groupId, artifactId, version, type_, classi
     version_type_id = in_version_type_table(version_id, type_, classifier)
     if version_type_id < 0:
         return
+    # print(str(project_id) + " " + str(version_type_id) + " " + module_)
     insert_project_lib_usage(project_id, version_type_id, module_)
 
 def insert_project_lib_usage(project_id, version_type_id, module_):
@@ -358,7 +361,7 @@ def compare():
     for entry in curr:
         proj_id = entry[0]
         curr_list.append(proj_id)
-    sql = "SELECT distinct project_id FROM `project_lib_usage_1.31`"
+    sql = "SELECT distinct project_id FROM `project_lib_usage_1.30`"
     prev = database.querydb(db, sql)
     for entry in prev:
         proj_id = entry[0]
@@ -367,6 +370,44 @@ def compare():
             count += 1
     print(count)
 
+def check_data():
+    projs = []
+    sql = "SELECT distinct project_id FROM `project_lib_usage_1.30`"
+    result = database.querydb(db, sql)
+    for entry in result:
+        proj_id = entry[0]
+        # sql = "SELECT * FROM project WHERE type = 'maven' AND id = " + str(proj_id)
+        # result = database.querydb(db, sql)
+        # if len(result) <= 0:
+        #     continue
+        projs.append(proj_id)
+    print(projs)
+    print(len(projs))
+
+    count = 0
+    new_list = []
+    for proj_id in projs:
+        sql = "SELECT distinct version_type_id FROM `project_lib_usage_1.30` where project_id = " + str(proj_id)
+        query_result1 = database.querydb(db, sql)
+        sql = "SELECT distinct version_type_id FROM `project_lib_usage` where project_id = " + str(proj_id)
+        query_result2 = database.querydb(db, sql)
+        if len(set(query_result1).difference(set(query_result2))) != 0:
+        # if len(set(query_result1).difference(set(query_result2))) != 0 or len(set(query_result2).difference(set(query_result1))) != 0:
+            print("-------------------- " + str(proj_id))
+            print(set(query_result1).difference(set(query_result2)))
+            # print(set(query_result2).difference(set(query_result1)))
+            count += 1
+            new_list.append(proj_id)
+        # if len(query_result1) != len(query_result2):
+        #     count += 1
+        #     # if len(query_result1) > len(query_result2):
+        #     print("-------------------- " + str(proj_id))
+        #     if len(set(query_result1).difference(set(query_result2))) != 0:
+        #
+        #         print(set(query_result1).difference(set(query_result2)))
+        #         print(set(query_result2).difference(set(query_result1)))
+    print(count)
+    print(new_list)
 
 # divide_batch()
 # android_proj()
@@ -386,17 +427,61 @@ db = database.connectdb()
 # # print(projs)
 # print(len(projs))
 #
-# dir = "D:/data/data_copy/RQ1/dependency/maven_or_both"
+# new_list = []
+# dir = "D:/data/data_copy/RQ1/dependency/test_new"
 # files = os.listdir(dir)
+# print(len(files))
+# count = 0
 # for file in files:
 #     # print(file)
 #     project_id = int(file.replace(".txt", ""))
-#     if project_id in projs:
+#     sql = "SELECT * FROM project WHERE type = 'maven' AND id = " + str(project_id)
+#     result = database.querydb(db, sql)
+#     if len(result) <= 0:
+# #         new_list.append(project_id)
+# # print(new_list)
+# # print(len(new_list))
 #         continue
-#     # if project_id == 1840:
-#     #     print(file)
-#     print(file)
-#     project_lib_usage_to_db(os.path.join(dir, file))
+#     count += 1
+#     if project_id == 2871:
+#         print(file)
+#     #     continue
+#         project_lib_usage_to_db(project_id, os.path.join(dir, file))
+# print(count)
 
 # project_lib_usage_to_db_gradle()
-compare()
+# compare()
+# path = "E:/Workspace_eclip/ThirdPartyLibraryAnalysis/proj_in_usage.txt"
+# data = read_json(path)
+# print(len(data))
+
+check_data()
+
+# projs = []
+# sql = "SELECT distinct project_id FROM `project_lib_usage_1.30`"
+# result = database.querydb(db, sql)
+# for entry in result:
+#     proj_id = entry[0]
+#     sql = "SELECT * FROM project WHERE type = 'maven' AND id = " + str(proj_id)
+#     result = database.querydb(db, sql)
+#     if len(result) <= 0:
+#         continue
+#     projs.append(proj_id)
+# print(projs)
+# print(len(projs))
+#
+# count = 0
+# sql = "SELECT * FROM `project_lib_usage_1.30`"
+# result = database.querydb(db, sql)
+# for entry in result:
+#     project_id = entry[0]
+#     if project_id in projs:
+#         count += 1
+# print(count)
+
+# new_list = [32, 83, 85, 148, 155, 163, 174, 318, 349, 361, 376, 383, 508, 534, 584, 602, 678, 692, 707, 709, 741, 759, 816, 1107, 1156, 1207, 1342, 1362, 1383, 1391, 1399, 1461, 1464, 1493, 1517, 1520, 1521, 1558, 1573, 1585, 1655, 1659, 1691, 1702, 1755, 1770, 1792, 1798, 1799, 1806, 1840, 1886, 1996, 2004, 2081, 2116, 2413, 2450, 2528, 2661, 2663, 2802, 2808, 2871, 3105, 3186, 3214, 3244, 3370, 3417, 3437, 3568, 3609, 3683, 3739, 4153, 4161, 4191, 4408, 4500, 4600, 4672, 5027, 5330, 5412, 5479]
+# print(len(new_list))
+# for proj_id in new_list:
+#     sql = "delete from project_lib_usage where project_id = " + str(proj_id)
+#     database.execute_sql(db, sql)
+

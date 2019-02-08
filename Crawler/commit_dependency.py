@@ -205,7 +205,7 @@ def jars_to_diff_machine():
     #         result = list(set(result))
     #         write_json("I:/commit_update_call/batch_scope/200star/" + str(num) + "_jar.txt",result)
 
-    proj_list = [1878]
+    proj_list = [220, 221]
     result = []
     jars_files = os.listdir("D:/data/lib_list")
     for entry in jars_files:
@@ -214,7 +214,7 @@ def jars_to_diff_machine():
         if project_id in proj_list:
             result.extend(read_json(os.path.join("D:/data/lib_list", entry)))
     result = list(set(result))
-    write_json("I:/commit_update_call/batch_scope/single_proj/1878_jar.txt", result)
+    write_json("I:/commit_update_call/batch_scope/single_proj/220_221_jar.txt", result)
 
 def lib_list_to_diff_machine():
     # dir = "I:/commit_update_call/batch_scope/200star"
@@ -311,7 +311,7 @@ def jar_url():
     # # print(count)
     #     write_json("I:/commit_update_call/batch_scope/200star/" + str(i) + "_path.txt", final)
     final = []
-    path = "I:/commit_update_call/batch_scope/single_proj/1878_jar.txt"
+    path = "I:/commit_update_call/batch_scope/single_proj/220_221_jar.txt"
     json_data = read_json(path)
     json_data = list(set(json_data))
     for jar_name in json_data:
@@ -320,7 +320,7 @@ def jar_url():
                 dir = final_dic[jar_name]
                 path = dir + "/" + jar_name
                 final.append(path)
-    write_json("I:/commit_update_call/batch_scope/single_proj/1878_path.txt", final)
+    write_json("I:/commit_update_call/batch_scope/single_proj/220_221_path.txt", final)
 
 
 
