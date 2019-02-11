@@ -8,33 +8,35 @@ from file_util import read_json, write_json, read_file
 
 def merge_project_call():
     dir = "E:/project_call/8_admin/call"
-    file_list = os.listdir(dir)
-    curr_id = None
-    call_list = []
-    for file in file_list:
-        print(file)
-        project_id = int(file.split("_")[0])
-        if project_id == 2979:
-            continue
-        # if project_id == 2979 or project_id == 2944 or project_id == 271 or project_id == 565 or project_id == 1198 or project_id == 1238 or project_id == 1304 or project_id == 613:
-        #     continue
-        content = read_json(os.path.join(dir,file))
-        if content is None:
-            continue
-        new_list = content[:-1]
-        if curr_id is None:
-            curr_id = project_id
-            call_list.extend(new_list)
-        elif curr_id != project_id:
-            # if curr_id == 3755:
-            #     print(call_list)
-            write_json("E:/project_call/total/" + str(curr_id) + ".txt", call_list)
-            curr_id = None
-            call_list = []
-        else:
-            call_list.extend(new_list)
-    print(call_list)
-    write_json("E:/project_call/total/" + str(curr_id) + ".txt", call_list)
+    # file_list = os.listdir(dir)
+    # curr_id = None
+    # call_list = []
+    # for file in file_list:
+    #     print(file)
+    #     project_id = int(file.split("_")[0])
+    #     if project_id == 2979:
+    #         continue
+    #     # if project_id == 2979 or project_id == 2944 or project_id == 271 or project_id == 565 or project_id == 1198 or project_id == 1238 or project_id == 1304 or project_id == 613:
+    #     #     continue
+    #     content = read_json(os.path.join(dir,file))
+    #     if content is None:
+    #         continue
+    #     new_list = content[:-1]
+    #     if curr_id is None:
+    #         curr_id = project_id
+    #         call_list.extend(new_list)
+    #     elif curr_id != project_id:
+    #         # if curr_id == 3755:
+    #         #     print(call_list)
+    #         write_json("E:/project_call/total/" + str(curr_id) + ".txt", call_list)
+    #         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! not right!!!!!!!!!!!!!!!!!!!!!!!!!!11
+    #         curr_id = None
+    #         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! not right!!!!!!!!!!!!!!!!!!!!!!!!!!11
+    #         call_list = []
+    #     else:
+    #         call_list.extend(new_list)
+    # print(call_list)
+    # write_json("E:/project_call/total/" + str(curr_id) + ".txt", call_list)
 
 def filter_test_code():
     array = ["0_fdse", "1_Thinkpad", "2_11", "3_lj", "4_zfy", "5_ZW", "6_Thinkpad", "7_huangkaifeng", "8_admin", "9_huangkaifeng"]
@@ -633,7 +635,7 @@ def project_statics():
 # get_all_calls_contain_dollar()
 # check_project_length()
 # extract_api_call_by_file()
-test_proj()
+# test_proj()
 # project_statics()
 # no_test_proj()
 # delete_no_test_project()
