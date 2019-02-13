@@ -186,7 +186,7 @@ def unsolved_proj():
     print(count)
 
 def extract_api_call():
-    dir = "D:/data/data_copy/RQ1/project_call/total_final/"
+    dir = "D:/data/data_copy/RQ1/project_call/total_final1/"
     file_list = os.listdir(dir)
     for file in file_list:
         if os.path.exists("D:/data/data_copy/RQ1/project_call/api_call/" + file):
