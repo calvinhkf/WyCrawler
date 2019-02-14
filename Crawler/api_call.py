@@ -186,13 +186,15 @@ def unsolved_proj():
     print(count)
 
 def extract_api_call():
-    dir = "D:/data/data_copy/RQ1/project_call/total_final1/"
+    dir = "D:/data/data_copy/RQ1/project_call/total_final/"
     file_list = os.listdir(dir)
     for file in file_list:
-        if os.path.exists("D:/data/data_copy/RQ1/project_call/api_call/" + file):
+        # if os.path.exists("D:/data/data_copy/RQ1/project_call/api_call/" + file):
+        #     continue
+        project_id = int(file.replace(".txt", ""))
+        if project_id != 1707:
             continue
         print("+++++++++++++++++++++++++++++++" + file)
-        project_id = int(file.replace(".txt", ""))
         json_data = read_json(os.path.join(dir, file))
         callInParent = json_data["callInParent"]
         lib_list = read_json("D:/data/data_copy/RQ1/lib_list/" + str(project_id) + ".json")

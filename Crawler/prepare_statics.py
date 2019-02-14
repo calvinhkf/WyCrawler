@@ -97,17 +97,19 @@ def dependency_statics():
     # print(count)
 
     # new_list = []
-    new_list = read_json("D:/data/data_copy/RQ1/dependency/total.txt")
-    print(len(new_list))
+    # # new_list = read_json("D:/data/data_copy/RQ1/dependency/total.txt")
+    # # print(len(new_list))
     # dir = "D:/data/data_copy/RQ1/dependency/maven_or_both"
     # files = os.listdir(dir)
     # for file in files:
+    #     project_id = int(file.replace(".txt", ""))
     #     data = read_json(os.path.join(dir, file))
     #     for lib in data:
     #         if 'id' in lib:
     #             project_id = lib["id"]
     #             print("-------------------- project_id: " + str(project_id))
     #             continue
+    #         lib["project_id"] = project_id
     #         new_list.append(lib)
     # print(len(new_list))
     # # write_json("D:/data/data_copy/RQ1/dependency/total.txt", new_list)
@@ -115,29 +117,48 @@ def dependency_statics():
     # dir = "D:/data/data_copy/RQ1/dependency/gradle_or_both"
     # files = os.listdir(dir)
     # for file in files:
+    #     project_id = int(file.replace(".txt", ""))
     #     print("-------------------- project_id: " + str(file))
     #     dependency_list = read_json(os.path.join(dir, file))
     #     for lib in dependency_list:
     #         lib["classifier"] = None
     #         lib["module"] = lib["path"]
     #         lib.pop("path")
+    #         lib["project_id"] = project_id
     #         new_list.append(lib)
     # write_json("D:/data/data_copy/RQ1/dependency/total.txt", new_list)
 
-    # new_list = read_json("E:/data/curr_result_statics/total.txt")
-    # print(len(new_list))
-    # for lib in new_list:
-    #     if "groupId" not in lib or "artifactId" not in lib or "version" not in lib or "type" not in lib:
-    #         print(False)
-    #         continue
-    #     groupId= lib["groupId"]
-    #     artifactId = lib["artifactId"]
-    #     version = lib["version"]
-    #     type_ = lib["type"]
-    #     if groupId is None or artifactId is None or version is None or type_ is None or '${' in groupId or '${' in artifactId or '${' in version or '${' in type_:
-    #         print("groupId: " + str(groupId) +"   artifactId: " + str(artifactId)+"   version: " + str(version)+"   type: " + str(type_) )
-    #         print(False)
-    #         continue
+    new_list = read_json("D:/data/data_copy/RQ1/dependency/total.txt")
+    print(len(new_list))
+    count = 0
+    snapcount = 0
+    final = []
+    for lib in new_list:
+        if "groupId" not in lib or "artifactId" not in lib or "version" not in lib or "type" not in lib:
+            print(False)
+            continue
+        groupId= lib["groupId"]
+        artifactId = lib["artifactId"]
+        version = lib["version"]
+        type_ = lib["type"]
+        if groupId is None or artifactId is None or version is None or type_ is None or '${' in groupId or '${' in artifactId or '${' in version or '${' in type_ or '@' in groupId or '@' in artifactId or '@' in version or '@' in type_:
+            print("groupId: " + str(groupId) +"   artifactId: " + str(artifactId)+"   version: " + str(version)+"   type: " + str(type_) )
+            print(False)
+            continue
+        if type(version) == list:
+            continue
+        if "classifier" in lib:
+            classifier = lib["classifier"]
+            if classifier is not None and ('${' in classifier or '@' in classifier):
+                continue
+        count += 1
+
+        if version.endswith("SNAPSHOT"):
+            snapcount += 1
+        final.append(lib)
+    print(count)
+    print(snapcount)
+    write_json("D:/data/data_copy/RQ1/dependency/final.txt", final)
     #     classifier = None
     #     if "classifier" in lib:
     #         classifier = lib["classifier"]
@@ -417,7 +438,7 @@ def check_data():
 # dependency_statics()
 # gradle_dependency_process()
 # maven_dependency_process()
-db = database.connectdb()
+# db = database.connectdb()
 # sql = "SELECT distinct(project_id) FROM project_lib_usage"
 # projs_result = database.querydb(db, sql)
 # projs = []
@@ -455,7 +476,7 @@ db = database.connectdb()
 # data = read_json(path)
 # print(len(data))
 
-check_data()
+# check_data()
 
 # projs = []
 # sql = "SELECT distinct project_id FROM `project_lib_usage_1.30`"
@@ -484,4 +505,41 @@ check_data()
 # for proj_id in new_list:
 #     sql = "delete from project_lib_usage where project_id = " + str(proj_id)
 #     database.execute_sql(db, sql)
+
+def get_library():
+    db = database.connectdb()
+    cursor = db.cursor()
+    usage_values = []
+    json_data = read_json("D:/data/data_copy/RQ1/dependency/final.txt")
+    print(len(json_data))
+    for lib in json_data:
+        groupId= lib["groupId"]
+        artifactId = lib["artifactId"]
+        version = lib["version"]
+        type_ = lib["type"]
+        classifier = None
+        if "classifier" in lib:
+            classifier = lib["classifier"]
+        if "module" in lib:
+            module_ = lib["module"]
+        elif "path" in lib:
+            module_ = lib["path"].replace("I:\\projects\\", "")
+        if module_ is None:
+            raise CustomizeException(groupId + " " + groupId + " " + artifactId + " " + version + " " + type_ + " " + str(classifier))
+        project_id = lib["project_id"]
+
+        usage_values.append((project_id, groupId, artifactId, version, type_, classifier, module_))
+        if len(usage_values) == 5000:
+            cursor.executemany(
+                'INSERT INTO `usage` (`project_id`, `group_str`, `name_str`, `version`, `type`, `classifier`, `module`) VALUE (%s,%s,%s,%s,%s,%s,%s)',
+                usage_values)
+            db.commit()
+            usage_values = []
+            print(5000)
+    cursor.executemany(
+        'INSERT INTO `usage` (`project_id`, `group_str`, `name_str`, `version`, `type`, `classifier`, `module`) VALUE (%s,%s,%s,%s,%s,%s,%s)',
+        usage_values)
+    db.commit()
+
+get_library()
 
