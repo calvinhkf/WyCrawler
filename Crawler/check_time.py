@@ -94,7 +94,7 @@ def time_interval(days):
 
 def get_maven_proj_update_within_three_months(num):
     proj_array = []
-    gradle_array = []
+    id_array = []
     with open('E:/data/projs.8.11.time.json', 'r') as f:
         content = f.read()
         m_dict = json.loads(content)
@@ -111,7 +111,7 @@ def get_maven_proj_update_within_three_months(num):
         head_commit_time3 = int(time.mktime(head_commit_time2))
 
         # if download_time3 - head_commit_time3 > time_interval(90) and download_time3 - head_commit_time3 <= time_interval(120):
-        if download_time3 - head_commit_time3 <= time_interval(90):
+        if download_time3 - head_commit_time3 <= time_interval(num):
             type_ = entry["proj-type"]
             # if type_ == "proj-type: maven":
             # if type_ == "proj-type: maven-gradle":
@@ -121,30 +121,30 @@ def get_maven_proj_update_within_three_months(num):
             query_result = database.querydb(db, sql)
             if len(query_result) > 0:
                 id = query_result[0][0]
-                # gradle_array.append(url)
-                url = url.replace("https://github.com/", "").replace("/", "__fdse__")
-                name = url
-                if os.path.exists("D:/gradle_maven200_500/" + url):
-                    url = "D:/gradle_maven200_500/" + url
-                elif os.path.exists("D:/gradle_maven500/" + url):
-                    url = "D:/gradle_maven500/" + url
-                elif os.path.exists("C:/gradle200_500/" + url):
-                    url = "C:/gradle200_500/" + url
-                elif os.path.exists("C:/gradle500/" + url):
-                    url = "C:/gradle500/" + url
-                elif os.path.exists("E:/maven200_500/" + url):
-                    url = "E:/maven200_500/" + url
-                elif os.path.exists("E:/maven500/" + url):
-                    url = "E:/maven500/" + url
-                else:
-                    raise CustomizeException("Not in local:" + url)
-                obj = {}
-                obj["id"] = id
-                obj["name"] = name
-                obj["local_addr"] = url
-                proj_array.append(obj)
-
-                final_result[str(query_result[0][0])] = url
+                id_array.append(id)
+                # url = url.replace("https://github.com/", "").replace("/", "__fdse__")
+                # name = url
+                # if os.path.exists("D:/gradle_maven200_500/" + url):
+                #     url = "D:/gradle_maven200_500/" + url
+                # elif os.path.exists("D:/gradle_maven500/" + url):
+                #     url = "D:/gradle_maven500/" + url
+                # elif os.path.exists("C:/gradle200_500/" + url):
+                #     url = "C:/gradle200_500/" + url
+                # elif os.path.exists("C:/gradle500/" + url):
+                #     url = "C:/gradle500/" + url
+                # elif os.path.exists("E:/maven200_500/" + url):
+                #     url = "E:/maven200_500/" + url
+                # elif os.path.exists("E:/maven500/" + url):
+                #     url = "E:/maven500/" + url
+                # else:
+                #     raise CustomizeException("Not in local:" + url)
+                # obj = {}
+                # obj["id"] = id
+                # obj["name"] = name
+                # obj["local_addr"] = url
+                # proj_array.append(obj)
+                #
+                # final_result[str(query_result[0][0])] = url
                 # with open("four_months.txt", "a") as f:
                 #     f.write(str(query_result[0][0]) + "\n")
                 #     f.write(query_result[0][1] + "\n")
@@ -152,10 +152,10 @@ def get_maven_proj_update_within_three_months(num):
             else:
                 raise CustomizeException("Not in db:" + url)
             cnt += 1
-    # print(cnt)
-    print(proj_array)
-    print(len(proj_array))
-    write_json("three_month.txt", proj_array)
+    print(id_array)
+    # print(proj_array)
+    # print(len(proj_array))
+    # write_json("three_month.txt", proj_array)
     # write_json("four_month.txt", final_result)
 
     # return gradle_array
