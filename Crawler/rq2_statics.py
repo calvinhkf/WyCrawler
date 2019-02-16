@@ -76,7 +76,7 @@ def update_type_and_version_id_in_lib_update():
     curr_values = []
     prev_versions = []
     curr_versions = []
-    sql = "SELECT id,group_str,name_str,prev_version,curr_version,type,classifier FROM lib_update"
+    sql = "SELECT id,group_str,name_str,prev_version,curr_version,type,classifier FROM lib_update where id > 3889039"
     update_info = database.querydb(db, sql)
     for entry in update_info:
         groupId = entry[1]
