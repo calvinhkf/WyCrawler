@@ -484,18 +484,30 @@ def s_3_2_1():
     # percent_count = read_json("D:/data/data_copy/figure/datas/s_3_2_1.txt")
     # data_group(percent_count, 2, "The Percent of a Project’s Methods That Call Library APIs (%)", "The Number of Projects (#)", False)
 
-    keys = [''] * 45
-    values = [0] * 45
+    keys = [''] * 30
+    values = [0] * 30
     keys[0] = '0'
-    for i in range(0, 44):
+    for i in range(0, 25):
         start = i * 2
         end = i * 2 + 2
         keys[i + 1] = str(start) + "-" + str(end)
+    keys[26] = '50-60'
+    keys[27] = '60-70'
+    keys[28] = '70-80'
+    keys[29] = '80-90'
     usage_count = read_json("D:/data/data_copy/figure/datas/s_3_2_1.txt")
     print(len(usage_count))
     count = 0
     for num in usage_count:
-        if num == 0:
+        if num > 80 and num <= 90:
+            values[29] += 1
+        elif num > 70 and num <= 80:
+            values[28] += 1
+        elif num > 60 and num <= 70:
+            values[27] += 1
+        elif num > 50 and num <= 60:
+            values[26] += 1
+        elif num == 0:
             values[0] += 1
         else:
             index = num // 2 + 1
@@ -511,19 +523,34 @@ def s_3_2_2():
     # print(len(percent_count))
     # data_group(percent_count, 2, "The Percent of a Library Version’s APIs That Are Called Across Projects (%)", "The Number of Library Versions (#)", False)
 
-    keys = [''] * 51
-    values = [0] * 51
+    keys = [''] * 31
+    values = [0] * 31
     keys[0] = '0'
-    for i in range(0, 50):
+    for i in range(0, 25):
         start = i * 2
         end = i * 2 + 2
         keys[i + 1] = str(start) + "-" + str(end)
-    version_dic = read_json("D:/data/data_copy/RQ1/project_call/lib_percent.txt")
-    usage_count = list(version_dic.values())
+    keys[26] = '50-60'
+    keys[27] = '60-70'
+    keys[28] = '70-80'
+    keys[29] = '80-90'
+    keys[30] = '90-100'
+    percent_count = read_json("D:/data/data_copy/RQ1/project_call/lib_percent.txt")
+    usage_count = list(percent_count.values())
     print(len(usage_count))
     count = 0
     for num in usage_count:
-        if num == 0:
+        if num > 90 and num <= 100:
+            values[30] += 1
+        elif num > 80 and num <= 90:
+            values[29] += 1
+        elif num > 70 and num <= 80:
+            values[28] += 1
+        elif num > 60 and num <= 70:
+            values[27] += 1
+        elif num > 50 and num <= 60:
+            values[26] += 1
+        elif num == 0:
             values[0] += 1
         else:
             index = num // 2 + 1
@@ -560,18 +587,33 @@ def s_3_2_3():
     # percent_count = read_json("D:/data/data_copy/figure/datas/s_3_2_3.txt")
     # print(len(percent_count))
     # data_group(percent_count, 2, "The Percent of a Library’s APIs That Are Called Across Projects (%)","The Number of Libraries (#)", False)
-    keys = [''] * 51
-    values = [0] * 51
+    keys = [''] * 31
+    values = [0] * 31
     keys[0] = '0'
-    for i in range(0, 50):
+    for i in range(0, 25):
         start = i * 2
         end = i * 2 + 2
         keys[i + 1] = str(start) + "-" + str(end)
+    keys[26] = '50-60'
+    keys[27] = '60-70'
+    keys[28] = '70-80'
+    keys[29] = '80-90'
+    keys[30] = '90-100'
     usage_count = read_json("D:/data/data_copy/figure/datas/s_3_2_3.txt")
     print(len(usage_count))
     count = 0
     for num in usage_count:
-        if num == 0:
+        if num > 90 and num <= 100:
+            values[30] += 1
+        elif num > 80 and num <= 90:
+            values[29] += 1
+        elif num > 70 and num <= 80:
+            values[28] += 1
+        elif num > 60 and num <= 70:
+            values[27] += 1
+        elif num > 50 and num <= 60:
+            values[26] += 1
+        elif num == 0:
             values[0] += 1
         else:
             index = num // 2 + 1
@@ -731,7 +773,7 @@ def s_3_3_2 ():
     keys[30] = '90-100'
     keys[31] = '100-300'
     keys[32] = '300-2240'
-    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_2_three.txt")
+    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_2.txt")
     print(len(usage_count))
     count = 0
     for num in usage_count:
@@ -811,7 +853,7 @@ def s_3_3_3 ():
     keys[30] = '90-100'
     keys[31] = '100-300'
     keys[32] = '300-2240'
-    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_3_three.txt")
+    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_3.txt")
     print(len(usage_count))
     count = 0
     for num in usage_count:
@@ -847,7 +889,7 @@ def s_3_3_3 ():
 # s_3_1_4_1()
 # s_3_1_4_2()
 # s_3_1_5()
-# s_3_1_6()
+s_3_1_6()
 # s_3_1_7()
 # lib_used_api()
 # s_3_2_1()
@@ -856,7 +898,7 @@ def s_3_3_3 ():
 # s_3_2_3()
 # s_3_3_1()
 # s_3_3_2()
-s_3_3_3()
+# s_3_3_3()
 # outdateness()
 # release()
 

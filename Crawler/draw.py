@@ -9,26 +9,26 @@ def draw_bar(x,y,x_label,y_label):
     Times_New_Roman = matplotlib.font_manager.FontProperties(fname='C:\\Windows\\Fonts\\times.ttf')
 
     x_num = range(len(x))
-    plt.xticks(x_num, x, rotation=75, fontproperties=Times_New_Roman, fontsize=20)
+    plt.xticks(x_num, x, rotation=75, fontproperties=Times_New_Roman, fontsize=21)
     # plt.xticks(x_num, x, fontproperties=Times_New_Roman, fontsize=11)
-    plt.yticks(fontproperties=Times_New_Roman, fontsize=20)
+    plt.yticks(fontproperties=Times_New_Roman, fontsize=21)
 
     # plt.xlabel("Java项目数量")
     # plt.ylabel("第三方库数量（个）")
 
-    plt.xlabel(x_label, fontproperties=Times_New_Roman, fontsize=20)
-    plt.ylabel(y_label, fontproperties=Times_New_Roman, fontsize=20)
+    plt.xlabel(x_label, fontproperties=Times_New_Roman, fontsize=21)
+    plt.ylabel(y_label, fontproperties=Times_New_Roman, fontsize=21)
 
     # plt.legend()
     for a, b in zip(index, y):
-        plt.text(a, b + 0.01, '%.0f' % b, ha='center', va='bottom', rotation=30, fontproperties=Times_New_Roman, fontsize=18)
+        plt.text(a, b + 0.01, '%.0f' % b, ha='center', va='bottom', rotation=0, fontproperties=Times_New_Roman, fontsize=17)
     plt.rcParams['font.sans-serif'] = ['SimHei']
     plt.rcParams['axes.unicode_minus'] = False
     plt.show()
 
 def draw_barh(labels, value):
     index = np.arange(len(value))
-    b=plt.barh(index, value, color='lightblue')
+    b=plt.barh(index, value, height=0.5, color='lightblue')
 
     Times_New_Roman = matplotlib.font_manager.FontProperties(fname='C:\\Windows\\Fonts\\times.ttf')
 
@@ -40,7 +40,7 @@ def draw_barh(labels, value):
 
     for rect in b:
         w = rect.get_width()
-        plt.text(w, rect.get_y()+rect.get_height()/2, '%d' % int(w), ha='left', va='center', fontproperties=Times_New_Roman, fontsize=18)
+        plt.text(w, rect.get_y()+rect.get_height()/2, '%d' % int(w), ha='left', va='center', fontproperties=Times_New_Roman, fontsize=17)
     plt.rcParams['font.sans-serif'] = ['SimHei']
     plt.rcParams['axes.unicode_minus'] = False
     plt.show()
