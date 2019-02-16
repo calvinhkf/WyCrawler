@@ -19,49 +19,51 @@ def project():
     print(len(ids))
 
 def s_3_1_1():
-    # usage_count = []
-    # for id in projects:
-    #     # print(id)
-    #     sql = "SELECT count(DISTINCT group_str,name_str,version) FROM `usage` WHERE project_id = " + str(id)
-    #     usage_info = database.querydb(db, sql)
-    #     usage_count.append(usage_info[0][0])
-    #     # usage_count.append(len(usage_info))
-    #     # if len(usage_info) == 732:
-    #     #     print(id)
-    #     # print(str(id)+" "+str(len(usage_info)))
+    usage_count = []
+    for id in projects:
+        # print(id)
+        sql = "SELECT count(DISTINCT group_str,name_str,version) FROM `usage` WHERE project_id = " + str(id)
+        usage_info = database.querydb(db, sql)
+        usage_count.append(usage_info[0][0])
+        if usage_info[0][0] == 1347:
+            print(id)
+        # usage_count.append(len(usage_info))
+        # if len(usage_info) == 732:
+        #     print(id)
+        # print(str(id)+" "+str(len(usage_info)))
     # usage_count.sort()
     # write_json("D:/data/data_copy/figure/datas/s_3_1_1.txt", usage_count)
-    keys = ['']*25
-    values = [0]*25
-    keys[0] = '0'
-    values[0] = 1329 - 1281
-    for i in range(0,20):
-        start = i*5
-        end = i*5 + 5
-        keys[i+1] = str(start) + "-" + str(end)
-    keys[21] = '100-150'
-    keys[22] = '150-200'
-    keys[23] = '200-250'
-    keys[24] = '>250'
-    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_1.txt")
-    print(len(usage_count))
-    count = 0
-    for num in usage_count:
-        if num > 250:
-            values[24] += 1
-        elif num > 200 and num <= 250:
-            values[23] += 1
-        elif num > 150 and num <= 200:
-            values[22] += 1
-        elif num > 100 and num <= 150:
-            values[21] += 1
-        else:
-            index = num // 5 + 1
-            if num % 5 == 0:
-                index -= 1
-            values[index] += 1
-
-    draw_bar(keys, values, "The Number of Library Versions Used in a Project (#)", "The Number of Projects (#)")
+    # keys = ['']*25
+    # values = [0]*25
+    # keys[0] = '0'
+    # values[0] = 1329 - 1281
+    # for i in range(0,20):
+    #     start = i*5
+    #     end = i*5 + 5
+    #     keys[i+1] = str(start) + "-" + str(end)
+    # keys[21] = '100-150'
+    # keys[22] = '150-200'
+    # keys[23] = '200-250'
+    # keys[24] = '>250'
+    # usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_1.txt")
+    # print(len(usage_count))
+    # count = 0
+    # for num in usage_count:
+    #     if num > 250:
+    #         values[24] += 1
+    #     elif num > 200 and num <= 250:
+    #         values[23] += 1
+    #     elif num > 150 and num <= 200:
+    #         values[22] += 1
+    #     elif num > 100 and num <= 150:
+    #         values[21] += 1
+    #     else:
+    #         index = num // 5 + 1
+    #         if num % 5 == 0:
+    #             index -= 1
+    #         values[index] += 1
+    #
+    # draw_bar(keys, values, "The Number of Library Versions Used in a Project (#)", "The Number of Projects (#)")
 
     # print(usage_count)
     # data_group_unique(usage_count, 10, "the number of library versions used in a project", "the number of projects")
@@ -134,33 +136,28 @@ def s_3_1_3():
 
     keys = [''] * 25
     values = [0] * 25
-    for i in range(0, 20):
-        start = i * 2
-        end = i * 2 + 2
-        keys[i] = str(start) + "-" + str(end)
-    keys[20] = '40-80'
-    keys[21] = '80-120'
-    keys[22] = '120-160'
-    keys[23] = '160-200'
-    keys[24] = '>200'
+    for i in range(1, 21):
+        keys[i - 1] = str(i)
+    keys[20] = '20-40'
+    keys[21] = '40-60'
+    keys[22] = '60-80'
+    keys[23] = '80-100'
+    keys[24] = '>100'
     usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_3.txt")
     count = 0
     for num in usage_count:
-        if num > 200:
+        if num > 100:
             values[24] += 1
-        elif num > 160 and num <= 200:
+        elif num > 80 and num <= 100:
             values[23] += 1
-        elif num > 120 and num <= 160:
+        elif num > 60 and num <= 80:
             values[22] += 1
-        elif num > 80 and num <= 120:
+        elif num > 40 and num <= 60:
             values[21] += 1
-        elif num > 40 and num <= 80:
+        elif num > 20 and num <= 40:
             values[20] += 1
         else:
-            index = num // 2
-            if num % 2 == 0:
-                index -= 1
-            values[index] += 1
+            values[num - 1] += 1
     draw_bar(keys, values, "The Number of Projects Using a Library (#)", "The Number of Libraries (#)")
 
     # usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_3.txt")
@@ -347,9 +344,17 @@ def s_3_1_7():
     # usage_count = [('3.8.1', 47), ('3.8.2', 8), ('4.0', 2), ('4.1', 1), ('4.2', 2), ('4.3', 1), ('4.3.1', 1), ('4.4', 11), ('4.5', 11),
     #  ('4.6', 4), ('4.7', 15), ('4.8', 7), ('4.8.1', 26), ('4.8.2', 52), ('4.9', 9), ('4.10', 84), ('4.11', 269), ('4.12', 599),
     #  ('4.12-beta-3', 1), ('4.13-SNAPSHOT', 2)]
-    values = [value for key, value in usage_count]
-    keys = [key for key, value in usage_count]
-    draw_bar(keys, values, "JUnit Version", "The Number of Projects (#)")
+    new_usage = {}
+    for entry in usage_count:
+        if entry[1] != 0:
+            new_usage[entry[0]] = entry[1]
+    new_usage = sorted(new_usage.items(), key=lambda d: d[1], reverse=True)
+    new_usage = new_usage[::-1]
+    print(new_usage)
+    values = [value for key, value in new_usage]
+    keys = [key for key, value in new_usage]
+    draw_barh(keys, values)
+    # draw_bar(keys, values, "JUnit Version", "The Number of Projects (#)")
 
 def data_group(li,step,x_label,y_label, is_single_label):
     li.sort()
@@ -515,6 +520,7 @@ def s_3_2_1():
             if num % 2 == 0:
                 index -= 1
             values[index] += 1
+    values[0] += 1329-len(usage_count)
     draw_bar(keys, values, "The Percent of a Project’s Methods That Call Library APIs (%)", "The Number of Projects (#)")
 
 def s_3_2_2():
@@ -523,42 +529,44 @@ def s_3_2_2():
     # print(len(percent_count))
     # data_group(percent_count, 2, "The Percent of a Library Version’s APIs That Are Called Across Projects (%)", "The Number of Library Versions (#)", False)
 
-    keys = [''] * 31
-    values = [0] * 31
-    keys[0] = '0'
+    keys = [''] * 30
+    values = [0] * 30
+    # keys[0] = '0'
     for i in range(0, 25):
         start = i * 2
         end = i * 2 + 2
-        keys[i + 1] = str(start) + "-" + str(end)
-    keys[26] = '50-60'
-    keys[27] = '60-70'
-    keys[28] = '70-80'
-    keys[29] = '80-90'
-    keys[30] = '90-100'
+        keys[i] = str(start) + "-" + str(end)
+    keys[25] = '50-60'
+    keys[26] = '60-70'
+    keys[27] = '70-80'
+    keys[28] = '80-90'
+    keys[29] = '90-100'
     percent_count = read_json("D:/data/data_copy/RQ1/project_call/lib_percent.txt")
     usage_count = list(percent_count.values())
     print(len(usage_count))
     count = 0
     for num in usage_count:
         if num > 90 and num <= 100:
-            values[30] += 1
-        elif num > 80 and num <= 90:
             values[29] += 1
-        elif num > 70 and num <= 80:
+        elif num > 80 and num <= 90:
             values[28] += 1
-        elif num > 60 and num <= 70:
+        elif num > 70 and num <= 80:
             values[27] += 1
-        elif num > 50 and num <= 60:
+        elif num > 60 and num <= 70:
             values[26] += 1
-        elif num == 0:
-            values[0] += 1
+        elif num > 50 and num <= 60:
+            values[25] += 1
+        # elif num == 0:
+        #     values[0] += 1
         else:
-            index = num // 2 + 1
+            index = num // 2
             index = int(round(index, 0))
             if num % 2 == 0:
                 index -= 1
+            if index < 0:
+                index = 0
             values[index] += 1
-    draw_bar(keys, values, "The Percent of a Library Version’s APIs That Are Called Across Projects (%)", "The Number of Library Versions (#)")
+    # draw_bar(keys, values, "The Percent of a Library Version’s APIs That Are Called Across Projects (%)", "The Number of Library Versions (#)")
 
 def s_3_2_3():
     # new_dic = {}
@@ -587,41 +595,43 @@ def s_3_2_3():
     # percent_count = read_json("D:/data/data_copy/figure/datas/s_3_2_3.txt")
     # print(len(percent_count))
     # data_group(percent_count, 2, "The Percent of a Library’s APIs That Are Called Across Projects (%)","The Number of Libraries (#)", False)
-    keys = [''] * 31
-    values = [0] * 31
-    keys[0] = '0'
+    keys = [''] * 30
+    values = [0] * 30
+    # keys[0] = '0'
     for i in range(0, 25):
         start = i * 2
         end = i * 2 + 2
-        keys[i + 1] = str(start) + "-" + str(end)
-    keys[26] = '50-60'
-    keys[27] = '60-70'
-    keys[28] = '70-80'
-    keys[29] = '80-90'
-    keys[30] = '90-100'
+        keys[i] = str(start) + "-" + str(end)
+    keys[25] = '50-60'
+    keys[26] = '60-70'
+    keys[27] = '70-80'
+    keys[28] = '80-90'
+    keys[29] = '90-100'
     usage_count = read_json("D:/data/data_copy/figure/datas/s_3_2_3.txt")
     print(len(usage_count))
     count = 0
     for num in usage_count:
         if num > 90 and num <= 100:
-            values[30] += 1
-        elif num > 80 and num <= 90:
             values[29] += 1
-        elif num > 70 and num <= 80:
+        elif num > 80 and num <= 90:
             values[28] += 1
-        elif num > 60 and num <= 70:
+        elif num > 70 and num <= 80:
             values[27] += 1
-        elif num > 50 and num <= 60:
+        elif num > 60 and num <= 70:
             values[26] += 1
-        elif num == 0:
-            values[0] += 1
+        elif num > 50 and num <= 60:
+            values[25] += 1
+        # elif num == 0:
+        #     values[0] += 1
         else:
-            index = num // 2 + 1
+            index = num // 2
             index = int(round(index, 0))
             if num % 2 == 0:
                 index -= 1
+            if index < 0:
+                index = 0
             values[index] += 1
-    draw_bar(keys, values, "The Percent of a Library’s APIs That Are Called Across Projects (%)","The Number of Libraries (#)")
+    # draw_bar(keys, values, "The Percent of a Library’s APIs That Are Called Across Projects (%)","The Number of Libraries (#)")
 
 def outdateness():
     # json_data = read_json("E:/data/projs.8.11.time.json")
@@ -694,7 +704,7 @@ def s_3_3_1():
     keys[29] = '80-90'
     keys[30] = '90-100'
     keys[31] = '100-300'
-    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_1_three.txt")
+    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_1.txt")
     print(len(usage_count))
     count = 0
     for num in usage_count:
@@ -799,7 +809,7 @@ def s_3_3_2 ():
             if num % 2 == 0:
                 index -= 1
             values[index] += 1
-    draw_bar(keys, values, "The Average Usage Outdatedness of the Library Dependencies on a Library Version (#)","The Number of Library Versions (#)")
+    # draw_bar(keys, values, "The Average Usage Outdatedness of the Library Dependencies on a Library Version (#)","The Number of Library Versions (#)")
 
 def s_3_3_3 ():
     # nine_month = read_json("D:/data/data_copy/figure/datas/three_month.txt")
@@ -879,7 +889,7 @@ def s_3_3_3 ():
             if num % 2 == 0:
                 index -= 1
             values[index] += 1
-    draw_bar(keys, values, "The Average Usage Outdatedness of the Library Dependencies on a Library (#)","The Number of Libraries (#)")
+    # draw_bar(keys, values, "The Average Usage Outdatedness of the Library Dependencies on a Library (#)","The Number of Libraries (#)")
 
 
 # project()
@@ -889,14 +899,14 @@ def s_3_3_3 ():
 # s_3_1_4_1()
 # s_3_1_4_2()
 # s_3_1_5()
-s_3_1_6()
+# s_3_1_6()
 # s_3_1_7()
 # lib_used_api()
 # s_3_2_1()
 # lib_percent()
 # s_3_2_2()
 # s_3_2_3()
-# s_3_3_1()
+s_3_3_1()
 # s_3_3_2()
 # s_3_3_3()
 # outdateness()

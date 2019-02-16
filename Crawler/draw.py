@@ -36,7 +36,8 @@ def draw_barh(labels, value):
     plt.yticks(y_, labels, fontproperties=Times_New_Roman, fontsize=17)
     plt.xticks(fontproperties=Times_New_Roman, fontsize=20)
 
-    plt.xlabel("The Number of Projects (#)", fontproperties=Times_New_Roman, fontsize=20)
+    plt.xlabel("The Number of Projects (#)", fontproperties=Times_New_Roman, fontsize=21)
+    # plt.ylabel("JUnit Version", fontproperties=Times_New_Roman, fontsize=21)
 
     for rect in b:
         w = rect.get_width()
