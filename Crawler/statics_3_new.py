@@ -194,6 +194,7 @@ def s_3_1_4_1():
     keys[24] = '35-40'
     keys[25] = '>40'
     usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_4.1.txt")
+    print(len(usage_count))
     count = 0
     for num in usage_count:
         if num > 40:
@@ -208,7 +209,8 @@ def s_3_1_4_1():
             values[21] += 1
         else:
             values[num] += 1
-    draw_bar(keys, values, "The Number of Libraries Whose Different Versions Are Used in a Project (#)", "The Number of Projects (#)")
+    values[0] += 48
+    # draw_bar(keys, values, "The Number of Libraries Whose Multiple Versions Are Used in a Project (#)", "The Number of Projects (#)")
 
     # usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_4.1.txt")
     # data_group(usage_count, 1, "the number of libraries whose different versions are used in a project", "the number of projects", True)
@@ -232,7 +234,7 @@ def s_3_1_4_2():
 
     usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_4.2.txt")
     print(len(usage_count))
-    data_group(usage_count, 1, "The Number of Used Versions of the Same Library (#)", "The Number of Multi-Version Cases (#)", True)
+    data_group(usage_count, 1, "The Number of Used Multiple Versions of the Same Library (#)", "The Number of Cases of Using Multiple Versions (#)", True)
 
 def s_3_1_5():
     # usage_count = []
@@ -277,6 +279,7 @@ def s_3_1_5():
             if num % 5 == 0:
                 index -= 1
             values[index] += 1
+    values[0] += 48
     draw_bar(keys, values, "The Number of Snapshot Versions in a Project (#)", "The Number of Projects (#)")
 
     # usage_count = read_json("D:/data/data_copy/figure/datas/s_3_1_5.txt")
@@ -897,7 +900,7 @@ def s_3_3_3 ():
 # s_3_1_2()
 # s_3_1_3()
 # s_3_1_4_1()
-# s_3_1_4_2()
+s_3_1_4_2()
 # s_3_1_5()
 # s_3_1_6()
 # s_3_1_7()
@@ -906,7 +909,7 @@ def s_3_3_3 ():
 # lib_percent()
 # s_3_2_2()
 # s_3_2_3()
-s_3_3_1()
+# s_3_3_1()
 # s_3_3_2()
 # s_3_3_3()
 # outdateness()
