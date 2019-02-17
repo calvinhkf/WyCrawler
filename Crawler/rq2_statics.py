@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 import database
 
@@ -179,9 +180,59 @@ def update_classifier():
         curr_values)
     db.commit()
 
+def update_time_in_lib_update():
+    db = database.connectdb()
+    cursor = db.cursor()
+    sql = "SELECT id,prev_version_id,curr_version_id FROM lib_update where prev_version_id is not null or curr_version_id is not null"
+    query_result = database.querydb(db, sql)
+    curr_values = []
+    for entry in query_result:
+        id = entry[0]
+        print(id)
+        prev_version_id = entry[1]
+        curr_version_id = entry[2]
+        prev_date  = None
+        curr_date = None
+        library_id = None
+        prev_num = None
+        curr_num = None
+        if prev_version_id is not None:
+            sql = "SELECT library_id,parsed_date FROM library_versions where id = " + str(prev_version_id)
+            prev_info = database.querydb(db, sql)
+            library_id = prev_info[0][0]
+            prev_date = prev_info[0][1]
+            prev_num = parse_date(prev_date)
+        if curr_version_id is not None:
+            sql = "SELECT library_id,parsed_date FROM library_versions where id = " + str(curr_version_id)
+            curr_info = database.querydb(db, sql)
+            library_id = curr_info[0][0]
+            curr_date = curr_info[0][1]
+            curr_num = parse_date(curr_date)
+        curr_values.append((id, library_id, prev_date, curr_date, prev_num, curr_num))
+        if len(curr_values) == 5000:
+            cursor.executemany(
+                'INSERT INTO lib_update (id,library_id, prev_date, curr_date, prev_num, curr_num) value (%s,%s,%s,%s,%s,%s) on duplicate key update classifier = values(classifier)',
+                curr_values)
+            db.commit()
+            curr_values = []
+            print(str(5000))
+        # break
+    # cursor.executemany(
+    #     'INSERT INTO lib_update (id,classifier) value (%s,%s) on duplicate key update classifier = values(classifier)',
+    #     curr_values)
+    # db.commit()
+
+def parse_date(date_str):
+    time1 = time.strptime(date_str, "%Y-%m-%d")
+    time_int = int(time.mktime(time1))
+    return time_int
+
 # distinct()
 # lib_update_data_to_db()
 # update_classifier()
 db = database.connectdb()
 cursor = db.cursor()
-update_type_and_version_id_in_lib_update()
+# update_type_and_version_id_in_lib_update()
+time1 = parse_date("2012-03-09")
+time2 = parse_date("2013-04-12")
+print((time2-time1)/60/60/24)
