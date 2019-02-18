@@ -378,13 +378,25 @@ def temp_sql():
     # query_result = database.querydb(db, sql)
     # print(query_result[0][0])
 
-    sql = "SELECT parsed_date FROM library_versions where id < 4 and id > 1"
+    # sql = "SELECT parsed_date FROM library_versions where id < 4 and id > 1"
+    # query_result = database.querydb(db, sql)
+    # print(query_result[0][0])
+    # time1 = parse_date(query_result[0][0])
+    # print(query_result[1][0])
+    # time2 = parse_date(query_result[1][0])
+    # print((time2 - time1) / 60 / 60 / 24)
+
+    sql = "SELECT prev_version,curr_version FROM third_party_library.lib_update where prev_version_id is null or curr_version_id is null "
     query_result = database.querydb(db, sql)
-    print(query_result[0][0])
-    time1 = parse_date(query_result[0][0])
-    print(query_result[1][0])
-    time2 = parse_date(query_result[1][0])
-    print((time2 - time1) / 60 / 60 / 24)
+    print(len(query_result))
+    # print(query_result[0][0])
+    count = 0
+    for entry in query_result:
+        prev_version = entry[0]
+        curr_version = entry[1]
+        if prev_version.endswith("SNAPSHOT") or curr_version.endswith("SNAPSHOT"):
+            count += 1
+    print(count)
 
 # distinct()
 # lib_update_data_to_db()
@@ -396,9 +408,9 @@ cursor = db.cursor()
 # time1 = parse_date("2012-03-09")
 # time2 = parse_date("2013-04-12")
 # print((time2-time1)/60/60/24)
-parse_gradle_update()
+# parse_gradle_update()
 # update_time_in_lib_update()
-# temp_sql()
+temp_sql()
 
 
 
