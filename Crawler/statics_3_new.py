@@ -755,63 +755,63 @@ def s_3_3_2 ():
     # print(len(usage_count))
     # write_json("D:/data/data_copy/figure/datas/s_3_3_2_three.txt", usage_count)
 
-    # versions = read_json("D:/data/data_copy/figure/datas/version_ids.txt")
-    # usage_count = []
-    # for id in versions:
-    #     # print(id)
-    #     sql = "SELECT outdate FROM project_lib_usage WHERE version_id = " + str(id)
-    #     usage_info = database.querydb(db, sql)
-    #     total = 0
-    #     for entry in usage_info:
-    #         total += entry[0]
-    #     usage_count.append(total/len(usage_info))
+    versions = read_json("D:/data/data_copy/figure/datas/version_ids.txt")
+    usage_count = []
+    for id in versions:
+        # print(id)
+        sql = "SELECT outdate FROM project_lib_usage WHERE version_id = " + str(id)
+        usage_info = database.querydb(db, sql)
+        total = 0
+        for entry in usage_info:
+            total += entry[0]
+        usage_count.append(total/len(usage_info))
+        if total/len(usage_info) == 2237:
+            print(id)
     # usage_count.sort()
     # print(usage_count)
     # print(len(usage_count))
     # write_json("D:/data/data_copy/figure/datas/s_3_3_2.txt", usage_count)
 
+    # keys = [''] * 33
+    # values = [0] * 33
+    # keys[0] = '0'
+    # for i in range(0, 25):
+    #     start = i * 2
+    #     end = i * 2 + 2
+    #     keys[i + 1] = str(start) + "-" + str(end)
+    # keys[26] = '50-60'
+    # keys[27] = '60-70'
+    # keys[28] = '70-80'
+    # keys[29] = '80-90'
+    # keys[30] = '90-100'
+    # keys[31] = '100-300'
+    # keys[32] = '300-2240'
     # usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_2.txt")
-    # data_group(usage_count, 20, "The Average Usage Outdatedness of the Library Dependencies on a Library Version (#)","The Number of Library Versions (#)", False)
-    keys = [''] * 33
-    values = [0] * 33
-    keys[0] = '0'
-    for i in range(0, 25):
-        start = i * 2
-        end = i * 2 + 2
-        keys[i + 1] = str(start) + "-" + str(end)
-    keys[26] = '50-60'
-    keys[27] = '60-70'
-    keys[28] = '70-80'
-    keys[29] = '80-90'
-    keys[30] = '90-100'
-    keys[31] = '100-300'
-    keys[32] = '300-2240'
-    usage_count = read_json("D:/data/data_copy/figure/datas/s_3_3_2.txt")
-    print(len(usage_count))
-    count = 0
-    for num in usage_count:
-        if num > 300 and num <= 2240:
-            values[32] += 1
-        elif num > 100 and num <= 300:
-            values[31] += 1
-        elif num > 90 and num <= 100:
-            values[30] += 1
-        elif num > 80 and num <= 90:
-            values[29] += 1
-        elif num > 70 and num <= 80:
-            values[28] += 1
-        elif num > 60 and num <= 70:
-            values[27] += 1
-        elif num > 50 and num <= 60:
-            values[26] += 1
-        elif num == 0:
-            values[0] += 1
-        else:
-            index = num // 2 + 1
-            index = int(round(index, 0))
-            if num % 2 == 0:
-                index -= 1
-            values[index] += 1
+    # print(len(usage_count))
+    # count = 0
+    # for num in usage_count:
+    #     if num > 300 and num <= 2240:
+    #         values[32] += 1
+    #     elif num > 100 and num <= 300:
+    #         values[31] += 1
+    #     elif num > 90 and num <= 100:
+    #         values[30] += 1
+    #     elif num > 80 and num <= 90:
+    #         values[29] += 1
+    #     elif num > 70 and num <= 80:
+    #         values[28] += 1
+    #     elif num > 60 and num <= 70:
+    #         values[27] += 1
+    #     elif num > 50 and num <= 60:
+    #         values[26] += 1
+    #     elif num == 0:
+    #         values[0] += 1
+    #     else:
+    #         index = num // 2 + 1
+    #         index = int(round(index, 0))
+    #         if num % 2 == 0:
+    #             index -= 1
+    #         values[index] += 1
     # draw_bar(keys, values, "The Average Usage Outdatedness of the Library Dependencies on a Library Version (#)","The Number of Library Versions (#)")
 
 def s_3_3_3 ():
@@ -900,7 +900,7 @@ def s_3_3_3 ():
 # s_3_1_2()
 # s_3_1_3()
 # s_3_1_4_1()
-s_3_1_4_2()
+# s_3_1_4_2()
 # s_3_1_5()
 # s_3_1_6()
 # s_3_1_7()
