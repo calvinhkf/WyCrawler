@@ -561,7 +561,27 @@ def getSnapshot():
         count += 1
     print(count) #6710
 
+def getSnapshotDependency():
+    sql= "SELECT group_str,name_str,version FROM `usage` where version like '%SNAPSHOT'"
+    query_result  = database.querydb(db, sql)
+    print(len(query_result))
+    count = 0
+    for entry in query_result:
+        groupId = entry[0]
+        artifactId = entry[1]
+        version = entry[2]
+        sql = "SELECT * FROM library_versions WHERE group_str = '" + str(groupId) + "' and name_str = '" + str(
+            artifactId) + "' and version = '" + str(version) + "'"
+        version_info = database.querydb(db, sql)
+        version_id = None
+        if len(version_info) != 0:
+            version_id = version_info[0][0]
+        if version_id is not None:
+            continue
+        count += 1
+    print(count) #39221
+
 db = database.connectdb()
 # get_library()
+# getSnapshot()
 getSnapshot()
-
