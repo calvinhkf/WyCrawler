@@ -38,7 +38,7 @@ def lib_update_data_to_db():
     db = database.connectdb()
     cursor = db.cursor()
     update_values = []
-    dir = "C:/data/three_month/lib_update_gradle"
+    dir = "D:/data/data_copy/lib_update_gradle"
     file_list = os.listdir(dir)
     count = 0
     for file in file_list:
@@ -88,7 +88,7 @@ def update_type_and_version_id_in_lib_update():
     curr_values = []
     prev_versions = []
     curr_versions = []
-    sql = "SELECT id,group_str,name_str,prev_version,curr_version,type,classifier FROM lib_update where id > 5189589"
+    sql = "SELECT id,group_str,name_str,prev_version,curr_version,type,classifier FROM lib_update where id > 5249525"
     update_info = database.querydb(db, sql)
     for entry in update_info:
         groupId = entry[1]
@@ -192,7 +192,7 @@ def update_classifier():
     db.commit()
 
 def update_time_in_lib_update():
-    sql = "SELECT id,curr_time,prev_version_id,curr_version_id FROM lib_update where id > 3527352 and (prev_version_id is not null or curr_version_id is not null)"
+    sql = "SELECT id,curr_time,prev_version_id,curr_version_id FROM lib_update where id > 5249525 and (prev_version_id is not null or curr_version_id is not null)"
     # sql = "SELECT id,curr_time,prev_version_id,curr_version_id FROM lib_update where id = 3"
     query_result = database.querydb(db, sql)
     print(len(query_result))
@@ -386,15 +386,25 @@ def temp_sql():
     # time2 = parse_date(query_result[1][0])
     # print((time2 - time1) / 60 / 60 / 24)
 
-    sql = "SELECT prev_version,curr_version FROM third_party_library.lib_update where prev_version_id is null or curr_version_id is null "
+    # sql = "SELECT prev_version,curr_version FROM third_party_library.lib_update where prev_version_id is null or curr_version_id is null "
+    # query_result = database.querydb(db, sql)
+    # print(len(query_result))
+    # # print(query_result[0][0])
+    # count = 0
+    # for entry in query_result:
+    #     prev_version = entry[0]
+    #     curr_version = entry[1]
+    #     if prev_version.endswith("SNAPSHOT") or curr_version.endswith("SNAPSHOT"):
+    #         count += 1
+    # print(count)
+    sql = "SELECT curr_version FROM third_party_library.lib_update where curr_version_id is null "
     query_result = database.querydb(db, sql)
     print(len(query_result))
     # print(query_result[0][0])
     count = 0
     for entry in query_result:
-        prev_version = entry[0]
-        curr_version = entry[1]
-        if prev_version.endswith("SNAPSHOT") or curr_version.endswith("SNAPSHOT"):
+        curr_version = entry[0]
+        if curr_version.endswith("SNAPSHOT"):
             count += 1
     print(count)
 
