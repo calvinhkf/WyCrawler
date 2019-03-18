@@ -127,7 +127,7 @@ def top50():
         artifactId = entry[1]
         sql = "SELECT DISTINCT(project_id) FROM `usage` WHERE group_str = '" +groupId + "' and name_str = '" + artifactId + "'"
         usage_info = database.querydb(db, sql)
-        name = groupId + " " + artifactId
+        name = groupId + "__fdse__" + artifactId
         usage_count[name] = len(usage_info)
     sorted_usage = sorted(usage_count.items(), key=lambda d: d[1], reverse=True)
     sorted_usage = sorted_usage[:50]
@@ -297,9 +297,9 @@ def proj_200_plus():
 
 # get_proj_not_in_three()
 # get_local_addr()
-copy_projs()
+# copy_projs()
 # get_not_three_month()
-# top50()
+top50()
 # get_gradle()
 # result = read_json("E:/data/not_in_three_month_gradle.txt")
 # print(len(result))

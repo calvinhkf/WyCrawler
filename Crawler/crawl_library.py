@@ -20,23 +20,23 @@ cookies = dict(res.cookies.items())
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36'}
 
-ttype = sys.argv[1]
-if ttype == "a":
-    output_dir = "E:/data/dependency_library_info"
-    lib_dir = "F:/GP/lib/"
-elif ttype == "c":
-    output_dir = "E:/data/dependency_library_info"
-    lib_dir = "E:/data/lib/"
-else:
-    output_dir = os.getcwd()+'/dependency_library_info'
-    lib_dir = os.getcwd()+'/lib/'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    if not os.path.exists(lib_dir):
-        os.makedirs(lib_dir)
-
-dependency_file = sys.argv[4]
-
+# ttype = sys.argv[1]
+# if ttype == "a":
+#     output_dir = "E:/data/dependency_library_info"
+#     lib_dir = "F:/GP/lib/"
+# elif ttype == "c":
+#     output_dir = "E:/data/dependency_library_info"
+#     lib_dir = "E:/data/lib/"
+# else:
+#     output_dir = os.getcwd()+'/dependency_library_info'
+#     lib_dir = os.getcwd()+'/lib/'
+#     if not os.path.exists(output_dir):
+#         os.makedirs(output_dir)
+#     if not os.path.exists(lib_dir):
+#         os.makedirs(lib_dir)
+#
+# dependency_file = sys.argv[4]
+lib_dir = "E:/data/lib/"
 crawled_repo = []
 repo_array = []
 
@@ -641,7 +641,7 @@ def handle_one_lib(lib_obj):
 # dependency_dict_to_list()
 # +1164 +11597
 
-numa = sys.argv[2]
-numb = sys.argv[3]
-is_catch = sys.argv[5]
-handle_lib_by_range(int(numa),int(numb))
+# numa = sys.argv[2]
+# numb = sys.argv[3]
+# is_catch = sys.argv[5]
+# handle_lib_by_range(int(numa),int(numb))
