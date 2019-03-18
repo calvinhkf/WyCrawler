@@ -627,6 +627,87 @@ def project_statics():
     data = read_json("F:/RQ1/filepath.json")
     print(len(data))
 
+def total_process():
+    # projs = [22,23,70,119,383,860,1356,1370,1464,1502,2057,2209,2917,3079,3238,3277,3422,3568,3788,5475]
+    projs0 = [22, 23, 70, 119]
+    projs1 = [383]
+    projs2 = [860,1356,1370]
+    projs3 = [1464,1502]
+    projs5 = [2057,2209]
+    projs6 = [2917,3422]
+    projs7 = [3079,3238,3277]
+    projs8 = [3568,3788]
+    projs9 = [5475]
+    array = ["0_fdse", "1_Thinkpad", "2_11", "3_lj", "4_zfy", "5_ZW", "6_Thinkpad", "7_huangkaifeng", "8_admin",
+             "9_huangkaifeng"]
+    machine_str = array[9]
+    proj_id = projs9
+    for id in proj_id:
+        print("++++++++++++++++++++++" + str(id))
+        dir = "E:/project_call/" + machine_str + "/call"
+        file_list = os.listdir(dir)
+        proj_content = {}
+        for file in file_list:
+            file_array = file.replace(".txt", "").split("_")
+            project_id = file_array[0]
+            # print(project_id)
+            if str(project_id) != str(id):
+                continue
+            print(file)
+            file_id = file_array[1]
+            json_data = read_json(os.path.join(dir, file))
+            num = json_data[-1]
+            json_data = json_data[:-1]
+            new_list = []
+            for call in json_data:
+                new_call = preprocess(call)
+                new_list.append(new_call)
+            new_list.append(num)
+            proj_content[file_id] = new_list
+        write_json("E:/project_call/20_total/" + str(id) + ".txt", proj_content)
+
+def extract_api_call_20():
+    ssd_dir = "F:/"
+    dir = "E:/project_call/20_total"
+    file_list = os.listdir(dir)
+    for file in file_list:
+        if os.path.exists("E:/project_call/api_call_20/" + file):
+            continue
+        print("+++++++++++++++++++++++++++++++" + file)
+        project_api_call = {}
+        project_id = int(file.replace(".txt", ""))
+        calls_by_file = read_json(os.path.join(dir, file))
+        lib_list = read_json("C:/lib_list/" + str(project_id) + ".json")
+        for lib in lib_list:
+            jar_dic = {}
+            print(lib)
+            if os.path.exists(ssd_dir + "RQ1-data/RQ1_Lib APIs/preprocessed_api/" + lib + ".json"):
+                json_data = read_json(ssd_dir + "RQ1-data/RQ1_Lib APIs/preprocessed_api/" + lib + ".json")
+                for file_id in calls_by_file.keys():
+                    file_dic = {}
+                    calls = calls_by_file[file_id][:-1]
+                    # print(calls)
+                    # print(calls_by_file[file_id])
+                    for call in calls:
+                        call = call.replace(" ", "").replace("$", ".")
+                        for class_name in json_data.keys():
+                            api_list = json_data[class_name][:-1]
+                            if api_list is not None and call in api_list:
+                                if call in file_dic:
+                                    api_dic = file_dic[call]
+                                    api_dic["count"] = api_dic["count"] + 1
+                                else:
+                                    api_dic = {}
+                                    api_dic["count"] = 1
+                                    api_dic["class"] = class_name
+                                    file_dic[call] = api_dic
+                                break
+                    if len(file_dic) > 0:
+                        jar_dic[file_id] = file_dic
+            if len(jar_dic) > 0:
+                project_api_call[lib] = jar_dic
+        write_json("E:/project_call/api_call_20/" + file, project_api_call)
+
 # version_time_gap()
 # get_update_projs()
 # filter_test_code()
@@ -648,3 +729,5 @@ def project_statics():
 # extract_commit_api_call()
 # remove_generics("java.lang.Iterable<java.lang.String>, java.util.List<java.lang.String>")
 # remove_generics("java.util.Deque<java.util.List<org.openjdk.source.tree.AnnotationTree<Aaaa>>>, org.openjdk.source.tree.Tree<pack.Test<1233>>")
+# total_process()
+extract_api_call_20()

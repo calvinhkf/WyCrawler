@@ -23,6 +23,10 @@ def write_json(path,json_data):
     with open(path, 'w', encoding='utf-8') as file_object:
         json.dump(json_data, file_object)
 
+def write_json_format(path,json_data):
+    with open(path, 'w', encoding='utf-8') as file_object:
+        json.dump(json_data, file_object, indent=4)
+
 def save_lib(url,path):
     # headers = {'User-Agent': random.choice(agents)}
     # lib = requests.get(url, headers=headers)

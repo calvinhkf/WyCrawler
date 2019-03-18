@@ -9,7 +9,7 @@ from file_util import read_file, append_file, read_json, write_json
 
 
 def distinct():
-    dir = "C:/data/three_month/lib_update_gradle"
+    dir = "F:/shibowen/lib_update_gradle"
     file_list = os.listdir(dir)
     for file in file_list:
         # print(file)
@@ -246,7 +246,7 @@ def parse_date(time1):
     return time_int
 
 def parse_gradle_update():
-    dir = "E:/lib_update_new/ok-ide/ok"
+    dir = "F:/shibowen/ok"
     files = os.listdir(dir)
     project_ids = set()
     for file in files:
@@ -302,7 +302,7 @@ def parse_gradle_update():
                             compare_dict[path] = new_obj
         print(compare_dict)
         if len(compare_dict) > 0:
-            write_json("C:/data/lib_update_ide/"+file, compare_dict)
+            write_json("F:/shibowen/lib_update/"+file, compare_dict)
     # print(len(project_ids))
     # print(project_ids)
         # break
@@ -317,7 +317,7 @@ def parse_gradle_update():
         # print(curr_time)
         # break
 def gradle_to_sql():
-    dir = "C:/data/lib_update"
+    dir = "F:/shibowen/lib_update"
     files = os.listdir(dir)
     for file in files:
         # print(file)
@@ -345,7 +345,7 @@ def gradle_to_sql():
                         continue
                     if type(prev_version)==list or type(curr_version)==list:
                         continue
-                    # append_file("C:/data/three_month/lib_update_gradle/" + str(project_id) + ".txt", sql)
+                    append_file("F:/shibowen/lib_update_gradle/" + str(project_id) + ".txt", sql)
         # break
 
 def delete_unparsed():
@@ -420,7 +420,7 @@ cursor = db.cursor()
 # print((time2-time1)/60/60/24)
 # parse_gradle_update()
 # update_time_in_lib_update()
-temp_sql()
+# temp_sql()
 
 
 
