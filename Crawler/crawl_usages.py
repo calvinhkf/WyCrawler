@@ -19,8 +19,10 @@ lib_dir = "E:/data/lib/"
 lib_json_dir = "E:/data/lib_json/"
 
 def get_info_from_maven_repo(groupId, artifactId):
+    if os.path.exists(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt"):
+        return
     result_dic = {}
-    time.sleep(random.randint(3, 6))
+    time.sleep(random.randint(30, 60))
     headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/'}
     library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False, cookies=cookies)
     if library.status_code == 403:
@@ -37,7 +39,7 @@ def get_info_from_maven_repo(groupId, artifactId):
 
 def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId):
     library_versions_list = []
-    time.sleep(random.randint(3, 6))
+    time.sleep(random.randint(30, 60))
     headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers, verify=False, cookies=cookies)
@@ -92,7 +94,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
             else:
                 usages = "{'" + tds[tr_usages].a.string.replace('\n', '') + "':'" + category_url + tds[tr_usages].a[
                     "href"] + "'}"
-            time.sleep(random.randint(3, 6))
+            time.sleep(random.randint(30, 60))
             headers = {'User-Agent': random.choice(agents),'Referer': tab_url}
             library_version = requests.get(version_url, headers=headers, verify=False, cookies=cookies)
             if library_version.status_code == 403:
@@ -168,7 +170,7 @@ def save_lib_package(files, _type, classifier,version):
         raise (CustomizeException("version:"+str(version)+"classifier:"+str(classifier)+"type:"+str(_type)+"\n!!!!!!!!!!!!!!!!!!!! unhandled type: " + str(_type)))
 
 def crawl_top50(path):
-    json_data = read_json()
+    json_data = read_json(path)
     for entry in json_data:
         key_array = entry[0].split("__fdse__")
         groupId = key_array[0]

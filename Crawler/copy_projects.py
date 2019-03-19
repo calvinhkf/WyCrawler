@@ -294,6 +294,50 @@ def proj_200_plus():
         result.append(obj)
     write_json("E:/data/200_plus.txt", result)
 
+def lib_used_api():
+    dir = "D:/data/data_copy/RQ1/project_call/api_call/"
+    file_list = os.listdir(dir)
+    for file in file_list:
+        if os.path.exists("D:/data/data_copy/RQ1/project_call/project_percent/" + file):
+            continue
+        project_id = int(file.replace(".txt", ""))
+        # if project_id == 1707:
+        #     continue
+        print("+++++++++++++++++++++++++++++++" + file)
+        json_data = read_json(os.path.join(dir, file))
+        callInParent = json_data["callInParent"]
+        otherDeclaration = json_data["otherDeclaration"]
+        proj_total_count = len(callInParent) + len(otherDeclaration)
+        proj_method_count = 0
+        lib_apis = {}
+        for entry in callInParent:
+            call_list = entry["call_list"]
+            has_call = 0
+            for call_obj in call_list:
+                if "lib" in call_obj:
+                    has_call += 1
+                    lib = call_obj["lib"]
+                    call = call_obj["api"]
+                    if lib in lib_apis:
+                        lib_apis[lib].add(call)
+                    else:
+                        lib_apis[lib] = set()
+                        lib_apis[lib].add(call)
+            if has_call > 0:
+                proj_method_count += 1
+
+        temp = [proj_total_count, proj_method_count]
+        write_json("D:/data/data_copy/RQ1/project_call/project_percent/" + file, temp)
+        for lib in lib_apis.keys():
+            if os.path.exists("D:/data/data_copy/RQ1/project_call/lib_percent/"+lib+".txt"):
+                prev_list = read_json("D:/data/data_copy/RQ1/project_call/lib_percent/"+lib+".txt")
+                prev_set = set(prev_list)
+                prev_set.union(lib_apis[lib])
+                write_json("D:/data/data_copy/RQ1/project_call/lib_percent/"+lib+".txt", list(prev_set))
+            else:
+                write_json("D:/data/data_copy/RQ1/project_call/lib_percent/" + lib + ".txt", list(lib_apis[lib]))
+        # break
+
 
 # get_proj_not_in_three()
 # get_local_addr()
