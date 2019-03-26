@@ -22,7 +22,7 @@ def get_info_from_maven_repo(groupId, artifactId):
     if os.path.exists(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt"):
         return
     result_dic = {}
-    time.sleep(random.randint(30, 60))
+    time.sleep(random.randint(10, 30))
     headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/'}
     library = requests.get("https://mvnrepository.com/artifact/" + groupId + "/" + artifactId, headers=headers, verify=False, cookies=cookies)
     if library.status_code == 403:
@@ -39,7 +39,7 @@ def get_info_from_maven_repo(groupId, artifactId):
 
 def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId):
     library_versions_list = []
-    time.sleep(random.randint(30, 60))
+    time.sleep(random.randint(10, 30))
     headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers, verify=False, cookies=cookies)
@@ -94,7 +94,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
             else:
                 usages = "{'" + tds[tr_usages].a.string.replace('\n', '') + "':'" + category_url + tds[tr_usages].a[
                     "href"] + "'}"
-            time.sleep(random.randint(30, 60))
+            time.sleep(random.randint(10, 30))
             headers = {'User-Agent': random.choice(agents),'Referer': tab_url}
             library_version = requests.get(version_url, headers=headers, verify=False, cookies=cookies)
             if library_version.status_code == 403:
@@ -134,7 +134,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
             name1 = declarations_soup.find('artifactId').string
             version1 = declarations_soup.find('version').string
             print('    version:' + str(version1))
-            jar_name = save_lib_package(files, "jar", None, version1)
+            # jar_name = save_lib_package(files, "jar", None, version1)
             library_version_dic = {}
             library_version_dic["group"] = group
             library_version_dic["name"] = name1
@@ -142,7 +142,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
             library_version_dic["usages"] = usages
             library_version_dic["repository"] = repository
             library_version_dic["date"] = _date
-            library_version_dic["jar_name"] = jar_name
+            library_version_dic["jar_name"] = None
             library_versions_list.append(library_version_dic)
     return library_versions_list
 
@@ -178,4 +178,4 @@ def crawl_top50(path):
         print("++++++++++++++++++ " + groupId + "  " + artifactId)
         get_info_from_maven_repo(groupId, artifactId)
 
-crawl_top50("E:/data/top50.txt")
+crawl_top50("E:/data/top51-100.txt")

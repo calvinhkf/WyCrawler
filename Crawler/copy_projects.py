@@ -130,9 +130,9 @@ def top50():
         name = groupId + "__fdse__" + artifactId
         usage_count[name] = len(usage_info)
     sorted_usage = sorted(usage_count.items(), key=lambda d: d[1], reverse=True)
-    sorted_usage = sorted_usage[:50]
+    sorted_usage = sorted_usage[:100]
     print(sorted_usage)
-    write_json("E:/data/top50.txt", sorted_usage)
+    write_json("E:/data/top100.txt", sorted_usage)
 
 def get_gradle():
     result = []
@@ -338,12 +338,45 @@ def lib_used_api():
                 write_json("D:/data/data_copy/RQ1/project_call/lib_percent/" + lib + ".txt", list(lib_apis[lib]))
         # break
 
+def get_jar():
+    db = database.connectdb()
+    sql = "SELECT DISTINCT project_id FROM project_lib_usage"
+    ids = database.querydb(db, sql)
+    project_ids = []
+    for entry in ids:
+        id = entry[0]
+        project_ids.append(id)
+    print(len(project_ids))
+
+    for id in project_ids:
+        print("++++++++++++++++++++++++ " + str(id))
+        sql = "SELECT DISTINCT version_type_id FROM project_lib_usage WHERE project_id = " + str(id)
+        types = database.querydb(db, sql)
+        project_array = []
+        for entry in types:
+            type_id = entry[0]
+            sql = "SELECT version_id,jar_package_url FROM version_types WHERE type_id = " + str(type_id)
+            type_info = database.querydb(db, sql)
+            version_id = type_info[0][0]
+            jar_package_url = type_info[0][1]
+            sql = "SELECT group_str,name_str,version FROM library_versions WHERE id = " + str(version_id)
+            version_info = database.querydb(db, sql)
+            group_str = version_info[0][0]
+            name_str = version_info[0][1]
+            version = version_info[0][2]
+            obj = {}
+            obj["jarName"] = jar_package_url
+            obj["groupId"] = group_str
+            obj["artifactId"] = name_str
+            obj["version"] = version
+            project_array.append(obj)
+        write_json("E:/data/project_lib_info/" + str(id) + ".txt", project_array)
 
 # get_proj_not_in_three()
 # get_local_addr()
 # copy_projs()
 # get_not_three_month()
-top50()
+# top50()
 # get_gradle()
 # result = read_json("E:/data/not_in_three_month_gradle.txt")
 # print(len(result))
@@ -353,3 +386,8 @@ top50()
 # get_change_info_from_project()
 # get_jar_list()
 # proj_200_plus()
+# get_jar()
+json_data = read_json("E:/data/top100.txt")
+json_data = json_data[50:100]
+print(len(json_data))
+write_json("E:/data/top51-100.txt", json_data)
