@@ -83,6 +83,9 @@ def copy_projs():
     print(len(projs))
     for entry in projs:
         name = entry["name"]
+        id = entry["id"]
+        if id < 4000:
+            continue
         if not os.path.exists("C:/projects_unzips/" + name):
             if os.path.exists("H:/projects_last/gradle_maven200_500/" + name + ".zip"):
                 local = "gradle_maven200_500/" + name
@@ -374,7 +377,7 @@ def get_jar():
 
 # get_proj_not_in_three()
 # get_local_addr()
-# copy_projs()
+copy_projs()
 # get_not_three_month()
 # top50()
 # get_gradle()
@@ -387,7 +390,7 @@ def get_jar():
 # get_jar_list()
 # proj_200_plus()
 # get_jar()
-json_data = read_json("E:/data/top100.txt")
-json_data = json_data[50:100]
-print(len(json_data))
-write_json("E:/data/top51-100.txt", json_data)
+# json_data = read_json("E:/data/top100.txt")
+# json_data = json_data[50:100]
+# print(len(json_data))
+# write_json("E:/data/top51-100.txt", json_data)

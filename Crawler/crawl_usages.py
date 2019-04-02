@@ -6,6 +6,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
+import database
 from crawl_library import get_lib_from_list_page
 from exception import CustomizeException
 from file_util import get_lib_name, save_lib, write_json, read_json
@@ -178,4 +179,23 @@ def crawl_top50(path):
         print("++++++++++++++++++ " + groupId + "  " + artifactId)
         get_info_from_maven_repo(groupId, artifactId)
 
-crawl_top50("E:/data/top51-100.txt")
+def get_version_for_top100():
+    db = database.connectdb()
+    json_data = read_json("E:/data/top100.txt")
+    result = []
+    for entry in json_data:
+        lib = entry[0]
+        groupId = lib.split("__fdse__")[0]
+        artifactId = lib.split("__fdse__")[1]
+        sql = "SELECT version FROM library_versions WHERE group_str = '" + groupId + "' and name_str = '" + artifactId + "' and repository = 'http://central.maven.org/maven2' ORDER BY parsed_date desc"
+        query_result = database.querydb(db, sql)
+        version = query_result[0][0]
+        value = groupId + "__fdse__" + artifactId + "__fdse__" + version
+        print(value)
+        result.append(value)
+    write_json("E:/data/top100_version.txt", result)
+
+
+
+# crawl_top50("E:/data/top51-100.txt")
+get_version_for_top100()
