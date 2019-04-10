@@ -2,6 +2,7 @@ import json
 import os
 import random
 import time
+import sys
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,10 +17,17 @@ url = "https://mvnrepository.com"
 res = requests.get(url)
 cookies = dict(res.cookies.items())
 
-lib_dir = "E:/data/lib/"
-lib_json_dir = "E:/data/lib_json/"
+num1 = int(sys.argv[1])
+num2 = int(sys.argv[2])
+root = sys.argv[3]
+lib_dir = root + "/lib/"
+lib_json_dir = root + "/lib_json/"
+if not os.path.exists(lib_dir):
+    os.mkdir(lib_dir)
+if not os.path.exists(lib_json_dir):
+    os.mkdir(lib_json_dir)
 
-def get_info_from_maven_repo(groupId, artifactId):
+def get_info_from_maven_repo(groupId, artifactId, versions):
     if os.path.exists(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt"):
         return
     result_dic = {}
@@ -32,13 +40,15 @@ def get_info_from_maven_repo(groupId, artifactId):
     library_soup = BeautifulSoup(library.text, 'lxml')
     results = library_soup.find('ul', class_='tabs').find_all('li')
     for tab in results:
-        temp = get_all_versions_from_maven_repo("http://mvnrepository.com" + tab.a["href"],
+        temp, over = get_all_versions_from_maven_repo("http://mvnrepository.com" + tab.a["href"],
                                                    "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId,
-                                                   groupId, artifactId)
+                                                   groupId, artifactId, versions)
         result_dic[tab.a["href"]] = temp
+        if over:
+            break
     write_json(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt", result_dic)
 
-def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId):
+def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId, versions):
     library_versions_list = []
     time.sleep(random.randint(10, 30))
     headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
@@ -109,7 +119,29 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
                 raise (CustomizeException("tab_url:"+str(tab_url)+"\n groupId:"+str(groupId)+"artifactId:"+str(artifactId)+"\ncan't find 'im' class"))
             results = results.find_next_sibling(class_='grid')
             information_trs = results.find_all('tr')
+            license, categories, organization, home_page, files, used_by = None, None, None, None, None, None
             for tr in information_trs:
+                if 'License' == tr.th.string:
+                    license = ''
+                    spans = tr.td.find_all('span')
+                    for span in spans:
+                        license = license + span.string + ','
+                    if license[len(license) - 1] == ',':
+                        license = license[:-1].replace('\n', '')
+                if 'Categories' == tr.th.string:
+                    categories = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "http://mvnrepository.com" + \
+                                 tr.td.a[
+                                     "href"] + "\"}"
+                if 'Organization' == tr.th.string:
+                    if tr.td.a is None:
+                        organization = "{\"" + tr.td.string.replace('\n', '') + "\":\"\"}"
+                    else:
+                        organization = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + tr.td.a["href"] + "\"}"
+                if 'HomePage' == tr.th.string:
+                    if tr.td.a is None:
+                        home_page = tr.td.string.replace('\n', '')
+                    else:
+                        home_page = tr.td.a["href"]
                 if 'Date' == tr.th.string:
                     _date = tr.td.string
                 if 'Files' == tr.th.string:
@@ -122,6 +154,9 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
                         if files[len(files) - 1] == ",":
                             files = files[:-1]
                         files = files + "}"
+                if 'Used By' == tr.th.string:
+                    used_by = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "http://mvnrepository.com" + tr.td.a[
+                        "href"] + "\"}"
             print('    repository:' + str(repository))
             print('    date:' + str(_date))
 
@@ -135,7 +170,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
             name1 = declarations_soup.find('artifactId').string
             version1 = declarations_soup.find('version').string
             print('    version:' + str(version1))
-            # jar_name = save_lib_package(files, "jar", None, version1)
+            jar_name = save_lib_package(files, "jar", None, version1)
             library_version_dic = {}
             library_version_dic["group"] = group
             library_version_dic["name"] = name1
@@ -143,9 +178,20 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId)
             library_version_dic["usages"] = usages
             library_version_dic["repository"] = repository
             library_version_dic["date"] = _date
-            library_version_dic["jar_name"] = None
+            library_version_dic["jar_name"] = jar_name
+
+            library_version_dic["license"] = license
+            library_version_dic["categories"] = categories
+            library_version_dic["organization"] = organization
+            library_version_dic["home_page"] = home_page
+            library_version_dic["files"] = files
+            library_version_dic["used_by"] = used_by
             library_versions_list.append(library_version_dic)
-    return library_versions_list
+            if version1 in versions:
+                versions.remove(version1)
+                if len(versions) == 0:
+                    return library_versions_list, True
+    return library_versions_list, False
 
 
 def save_lib_package(files, _type, classifier,version):
@@ -179,6 +225,20 @@ def crawl_top50(path):
         print("++++++++++++++++++ " + groupId + "  " + artifactId)
         get_info_from_maven_repo(groupId, artifactId)
 
+def crawl_mv(path, num1, num2):
+    json_data = read_json(path)
+    for i in range(num1, num2):
+        obj = json_data[i]
+        key = obj["lib"]
+        key_array = key.split("__fdse__")
+        groupId = key_array[0]
+        artifactId = key_array[1]
+        versions = obj["versions"]
+        if len(versions) == 0:
+            versions.append("version")
+        print("++++++++++++++++++ " + groupId + "  " + artifactId)
+        get_info_from_maven_repo(groupId, artifactId, versions)
+
 def get_version_for_top100():
     db = database.connectdb()
     json_data = read_json("E:/data/top100.txt")
@@ -198,4 +258,8 @@ def get_version_for_top100():
 
 
 # crawl_top50("E:/data/top51-100.txt")
-get_version_for_top100()
+# print(num1)
+# print(num2)
+crawl_mv("mv_libs.txt", num1, num2)
+# get_version_for_top100()
+# get_info_from_maven_repo("com.android.support", "appcompat-v7", ["28.0.0"])

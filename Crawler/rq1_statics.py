@@ -730,4 +730,4 @@ def extract_api_call_20():
 # remove_generics("java.lang.Iterable<java.lang.String>, java.util.List<java.lang.String>")
 # remove_generics("java.util.Deque<java.util.List<org.openjdk.source.tree.AnnotationTree<Aaaa>>>, org.openjdk.source.tree.Tree<pack.Test<1233>>")
 # total_process()
-extract_api_call_20()
+# extract_api_call_20()

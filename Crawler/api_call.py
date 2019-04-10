@@ -6,7 +6,6 @@ from file_util import read_json, write_json
 from modifier_util import isAbstract, isInterface, isNative, isPublic
 from rq1_statics import preprocess
 
-
 def lib_api_preprocess():
     dir = "D:/data/data_copy/lib_to_field/lib_field"
     files = os.listdir(dir)
@@ -116,25 +115,41 @@ def project_call_preprocess():
     #         entry["call_list"] = new_list
     #     write_json("D:/data/data_copy/RQ1/project_call/total_new/"+ file, json_data)
 
-    dir = "D:/data/data_copy/RQ1/project_call/total_new/"
+    # dir = "D:/data/data_copy/RQ1/project_call/total_new/"
+    # file_list = os.listdir(dir)
+    # for file in file_list:
+    #     print("+++++++++++++++++++++++++++++++" + file)
+    #     json_data = read_json(os.path.join(dir, file))
+    #     callInParent = json_data["callInParent"]
+    #     for entry in callInParent:
+    #         new_list = []
+    #         call_list = entry["call_list"]
+    #         for call in call_list:
+    #             call = call.replace(" ", "")
+    #             obj = {}
+    #             obj["api"] = call
+    #             # obj["lib"] = lib
+    #             new_list.append(obj)
+    #         entry["call_list"] = new_list
+    #
+    #     write_json("D:/data/data_copy/RQ1/project_call/total_final/" + file, json_data)
+
+    dir = "E:/data/RQ1/api_call/total/"
     file_list = os.listdir(dir)
     for file in file_list:
-        print("+++++++++++++++++++++++++++++++" + file)
+        print(file)
         json_data = read_json(os.path.join(dir, file))
-        callInParent = json_data["callInParent"]
-        for entry in callInParent:
+        new_data = {}
+        for key in json_data:
+            call_list = json_data[key]
             new_list = []
-            call_list = entry["call_list"]
             for call in call_list:
-                call = call.replace(" ", "")
-                obj = {}
-                obj["api"] = call
-                # obj["lib"] = lib
-                new_list.append(obj)
-            entry["call_list"] = new_list
-
-        write_json("D:/data/data_copy/RQ1/project_call/total_final/" + file, json_data)
-        # break
+                print(call)
+                new_call = preprocess(call)
+                print(new_call)
+                new_list.append(new_call)
+            new_data[key] = new_list
+        write_json("E:/data/RQ1/api_call/total_new/" + file, new_data)
 
 def check():
     dir = "D:/data/data_copy/RQ1/project_call/total"
@@ -186,30 +201,60 @@ def unsolved_proj():
     print(count)
 
 def extract_api_call():
-    dir = "D:/data/data_copy/RQ1/project_call/total_final/"
+    # dir = "D:/data/data_copy/RQ1/project_call/total_final/"
+    # file_list = os.listdir(dir)
+    # for file in file_list:
+    #     # if os.path.exists("D:/data/data_copy/RQ1/project_call/api_call/" + file):
+    #     #     continue
+    #     project_id = int(file.replace(".txt", ""))
+    #     if project_id != 1707:
+    #         continue
+    #     print("+++++++++++++++++++++++++++++++" + file)
+    #     json_data = read_json(os.path.join(dir, file))
+    #     callInParent = json_data["callInParent"]
+    #     lib_list = read_json("D:/data/data_copy/RQ1/lib_list/" + str(project_id) + ".json")
+    #     for lib in lib_list:
+    #         print(lib)
+    #         if os.path.exists("D:/data/data_copy/lib_to_field/preprocessed_api/" + lib + ".json"):
+    #             api_list = read_json("D:/data/data_copy/lib_to_field/preprocessed_api/" + lib + ".json")
+    #             if api_list is not None:
+    #                 for entry in callInParent:
+    #                     call_list = entry["call_list"]
+    #                     for call_obj in call_list:
+    #                         call = call_obj["api"]
+    #                         if call in api_list:
+    #                             call_obj["lib"] = lib
+    #     write_json("D:/data/data_copy/RQ1/project_call/api_call/" + file, json_data)
+
+    dir = "E:/data/RQ1/api_call/total_final2"
     file_list = os.listdir(dir)
     for file in file_list:
-        # if os.path.exists("D:/data/data_copy/RQ1/project_call/api_call/" + file):
-        #     continue
-        project_id = int(file.replace(".txt", ""))
-        if project_id != 1707:
+        if os.path.exists("E:/data/RQ1/api_call/api_call/" + file):
             continue
+        project_id = int(file.replace(".txt", ""))
         print("+++++++++++++++++++++++++++++++" + file)
         json_data = read_json(os.path.join(dir, file))
-        callInParent = json_data["callInParent"]
-        lib_list = read_json("D:/data/data_copy/RQ1/lib_list/" + str(project_id) + ".json")
+        lib_list = read_json("E:/data/lib_list/" + str(project_id) + ".json")
+        new_obj = {}
         for lib in lib_list:
             print(lib)
-            if os.path.exists("D:/data/data_copy/lib_to_field/preprocessed_api/" + lib + ".json"):
-                api_list = read_json("D:/data/data_copy/lib_to_field/preprocessed_api/" + lib + ".json")
+            if os.path.exists("E:/data/RQ1/lib_to_field/preprocessed_api/" + lib + ".json"):
+                api_list = read_json("E:/data/RQ1/lib_to_field/preprocessed_api/" + lib + ".json")
                 if api_list is not None:
-                    for entry in callInParent:
-                        call_list = entry["call_list"]
-                        for call_obj in call_list:
-                            call = call_obj["api"]
+                    for key in json_data:
+                        api_call_set = set()
+                        call_list = json_data[key]
+                        for call in call_list:
                             if call in api_list:
-                                call_obj["lib"] = lib
-        write_json("D:/data/data_copy/RQ1/project_call/api_call/" + file, json_data)
+                                api_call_set.add(call)
+                        if len(api_call_set) > 0:
+                            if key in new_obj:
+                                new_obj[key][lib] = list(api_call_set)
+                            else:
+                                temp = {}
+                                temp[lib] = list(api_call_set)
+                                new_obj[key] = temp
+        write_json("E:/data/RQ1/api_call/api_call/" + file, new_obj)
         # break
 
 def get_api_list_of_lib(lib):
@@ -219,6 +264,61 @@ def get_api_list_of_lib(lib):
         data = read_json("D:/data/data_copy/lib_to_field/preprocessed_api/" + lib + ".json")
         return set(data)
     return json_data
+
+
+def merge_project_call_by_file():
+    dir = "E:/data/RQ1/project_call/call_add/call"
+    file_list = os.listdir(dir)
+    curr_id = None
+    call_obj = {}
+    for file in file_list:
+        print(file)
+        project_id = int(file.split("_")[0])
+        # call_wangxin
+        if project_id != 2979:
+            continue
+        content = read_json(os.path.join(dir, file))
+        if content is None:
+            raise CustomizeException("content is None")
+            sys.exit(0)
+        path = content["path"]
+        callInParent = content["callInParent"]
+        callOutParent = content["callOutParent"]
+        call_set = set()
+        for key in callInParent.keys():
+            call_set = call_set.union(set(callInParent[key]))
+        call_set = call_set.union(set(callOutParent))
+        # print(call_set)
+        if curr_id is None:
+            curr_id = project_id
+            call_obj[path] = list(call_set)
+        elif curr_id != project_id:
+            write_json("E:/data/RQ1/api_call/total/" + str(curr_id) + ".txt", call_obj)
+            # break
+            curr_id = project_id
+            call_obj = {}
+            call_obj[path] = list(call_set)
+        else:
+            call_obj[path] = list(call_set)
+    write_json("E:/data/RQ1/api_call/total/" + str(curr_id) + ".txt", call_obj)
+
+def match_module():
+    dir = "E:/data/RQ1/api_call/api_call/"
+    files = os.listdir(dir)
+    for file in files:
+        json_data = read_json(os.path.join(dir, file))
+        project_id = file.replace(".txt", "")
+        modules = read_json("E:/data/RQ1/api_call/modules/" + project_id + ".txt")
+        for key in json_data.keys():
+            curr_module = None
+            for _module in modules:
+                if key.startswith(_module):
+                    if curr_module == None:
+                        curr_module = _module
+                    elif len(_module) > len(curr_module):
+                        curr_module = _module
+            json_data[key]["module"] = curr_module
+        write_json("E:/data/RQ1/api_call/api_call_with_module/" + file, json_data)
 
 
 
@@ -233,4 +333,8 @@ def get_api_list_of_lib(lib):
 # check()
 # unsolved_proj()
 # project_call_preprocess()
-extract_api_call()
+# extract_api_call()
+# merge_project_call_by_file()
+# json_data = read_json("E:/data/RQ1/api_call/total/102.txt")
+# print(len(json_data))
+match_module()
