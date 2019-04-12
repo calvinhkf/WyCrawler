@@ -38,7 +38,14 @@ def get_info_from_maven_repo(groupId, artifactId, versions):
         print("Exception status 403:" + "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId)
         os._exit(0)
     library_soup = BeautifulSoup(library.text, 'lxml')
-    results = library_soup.find('ul', class_='tabs').find_all('li')
+    test_tab = library_soup.find('ul', class_='tabs')
+    if test_tab is None:
+        write_json(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt", result_dic)
+        return
+    results = test_tab.find_all('li')
+    if results is None:
+        write_json(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt", result_dic)
+        return
     for tab in results:
         temp, over = get_all_versions_from_maven_repo("http://mvnrepository.com" + tab.a["href"],
                                                    "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId,
