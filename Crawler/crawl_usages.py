@@ -243,7 +243,7 @@ def crawl_mv(path, num1, num2):
         versions = obj["versions"]
         if len(versions) == 0:
             versions.append("version")
-        print("++++++++++++++++++ " + groupId + "  " + artifactId)
+        print("++++++++++++++++++ " + str(i) + " : " + groupId + "  " + artifactId)
         get_info_from_maven_repo(groupId, artifactId, versions)
 
 def get_version_for_top100():
@@ -268,5 +268,6 @@ def get_version_for_top100():
 # print(num1)
 # print(num2)
 crawl_mv("mv_libs.txt", num1, num2)
+# get_info_from_maven_repo("org.opennms.dependencies", "jasper-dependencies", {})
 # get_version_for_top100()
 # get_info_from_maven_repo("com.android.support", "appcompat-v7", ["28.0.0"])

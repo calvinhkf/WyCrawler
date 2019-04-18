@@ -279,7 +279,7 @@ def distinguish_major_minor_patch():
     print("minor" + str(minor))
     print("patch" + str(patch))
 
-def update_module_in_project_lib_usage():
+def update_module_in_usage():
     sql = "SELECT * FROM `usage`"
     query_result = database.querydb(db, sql)
     print(len(query_result))
@@ -324,6 +324,34 @@ def insert_to_usage():
         curr_values)
     db.commit()
 
+def update_module_in_project_lib_usage():
+    sql = "SELECT * FROM `project_lib_usage`"
+    query_result = database.querydb(db, sql)
+    print(len(query_result))
+    curr_values = []
+    for entry in query_result:
+        module_ = entry[2]
+        if module_.endswith(".gradle"):
+            print("++++++++++++++ "+ module_)
+            print(module_.split("\\")[0])
+            print(module_.split("/")[0])
+    #     module_ = module_.replace("\\", "/")
+    #     if module_.endswith(".gradle"):
+    #         module_ = module_.replace("I:/projects/", "")
+    #     else:
+    #         if module_ == '':
+    #             module_ = "pom.xml"
+    #         else:
+    #             module_ = module_ + "/pom.xml"
+    #     # if module_.endswith(".gradle"):
+    #     #     print(module_)
+    #     entry_list = list(entry)
+    #     entry_list[6] = module_
+    #     print(tuple(entry_list))
+    #     curr_values.append(tuple(entry_list))
+    # print(len(curr_values))
+    # write_json("D:/data/data_copy/usage.txt", curr_values)
+
 # release_version_check()
 # print(is_match("3.4.5sfs"))
 # print(get_match("3.4-243"))
@@ -331,5 +359,5 @@ def insert_to_usage():
 # version_compare()
 # check_snapshot_in_unknown()
 # distinguish_major_minor_patch()
-# update_module_in_project_lib_usage()
-insert_to_usage()
+update_module_in_project_lib_usage()
+# insert_to_usage()

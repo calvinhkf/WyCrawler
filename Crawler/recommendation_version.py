@@ -78,6 +78,7 @@ projects = [2, 4, 5, 6, 7, 8, 9, 10, 15, 16, 17, 18, 20, 21, 22, 23, 24, 28, 30,
 def get_multiversion_libs():
     db = database.connectdb()
     libs = set()
+    projs = set()
     count = 0
     for id in projects:
         print(id)
@@ -94,8 +95,10 @@ def get_multiversion_libs():
                 have = True
                 break
         if have:
+            projs.add(id)
             count += 1
     print(count)
+    write_json("E:/data/mv_libs_total.txt", list(projs))
     #             libs.add(groupId + "__fdse__" + artifactId)
     # write_json("E:/data/mv_libs.txt", list(libs))
 
@@ -173,10 +176,16 @@ def snapshot_filter():
     # write_json("E:/data/multiversion/mv_libs_exclude_snapshot.txt", json_data)
 
 def add_proj_type():
+    db = database.connectdb()
     json_data = read_json("E:/data/200_plus.txt")
     for entry in json_data:
         project_id = entry["id"]
-        sql = "SELECT * FROM "
+        sql = "SELECT type FROM project WHERE id = " + str(project_id)
+        query_result = database.querydb(db, sql)
+        _type = query_result[0][0]
+        entry["type"] = _type
+    write_json("E:/data/200_plus_with_type.txt", json_data)
+
 
 def get_multiversion_info():
     db = database.connectdb()
@@ -214,6 +223,175 @@ def mv_dict_to_list():
         new_list.append(obj)
     write_json("mv_libs.txt", new_list)
 
+def get_multiversion_projs():
+    print(len(projects))
+    db = database.connectdb()
+    projs = set()
+    count = 0
+    for id in projects:
+        print(id)
+        sql = "SELECT DISTINCT library_id FROM `project_lib_usage` WHERE project_id = " + str(id)
+        usage_info = database.querydb(db, sql)
+        num = 0
+        have = False
+        for entry in usage_info:
+            library_id = entry[0]
+            sql = "SELECT COUNT(DISTINCT(version_id)) FROM `project_lib_usage` WHERE project_id = " + str(id) + " and library_id = " + str(library_id)
+            result = database.querydb(db, sql)
+            if result[0][0] > 1:
+                have = True
+                projs.add(id)
+                print(id)
+                break
+        if have:
+            count += 1
+    print(count)
+    #             libs.add(groupId + "__fdse__" + artifactId)
+    write_json("E:/data/mv_projs.txt", list(projs))
+
+def compare():
+    json_data = read_json("E:/data/multiversion/multiversion_info.txt")
+    longer = list(json_data.keys())
+    shorter = read_json("E:/data/multiversion/mv_libs_total.txt")
+    # print(shorter)
+    final = []
+    for id_str in longer:
+        id = int(id_str)
+        # print(id_str)
+        if not id in shorter:
+            final.append(id)
+    print(final)
+    print(len(final))
+
+def get_multiversion_info_in_usage():
+    # db = database.connectdb()
+    # final = {}
+    # for id in projects:
+    #     print(id)
+    #     proj_obj = {}
+    #     sql = "SELECT DISTINCT library_id FROM `project_lib_usage` WHERE project_id = " + str(id)
+    #     usage_info = database.querydb(db, sql)
+    #     for entry in usage_info:
+    #         library_id = entry[0]
+    #         sql = "SELECT * FROM library WHERE id = " + str(library_id)
+    #         library_info = database.querydb(db, sql)
+    #         groupId = library_info[0][1]
+    #         artifactId = library_info[0][2]
+    #         sql = "SELECT DISTINCT version FROM `project_lib_usage` WHERE project_id = " + str(id) + " and library_id = " + str(library_id)
+    #         result = database.querydb(db, sql)
+    #         if len(result) > 1:
+    #             version_list = []
+    #             for entry in result:
+    #                 version = entry[0]
+    #                 sql = "SELECT DISTINCT module FROM `project_lib_usage` WHERE project_id = " + str(id) + " and library_id = " + str(library_id) + " and version = '" + version + "'"
+    #                 module_info = database.querydb(db, sql)
+    #                 for m in module_info:
+    #                     _module = m[0]
+    #                     version_list.append(_module + "__fdse__" + version)
+    #             proj_obj[groupId + "__fdse__" + artifactId] = version_list
+    #     if len(proj_obj) > 0:
+    #         final[str(id)] = proj_obj
+    #         # break
+    # write_json("E:/data/multiversion/multiversion_info.txt", final)
+
+    db = database.connectdb()
+    final = {}
+    for id in projects:
+        print(id)
+        proj_obj = {}
+        sql = "SELECT DISTINCT library_id FROM `project_lib_usage` WHERE project_id = " + str(id)
+        usage_info = database.querydb(db, sql)
+        for entry in usage_info:
+            library_id = entry[0]
+            sql = "SELECT DISTINCT version_id FROM `project_lib_usage` WHERE project_id = " + str(
+                id) + " and library_id = " + str(library_id)
+            result = database.querydb(db, sql)
+            version_list = []
+            if len(result) > 1:
+                sql = "SELECT * FROM library WHERE id = " + str(library_id)
+                library_info = database.querydb(db, sql)
+                groupId = library_info[0][1]
+                artifactId = library_info[0][2]
+                lib_obj = {}
+                for entry in result:
+                    version_id = entry[0]
+                    sql = "SELECT version FROM `library_versions` WHERE id = " + str(version_id)
+                    version_info = database.querydb(db, sql)
+                    version = version_info[0][0]
+                    sql = "SELECT version_type_id, module FROM `project_lib_usage` WHERE project_id = " + str(
+                        id) + " and version_id = " + str(version_id)
+                    module_info = database.querydb(db, sql)
+                    for m in module_info:
+                        version_type_id = m[0]
+                        _module = m[1]
+                        sql = "SELECT type, classifier FROM `version_types` WHERE type_id = " + str(version_type_id)
+                        type_info = database.querydb(db, sql)
+                        type_ = type_info[0][0]
+                        classifier = type_info[0][1]
+                        key = groupId + "__fdse__" + artifactId + "__fdse__" + type_
+                        if classifier is not None:
+                            key += "__fdse__" + classifier
+                        if key in lib_obj:
+                            lib_obj[key].add(_module + "__fdse__" + version)
+                        else:
+                            lib_obj[key] = set()
+                            lib_obj[key].add(_module + "__fdse__" + version)
+                for lib_key in lib_obj:
+                    if len(lib_obj[lib_key]) > 1:
+                        proj_obj[lib_key] = list(lib_obj[lib_key])
+                    else:
+                        print(lib_key + " : " + str(lib_obj[lib_key]))
+            # proj_obj[groupId + "__fdse__" + artifactId] = version_list
+        if len(proj_obj) > 0:
+            final[str(id)] = proj_obj
+            # break
+    write_json("E:/data/multiversion/multiversion_info.txt", final)
+
+def parse_mv_info():
+    db = database.connectdb()
+    json_data = read_json("E:/data/multiversion/multiversion_info.txt")
+    final = {}
+    for project_id in json_data.keys():
+        sql = "SELECT url FROM project WHERE id = " + project_id
+        query_result = database.querydb(db, sql)
+        url = query_result[0][0]
+        name = url.replace("https://github.com/", "").replace("/", "__fdse__")
+        proj_data = json_data[project_id]
+        proj_ = {}
+        for lib in proj_data.keys():
+            version_list = proj_data[lib]
+            for entry in version_list:
+                _module = entry.split("__fdse__")[0]
+                version = entry.split("__fdse__")[1]
+                if _module in proj_:
+                    proj_[_module].append(lib + "__fdse__" + version)
+                else:
+                    new_list = [lib + "__fdse__" + version]
+                    proj_[_module] = new_list
+        final[project_id] = proj_
+    write_json("E:/data/multiversion/mv_info_parsed.txt", final)
+
+def remove_gradle_proj():
+    # proj_data = read_json("E:/data/200_plus_with_type.txt")
+    # proj_dict = {}
+    # for entry in proj_data:
+    #     id = entry["id"]
+    #     _type = entry["type"]
+    #     proj_dict[str(id)] = _type
+    #
+    # json_data = read_json("E:/data/multiversion/mv_info_parsed.txt")
+    # print(len(json_data))
+    # new_data = {}
+    # for id in json_data:
+    #     _type = proj_dict[id]
+    #     if _type == "maven":
+    #         new_data[id] = json_data[id]
+    # print(len(new_data))
+    # write_json("E:/data/multiversion/mv_info_maven.txt", new_data)
+    data = read_json("E:/data/multiversion/mv_info_maven.txt")
+    print(len(data))
+
+
 # get_project_commit_pair()
 # filter_diff()
 # get_multiversion_libs()
@@ -225,4 +403,15 @@ def mv_dict_to_list():
 # get_multiversion_info()
 # get_build_success_proj()
 # snapshot_filter()
-mv_dict_to_list()
+# mv_dict_to_list()
+# get_multiversion_projs()
+# data = read_json("E:/data/multiversion/mv_projs.txt")
+# print(len(data))
+# add_proj_type()
+# get_multiversion_libs()
+# compare()
+# get_multiversion_info_in_usage()
+# data = read_json("E:/data/multiversion/multiversion_info_4.9.txt")
+# print(len(data))
+# parse_mv_info()
+remove_gradle_proj()
