@@ -47,7 +47,7 @@ def get_info_from_maven_repo(groupId, artifactId, versions):
         write_json(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt", result_dic)
         return
     for tab in results:
-        temp, over = get_all_versions_from_maven_repo("http://mvnrepository.com" + tab.a["href"],
+        temp, over = get_all_versions_from_maven_repo("https://mvnrepository.com" + tab.a["href"],
                                                    "https://mvnrepository.com/artifact/" + groupId + "/" + artifactId,
                                                    groupId, artifactId, versions)
         result_dic[tab.a["href"]] = temp
@@ -105,7 +105,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId,
                     tr_usages = tr_usages - 1
                     tr_date = tr_date - 1
             version_url = category_url[0:category_url.rindex('/')] + '/' + tds[tr_version].a["href"]
-            repository = "http://mvnrepository.com" + tds[tr_repository].a["href"]
+            repository = "https://mvnrepository.com" + tds[tr_repository].a["href"]
             usages = None
             if tds[tr_usages].a is None:
                 usages = "{'" + tds[tr_usages].get_text().replace('\n', '') + "':''}"
@@ -136,7 +136,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId,
                     if license[len(license) - 1] == ',':
                         license = license[:-1].replace('\n', '')
                 if 'Categories' == tr.th.string:
-                    categories = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "http://mvnrepository.com" + \
+                    categories = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "https://mvnrepository.com" + \
                                  tr.td.a[
                                      "href"] + "\"}"
                 if 'Organization' == tr.th.string:
@@ -162,7 +162,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId,
                             files = files[:-1]
                         files = files + "}"
                 if 'Used By' == tr.th.string:
-                    used_by = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "http://mvnrepository.com" + tr.td.a[
+                    used_by = "{\"" + tr.td.a.string.replace('\n', '') + "\":\"" + "https://mvnrepository.com" + tr.td.a[
                         "href"] + "\"}"
             print('    repository:' + str(repository))
             print('    date:' + str(_date))
@@ -268,6 +268,6 @@ def get_version_for_top100():
 # print(num1)
 # print(num2)
 crawl_mv("mv_libs.txt", num1, num2)
-# get_info_from_maven_repo("org.opennms.dependencies", "jasper-dependencies", {})
+# get_info_from_maven_repo("com.amazonaws", "aws-java-sdk-bundle", ["1.11.271", "1.11.134", "1.11.172", "1.11.199", "1.11.106"])
 # get_version_for_top100()
 # get_info_from_maven_repo("com.android.support", "appcompat-v7", ["28.0.0"])
