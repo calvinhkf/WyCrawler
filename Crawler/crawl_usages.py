@@ -17,15 +17,23 @@ url = "https://mvnrepository.com"
 res = requests.get(url)
 cookies = dict(res.cookies.items())
 
-num1 = int(sys.argv[1])
-num2 = int(sys.argv[2])
-root = sys.argv[3]
+# num1 = int(sys.argv[1])
+# num2 = int(sys.argv[2])
+# root = sys.argv[3]
+
+string_list = "97:98:99:123:124:140:147:148:162:181:184:276:277:280:281:282:286:287:289:295:308:320:442:449:452:454:457:458:459:462:463:464:465:471:543:546:553:565:625:636:677:678:679:680:681:683:684:687:688:696:699:802:803:810:829:830:843:844:940:986:8:11:96:234:431:499:540:542:761"
+root = sys.argv[1]
+
 lib_dir = root + "/lib/"
 lib_json_dir = root + "/lib_json/"
+lib_ver_json_dir = root + "/lib_version_json/"
+
 if not os.path.exists(lib_dir):
     os.mkdir(lib_dir)
 if not os.path.exists(lib_json_dir):
     os.mkdir(lib_json_dir)
+if not os.path.exists(lib_ver_json_dir):
+    os.mkdir(lib_ver_json_dir)
 
 def get_info_from_maven_repo(groupId, artifactId, versions):
     if os.path.exists(lib_json_dir + groupId + "__fdse__" + artifactId + ".txt"):
@@ -57,7 +65,7 @@ def get_info_from_maven_repo(groupId, artifactId, versions):
 
 def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId, versions):
     library_versions_list = []
-    time.sleep(random.randint(10, 30))
+    time.sleep(random.randint(10, 30)) #
     headers = {'User-Agent': random.choice(agents),'Referer': 'https://mvnrepository.com/artifact/' + groupId + '/' + artifactId}
     print('------------------------- tab_url:' + tab_url)
     library_tab = requests.get(tab_url, headers=headers, verify=False, cookies=cookies)
@@ -104,6 +112,9 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId,
                     tr_repository = tr_repository - 1
                     tr_usages = tr_usages - 1
                     tr_date = tr_date - 1
+            test_version = tds[tr_version].a.string.replace('\n', '')
+            if os.path.exists(lib_ver_json_dir + groupId + "__fdse__" + artifactId + "__fdse__" + test_version + ".txt"):
+                continue
             version_url = category_url[0:category_url.rindex('/')] + '/' + tds[tr_version].a["href"]
             repository = "https://mvnrepository.com" + tds[tr_repository].a["href"]
             usages = None
@@ -112,7 +123,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId,
             else:
                 usages = "{'" + tds[tr_usages].a.string.replace('\n', '') + "':'" + category_url + tds[tr_usages].a[
                     "href"] + "'}"
-            time.sleep(random.randint(10, 30))
+            time.sleep(random.randint(10, 30)) #
             headers = {'User-Agent': random.choice(agents),'Referer': tab_url}
             library_version = requests.get(version_url, headers=headers, verify=False, cookies=cookies)
             if library_version.status_code == 403:
@@ -176,6 +187,8 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId,
             group = declarations_soup.find('groupId').string
             name1 = declarations_soup.find('artifactId').string
             version1 = declarations_soup.find('version').string
+            if os.path.exists(lib_ver_json_dir + groupId + "__fdse__" + artifactId + "__fdse__" + version1 + ".txt"):
+                continue
             print('    version:' + str(version1))
             jar_name = save_lib_package(files, "jar", None, version1)
             library_version_dic = {}
@@ -193,6 +206,7 @@ def get_all_versions_from_maven_repo(tab_url, category_url, groupId, artifactId,
             library_version_dic["home_page"] = home_page
             library_version_dic["files"] = files
             library_version_dic["used_by"] = used_by
+            write_json(lib_ver_json_dir + groupId + "__fdse__" + artifactId + "__fdse__" + version1 + ".txt", library_version_dic)
             library_versions_list.append(library_version_dic)
             if version1 in versions:
                 versions.remove(version1)
@@ -263,11 +277,33 @@ def get_version_for_top100():
     write_json("E:/data/top100_version.txt", result)
 
 
+def crawl_mv2(path, string_list):
+    string_list = string_list.split(':')
 
+    json_data = read_json(path)
+    for ele in string_list:
+        i = ele.strip(' ')
+        i = int(i)
+
+        obj = json_data[i]
+        key = obj["lib"]
+        key_array = key.split("__fdse__")
+        groupId = key_array[0]
+        artifactId = key_array[1]
+        versions = obj["versions"]
+        if len(versions) == 0:
+            versions.append("version")
+        print("++++++++++++++++++ " + str(i) + " : " + groupId + "  " + artifactId)
+        get_info_from_maven_repo(groupId, artifactId, versions)
+
+
+crawl_mv2("mv_libs.txt", string_list)
 # crawl_top50("E:/data/top51-100.txt")
 # print(num1)
 # print(num2)
-crawl_mv("mv_libs.txt", num1, num2)
+# crawl_mv("mv_libs.txt", num1, num2)
 # get_info_from_maven_repo("com.amazonaws", "aws-java-sdk-bundle", ["1.11.271", "1.11.134", "1.11.172", "1.11.199", "1.11.106"])
+# get_info_from_maven_repo("com.google.http-client", "google-http-client", ["1.22.0", "1.20.0", "1.23.0"])
+# get_info_from_maven_repo("org.apache.hadoop", "hadoop-hdfs", ["0.22.0", "3.1.0", "2.4.0", "2.7.4", "2.7.3", "2.6.0-cdh5.7.0", "2.4.1", "2.2.0", "2.6.0-cdh5.4.2", "2.6.0-cdh5.10.0", "2.3.0-cdh5.1.3", "2.7.3.2.6.1.0-129", "2.0.0-alpha", "2.3.0", "2.6.0", "2.0.0-cdh4.4.0", "2.6.2", "3.0.0", "2.5.2", "2.6.5", "2.5.1", "2.6.1", "2.8.3", "2.7.5", "0.23.3", "2.8.1", "2.7.1", "3.0.0-beta1", "2.3.0-cdh5.1.5", "2.6.0-cdh5.7.4", "2.7.2", "2.5.0", "2.9.0"])
 # get_version_for_top100()
 # get_info_from_maven_repo("com.android.support", "appcompat-v7", ["28.0.0"])

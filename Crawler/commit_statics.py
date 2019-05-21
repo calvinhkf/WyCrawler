@@ -234,13 +234,80 @@ def handle_batch():
                 num_dic[commit] = num
             write_json("J:/commit_update_call/" + project_id + ".txt", num_dic)
 
+def get_project_commits():
+    # result = {}
+    # dir_array = [30, 60, 90]
+    # projs = set()
+    # for num in dir_array:
+    #     dir = "H:/90days-update-api-call/200star/" + str(num) + "/"
+    #     for i in [2, 6]:
+    #         files = os.listdir(dir + "call_" + str(i))
+    #         print(dir + "call_" + str(i))
+    #         for file in files:
+    #             name = file.replace(".txt", "").split("_")
+    #             print(name)
+    #             project_id = name[0]
+    # #             projs.add(project_id)
+    # # print(len(projs))
+    #             commit = name[1]
+    #             if project_id not in result:
+    #                 result[project_id] = set()
+    #             result[project_id].add(commit)
+    # for key in result.keys():
+    #     result[key] = list(result[key])
+    # write_json("E:/data/ASE2019/proj_commits_200.txt", result)
+
+    data1 = read_json("E:/data/ASE2019/proj_commits_200.txt")
+    print(len(data1))
+    data2 = read_json("E:/data/ASE2019/proj_commits.txt")
+    print(len(data2))
+    set1 = set(data1.keys())
+    set2 = set(data2.keys())
+    print(set1)
+    print(set2)
+    set1 = set1.union(set2)
+    print(len(set1))
+
+def get_total_entries():
+    db = database.connectdb()
+    # sql = "SELECT project_id, prev_commit, curr_commit FROM lib_update WHERE prev_type_id is not null and curr_type_id is not null"
+    # query_result = database.querydb(db, sql)
+    # write_json("E:/data/ASE2019/update_total_.txt", list(query_result))
+    # print(len(query_result))
+
+    # sql = "SELECT project_id, prev_commit, curr_commit FROM lib_update WHERE prev_version_id is not null and curr_version_id is not null"
+    # query_result = database.querydb(db, sql)
+    # write_json("E:/data/ASE2019/update_total+.txt", list(query_result))
+    # print(len(query_result))
+
+    data1 = read_json("E:/data/ASE2019/proj_commits_200.txt")
+    # print(len(data1))
+    data2 = read_json("E:/data/ASE2019/proj_commits.txt")
+    # print(len(data2))
+    data = read_json("E:/data/ASE2019/update_total+.txt") # 806138
+    print(len(data))
+    count = 0
+    for entry in data:
+        project_id = entry[0]
+        prev_commit = entry[1]
+        curr_commit = entry[2]
+        if str(project_id) in data2 and prev_commit in data2[str(project_id)] and curr_commit in data2[str(project_id)]:
+            count += 1
+        if str(project_id) in data1 and prev_commit in data1[str(project_id)] and curr_commit in data1[str(project_id)]:
+            count += 1
+    print(count)
+    # 63909
+
+
 # compare()
 # get_all_commits()
 # count()
 # projects()
 # data = read_json("update_proj_500+.json")
 # print(len(data))
-generate_batch()
-# commit_count()
+# generate_batch()
+# commit_count()n
 # divide_batch()
 # handle_batch()
+# get_project_commits()
+get_total_entries()

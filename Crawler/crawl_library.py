@@ -36,7 +36,7 @@ headers = {
 #         os.makedirs(lib_dir)
 #
 # dependency_file = sys.argv[4]
-root = sys.argv[3]
+root = sys.argv[1]
 lib_dir = root + "/lib/"
 crawled_repo = []
 repo_array = []

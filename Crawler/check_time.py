@@ -198,7 +198,7 @@ def get_update_proj_in_three_months():
 # input_repo_time_compare(52)
 # input_repo_time_compare(90)
 
-get_maven_proj_update_within_three_months(90)
+# get_maven_proj_update_within_three_months(90)
 # get_update_proj_in_three_months()
 # data = read_json("four_month.txt")
 # for key in data.keys():

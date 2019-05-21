@@ -1,6 +1,48 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
+def draw_twinx(x,y1,y2,x_label,y_label1,y_label2):
+
+    # plt.bar(index, y, width=0.4, color='lightblue')
+    #
+    #
+    #
+    # x_num = range(len(x))
+    # plt.xticks(x_num, x, rotation=75, fontproperties=Times_New_Roman, fontsize=21)
+    # plt.yticks(fontproperties=Times_New_Roman, fontsize=21)
+
+    Times_New_Roman = matplotlib.font_manager.FontProperties(fname='C:\\Windows\\Fonts\\times.ttf')
+    # print(y2)
+    df = pd.DataFrame({'bar': y1, 'line': y2}, index=x)
+    fig = plt.figure()
+    ax1 = df['bar'].plot(kind='bar', label='Number of Projects', color='lightblue')
+    plt.xticks(rotation=75, fontproperties=Times_New_Roman, fontsize=21)
+    plt.yticks(fontproperties=Times_New_Roman, fontsize=21)
+    plt.xlabel(x_label, fontproperties=Times_New_Roman, fontsize=21)
+    plt.ylabel(y_label1, fontproperties=Times_New_Roman, fontsize=21)
+    index = np.arange(len(y1))
+    for a, b in zip(index, y1):
+        plt.text(a, b + 0.01, '%.0f' % b, ha='center', va='bottom', rotation=0, fontproperties=Times_New_Roman, fontsize=17)
+    ax2 = ax1.twinx()
+    # lns1 = df['line'].plot(kind='line', label='Median Size of Projects', ax=ax2, color='green', style='-o')
+    lns1 = df['line'].plot(kind='line', label='Median Number of Libraries', ax=ax2, color='green', style='-o')
+    # ax2.grid(color="red", axis="x")
+    plt.yticks(fontproperties=Times_New_Roman, fontsize=21)
+    plt.ylabel(y_label2, fontproperties=Times_New_Roman, fontsize=21)
+
+    font1 ={'family' : 'Times New Roman', 'size'   : 15}
+
+
+    fig.legend(loc=1, bbox_to_anchor=(0.85,1), bbox_transform=ax1.transAxes, prop=font1)
+    # lns = ax1 + lns1
+    # labs = [l.get_label() for l in lns]
+    # ax1.legend(lns, labs, loc=0)
+
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+    plt.show()
 
 def draw_bar(x,y,x_label,y_label):
     index = np.arange(len(y))
